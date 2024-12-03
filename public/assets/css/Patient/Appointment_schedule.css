@@ -1,0 +1,350 @@
+/* General Reset */
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+/* Sidebar */
+.sidebar {
+    width: 80px; /* Show icons only */
+    background-color: #172554;
+    color: white;
+    transition: width 0.3s ease;
+    overflow: visible; /* Ensure content is not clipped */
+}
+
+.sidebar:hover {
+    width: 250px; /* Expands on hover */
+    overflow: visible; /* Ensure expanded content is visible */
+}
+
+/* Sidebar Menu Items */
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.sidebar-menu li:hover {
+    background-color: #1C407F;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li.active {
+    background-color: #fff;
+    color: #172554;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li i {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-logo h2 {
+    margin-left: 10px;
+    font-size: 30px;
+    color: #00C67A;
+}
+
+.sidebar-logo img {
+    margin-left: 5px;
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 20px 0;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172554;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d1d9f1; /* Placeholder for avatar */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.name {
+    margin: 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.role {
+    color: #525151;
+    font-size: 12px;
+}
+
+.notification img {
+    margin-right: 20px;
+    max-width: 25px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.welcome-message p {
+    font-size: 18px;
+    color: #172554;
+    margin-bottom: 10px;
+}
+
+
+/* Flex container for aligning input boxes and image */
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Input box styling */
+.input-box {
+    background-color: #eef3ff;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    font-size: 14px;
+    color: #444;
+    margin-top: 5px;
+    width: 500px;
+    margin-left: 80px;
+}
+
+input[type="text"], select {
+    width: 100%; /* Adjusted width to fit container */
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #444;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #666;
+}
+
+.services-link {
+    display: block;
+    text-decoration: none;
+    font-size: 14px;
+    color: #2972ff;
+    margin-bottom: 20px;
+    margin-left: 180px;
+}
+
+.services-link:hover {
+    text-decoration: underline;
+}
+
+.find-doctor-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    padding: 10px;
+    background-color: #0a1a3a;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 80px;
+}
+
+.find-doctor-btn .icon {
+    margin-right: 5px;
+}
+
+.find-doctor-btn:hover {
+    background-color: #0c2345;
+}
+
+/* Image container aligned next to input boxes */
+.image-container {
+    width: 35%; /* Adjust width to fit your design */
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 150px;
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 50px;
+}
+
+/* Header Title */
+.header {
+    text-align: center; /* Center text horizontally */
+    margin-bottom: 20px; /* Adjust spacing below the header if needed */
+    background-color: #00C67A;
+    margin-left: 80px;
+    border-radius: 15px;
+    margin-top: 25px;
+}
+
+.header-title {
+    font-size: 24px; /* Adjust font size as needed */
+    font-weight: bold; /* Make text bold */
+    color: #000000; /* Adjust color to match your design */
+    margin-top: 25px;
+}
+
+
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    
+}
+
+.btn-container h2 {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #172554;
+    margin-left: 150px;
+}
+
+.btn-container button {
+    background-color: #838f8a;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 1 1 calc(33% - 10px);
+    margin: 5px;
+    text-align: center;
+    
+}
+
+.btn-container button:hover {
+    background-color: #007d4d;
+}
+
+
+.sidebar-menu li a {
+    text-decoration: none; /* Removes underline */
+    color: inherit; /* Inherits color from parent element */
+    display: flex; /* Ensures alignment of icon and text */
+    align-items: center; /* Vertically aligns the items */
+  
+  }
+  
+  .sidebar-menu li a:hover,
+  .sidebar-menu li a:focus {
+    color: #ddd; /* Change color on hover/focus */
+  }

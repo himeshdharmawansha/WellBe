@@ -1,0 +1,424 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 80px; /* Show icons only */
+    background-color: #172554;
+    color: white;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 250px; /* Expands on hover */
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-logo h2 {
+    margin-left: 10px;
+    font-size: 30px;
+    color: #00C67A;
+}
+
+.sidebar-logo img {
+    margin-left: 5px;
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 20px 0;
+    margin-left: 10px;
+    margin-top: 20px;;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    color: #fff;
+}
+
+
+.sidebar-menu li:hover {
+    background-color: #1C407F;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li.active {
+    background-color: #fff;
+    color: #172554;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar-menu li i {
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172554;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d1d9f1; /* Placeholder for avatar */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.name{
+    margin: 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.role{
+    color: #525151;
+    font-size: 12px;
+}
+
+.notification img{
+    margin-right: 20px;
+    max-width: 25px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.welcome-message p {
+    font-size: 18px;
+    color: #172554;
+}
+
+.cards-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.card {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-right: 10px;
+    text-align: left;
+    border-radius: 10px;
+    font-size: 20px;
+    align-items: center;
+    height: 109px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+
+}
+
+.circle-background {
+    position: relative;
+    display: inline-block;
+    background-color: #f0f8ff;
+    border-radius: 50%;
+    box-shadow: 5px 5px 20px rgba(7, 7, 7, 0.1);
+    margin-bottom: 10px;
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+}
+
+.icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: rgb(16, 16, 16);
+}
+
+.figure {
+    font-size: 35px;
+    font-weight: normal;
+    color: #FFFFFF;
+    padding: 0;
+    margin: 0;
+}
+
+.label {
+    font-size: 20px;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+
+.appointment {
+    background-color: #00C38F;
+}
+
+.patients {
+    background-color: #8765FA;
+}
+
+.doctors {
+    background-color: #5D93FF;
+}
+
+.pharmacists {
+    background-color: #7E8BAD;
+}
+
+.lab-techs {
+    background-color: #B16FA2;
+}
+
+.card:last-child {
+    margin-right: 0;
+}
+
+.content-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.dashboard {
+    flex: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.see-all {
+    font-size: 14px;
+    color: #683CFC;
+}
+
+.see-all:hover {
+    font-weight: bold;
+}
+
+.appointments,
+.patient-analysis {
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.appointments h3,
+.patient-analysis h3 {
+    font-size: 18px;
+    color: #172554;
+    margin-bottom: 10px;
+}
+
+.appointment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.appointment-table th,
+.appointment-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.doctor-name {
+    display: block;
+    font-size: 14px;
+}
+
+.speciality {
+    font-size: 12px;
+    color: #666;
+    display: block;
+    margin-top: 2px;
+}
+
+.time {
+    font-size: 14px;
+    text-align: center;
+    display: inline-block;
+    padding: 5px;
+    width: 80px;
+    background-color: #CBE2FF;
+    color: #683CFC;
+}
+
+.time:hover {
+    cursor: pointer;
+}
+
+.ongoing {
+    background-color: #FFE351;
+}
+
+.messages {
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;;
+    margin-bottom: 20px;
+}
+
+.calendar-container {
+    background-color: #f0f8ff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    height: auto;
+}
+
+.calendar-header {
+    margin-bottom: 10px;
+}
+
+.calendar-header h3 {
+    font-size: 18px;
+    color: #172554;
+    margin-bottom: 5px;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-nav span {
+    font-size: 16px;
+    color: #1b2748;
+}
+
+.calendar-nav button {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #1b2748;
+    cursor: pointer;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+    padding: 5px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.calendar-table th {
+    font-weight: bold;
+    color: #1b2748;
+}
+
+.calendar-table td {
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.calendar-table td.inactive {
+    color: #b0b0b0;
+    /* Dim color for other month's dates */
+}
+
+.date {
+    flex: 1;
+    text-align: right;
+}

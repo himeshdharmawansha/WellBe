@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+.cal-dashboard {
+    width: 400px;
+}
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+.calendar-container {
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    height: 40%;
+}
+
+.calendar-header {
+    margin-bottom: 0px;
+}
+
+.calendar-header h3 {
+    font-size: 18px;
+    color: #172554;
+    margin-bottom: 10px;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-nav span {
+    font-size: 20px;
+    color: #1b2748;
+}
+
+.calendar-nav button {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    color: #1b2748;
+    cursor: pointer;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+    padding: 0px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    color: #333;
+}
+
+.calendar-table th {
+    font-weight: bold;
+    color: #1b2748;
+}
+
+.calendar-table td {
+
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.calendar-table td.inactive {
+    color: #bebcbce1;
+    /* Dim color for other month's dates */
+}
+
+.calendar-table td.today {
+    color: #ffffff;
+    background-color: rgb(30, 116, 237);
+    /* Dim color for other month's dates */
+}
+
+.calendar-table td.update {
+    color: #ffffff;
+    background-color: rgb(217, 209, 67);
+    /* Dim color for other month's dates */
+}
+
+.calendar-table td.scheduled {
+    color: #ffffff;
+    background-color: rgb(63, 200, 70);
+    /* Dim color for other month's dates */
+}
+
+.date {
+    flex: 1;
+    text-align: right;
+}
+
+#scheduleForm {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+#scheduleForm label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333333;
+}
+
+#scheduleForm input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #555555;
+}
+
+#scheduleForm input[type="text"]:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+.add-timeslot-btn,#scheduleForm button {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.add-timeslot-btn {
+    background-color: #28a745;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.add-timeslot-btn:hover {
+    background-color: #218838;
+}
+
+#scheduleForm button:hover {
+    background-color: #0056b3;
+}
+
+#scheduleForm button:active {
+    background-color: #003f8a;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.save_btn{
+    margin-top: 40px;
+}
+
+#timeSlot {
+    width: 100%; /* Full width */
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease-in-out;
+}
+
+#timeSlot:focus {
+    border-color: #4CAF50; /* Highlight color */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+#appointmentTable th, #appointmentTable td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+#appointmentTable th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+#appointmentTable tr:hover {
+    background-color: #f1f1f1;
+}

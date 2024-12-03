@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 80px; /* Show icons only */
+    background-color: #172554;
+    color: white;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 250px; /* Expands on hover */
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-logo h2 {
+    margin-left: 10px;
+    font-size: 30px;
+    color: #00C67A;
+}
+
+.sidebar-logo img {
+    margin-left: 5px;
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 20px 0;
+    margin-left: 10px;
+    margin-top: 20px;;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+.sidebar-menu li:hover {
+    background-color: #1C407F;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li.active {
+    background-color: #fff;
+    color: #172554;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar-menu li i {
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172554;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d1d9f1; /* Placeholder for avatar */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.name{
+    margin: 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.role{
+    color: #525151;
+    font-size: 12px;
+}
+
+.notification img{
+    margin-right: 20px;
+    max-width: 25px;
+}
+
+/* Dashboard Content */
+.content-container {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.search-bar {
+    margin-top: 14px;
+    margin-right: 14%;
+}
+
+.search-bar input {
+    /* border-color: #dadada; */
+    border-style: none;
+    background-color: #EBF5FF;
+    padding: 10px;
+    border-radius: 25px;
+    width: 260px;
+    height: 45px;
+}
+
+.search-bar button {
+    border: none;
+    cursor: pointer;
+    margin-left: -40px;
+
+}
+
+.fas.fa-search {
+    font-weight: 900;
+    background-color: #EBF5FF;
+    padding: 2px;
+}
+
+.top-buttons {
+    display: flex;
+    align-items: center;
+    gap: 700px;
+}
+
+.add-appointment {
+    flex-direction: column; /* Stack the plus icon on top of the text */
+    align-items: center; 
+    cursor: pointer;
+    padding: -5px;
+    margin: 0;
+}
+
+.fas.fa-plus {
+    background-color: #172554;
+    color:#fff;
+    padding: 10px;
+    border-radius: 100px;
+    
+}
+
+.add-text {
+    font-size: 14px;
+    background-color: #EFF4FF;
+    padding: 10px;
+    border-radius: 25px;
+}
+
+.view-buttons {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+.view-buttons span {
+    cursor: pointer;
+    padding: 5px 50px;
+    font-size: 14px;
+}
+
+
+.view-buttons .active {
+    color: #3497F9;
+    border-bottom: 2px solid #3497F9;
+    padding-bottom: 5px;
+}
+
+.view-buttons a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.table-container {
+    
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.appointment-table {
+    width:100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.appointment-table th{
+    background-color: #EFF4FF;
+    color: #393939;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+

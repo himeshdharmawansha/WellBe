@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   font-family: Arial, sans-serif;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+   display: flex;
+   height: 100vh;
+}
+
+/* Main Content */
+.main-content {
+   flex-grow: 1;
+   background-color: #f0f8ff;
+   display: flex;
+   flex-direction: column;
+}
+
+
+/* Dashboard Content */
+.dashboard-content {
+   flex-grow: 1;
+   padding: 20px;
+   background-color: white;
+   border-radius: 15px;
+   margin: 20px;
+   overflow-y: auto;
+}
+
+.dashboard-content h2 {
+   color: #0443A5;
+   margin-bottom: 20px;
+}
+
+.dashboard-content table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-bottom: 20px;
+}
+
+.dashboard-content table,
+.dashboard-content th,
+.dashboard-content td {
+   border: 1px solid #ccc;
+}
+
+.dashboard-content th,
+.dashboard-content td {
+   padding: 10px;
+   text-align: center;
+}
+
+.dashboard-content thead {
+   background-color: #F0F0F0;
+}
+
+.dashboard-content input[type="checkbox"] {
+   width: 20px;
+   height: 20px;
+}
+
+/* Buttons */
+.buttons {
+   display: flex;
+   justify-content: flex-end;
+   margin-top: 20px;
+}
+
+.btn {
+   padding: 10px 20px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 16px;
+   background-color: #007bff;
+   color: white;
+   margin-left: 10px;
+}
+
+.btn.print {
+   background-color: #3497F9;
+}
+
+/* Remarks Section */
+.remarks-section {
+   margin-top: 20px;
+   padding: 20px;
+   background-color: #f0f8ff;
+   border: 1px solid #ccc;
+   border-radius: 10px;
+}
+
+.remarks-section h3 {
+   color: #172554;
+   margin-bottom: 10px;
+}
+
+#additionalRemarks {
+   width: 100%;
+   height: 100px;
+   padding: 10px;
+   margin-top: 15px;
+   border-radius: 5px;
+   border: 1px solid #ccc;
+}
+
+/* Add media query for print */
+@media print {
+   body * {
+      visibility: hidden;
+   }
+
+   .dashboard-content,
+   .dashboard-content * {
+      visibility: visible;
+   }
+
+   .dashboard-content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+   }
+}
+
+a {
+   text-decoration: none;
+   color: inherit;
+   /* Inherits the color from the parent element */
+}

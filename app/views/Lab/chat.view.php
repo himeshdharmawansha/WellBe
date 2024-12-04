@@ -374,16 +374,21 @@ $user_profile = $DB->read($query, ['currentUserId' => $currentUserId, 'role' => 
       // Call the update function every 3 seconds
       setInterval(updateChatTimestamps, 3000);
 
-      function refreshUnseenCounts() {
-         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts/${3}`)
+      function refreshUnseenCounts(roleArray) {
+         const roles = roleArray.join(','); // Serialize roles into a comma-separated string
+
+         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
             .then(response => response.json())
             .then(user_profile => {
+               if (user_profile.error) {
+                  console.error("Error:", user_profile.error);
+                  return;
+               }
 
                const chatList = document.getElementById('chat-list');
                chatList.innerHTML = ''; // Clear current list
 
                user_profile.forEach(user => {
-                  // Create the HTML for each user item
                   const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
                   const lastMessageDate = user.last_message_date ?
                      new Date(user.last_message_date).toLocaleDateString('en-GB') :
@@ -415,7 +420,8 @@ $user_profile = $DB->read($query, ['currentUserId' => $currentUserId, 'role' => 
       }
 
       // Set interval to poll unseen message counts every 3 seconds
-      setInterval(refreshUnseenCounts, 3000);
+      // Poll unseen counts every 3 seconds
+      setInterval(() => refreshUnseenCounts([3]), 3000);
 
 
       // Mark messages as seen when chat is opened

@@ -44,7 +44,7 @@ class Pharmacy extends Controller
 
    public function medicationDetails()
    {
-      $this->view('Pharmacy/medicationDetails', 'medicationDetails');
+      $this->view('Pharmacy/medicationDetails', 'requests');
    }
 
    public function login()

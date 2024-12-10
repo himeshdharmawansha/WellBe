@@ -39,7 +39,7 @@ class Lab extends Controller
    }
    public function labTestDetails()
    {
-      $this->view('Lab/labTestDetails', 'labTestDetails');
+      $this->view('Lab/labTestDetails', 'requests');
    }
    public function login()
    {

@@ -162,25 +162,48 @@
     margin-bottom: 15px;
 }
 
-.search-bar {
-    flex-grow: 1;
+#countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(to right, #46cefc, #6bdcde);
+    border-radius: 10px;
+    padding: 5px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    height: 109px;
+    width: 220px;
 }
 
-.search-bar input {
-    /* border-color: #dadada; */
-    border-style: none;
-    background-color: #EBF5FF;
-    padding: 10px;
-    border-radius: 25px;
-    width: 260px;
-    height: 45px;
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.6rem;
 }
 
-.search-bar button {
-    border: none;
-    cursor: pointer;
-    margin-left: -40px;
+.time-unit span {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0;
+    width: 2.5ch;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
 
+.inline-separator {
+
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1 5px;
+    margin-top: 23px;
+    /* Adjust spacing if needed */
+    align-self: flex-start;
+    /* Align with the numbers */
+    line-height: 2rem;
+    /* Match the height of numbers */
 }
 
 .fa-solid.fa-magnifying-glass {

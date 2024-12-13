@@ -16,12 +16,12 @@ class Pharmacy extends Controller
    ];
 
    public function __construct()
-        {
-            if(!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy"){
-                redirect('login');
-                exit;
-            }
-        }
+   {
+      if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
+         redirect('login');
+         exit;
+      }
+   }
 
    public function index()
    {
@@ -63,5 +63,59 @@ class Pharmacy extends Controller
 
       $filename = "../app/views/Components/{$component}.php";
       require $filename;
+   }
+   public function getRequestCounts()
+   {
+      $db = new Database();
+      $query = "
+           SELECT state, COUNT(*) as count 
+           FROM medication_requests 
+           WHERE date >= NOW() - INTERVAL 14 DAY
+           GROUP BY state
+       ";
+
+      $results = $db->read($query);
+
+      // Structure the data for easier use in the frontend
+      $response = [
+         'pending' => 0,
+         'progress' => 0,
+         'completed' => 0,
+      ];
+
+      foreach ($results as $row) {
+         if (isset($response[$row['state']])) {
+            $response[$row['state']] = (int)$row['count'];
+         }
+      }
+
+      echo json_encode($response);
+   }
+
+   public function getRequestsByDay()
+   {
+      $db = new Database();
+      $query = "
+        SELECT 
+            DAYNAME(date) as day, 
+            COUNT(*) as count
+        FROM medication_requests
+        WHERE date >= NOW() - INTERVAL 7 DAY
+        GROUP BY DAYNAME(date)
+        ORDER BY FIELD(DAYNAME(date), 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+    ";
+
+      $results = $db->read($query);
+
+      // Initialize days of the week
+      $days = ['Monday' => 0, 'Tuesday' => 0, 'Wednesday' => 0, 'Thursday' => 0, 'Friday' => 0, 'Saturday' => 0, 'Sunday' => 0];
+
+      // Populate data from the query
+      foreach ($results as $row) {
+         $days[$row['day']] = (int)$row['count'];
+      }
+
+      // Return the counts in a simple format
+      echo json_encode(array_values($days));
    }
 }

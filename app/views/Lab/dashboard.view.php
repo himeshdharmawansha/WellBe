@@ -22,7 +22,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Dashboard"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <!-- Dashboard Content -->
@@ -32,7 +32,7 @@
                     <h4 class="date">10 August, 2024</h4>
                 </div>
                 <div class="topbar">
-                <div id="countdown">
+                    <div id="countdown">
                         <div class="time-unit">
                             <span id="hours">00</span>
                             <p>HOURS</p>
@@ -215,6 +215,14 @@
 
         // Initialize the countdown with a duration in seconds (e.g., 15 hours).
         startCountdown(15 * 3600);
+
+        function updateReceivedState() {
+            fetch('<?= ROOT ?>/ChatController/loggedin')
+                .catch(error => console.error("Error in loggedin :", error));
+        }
+
+        // Call the update function every 3 seconds
+        setInterval(updateReceivedState, 3000);
     </script>
 </body>
 

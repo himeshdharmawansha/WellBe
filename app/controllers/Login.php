@@ -5,7 +5,7 @@ class Login extends Controller
 
     public function index()
     {
-        $data = [];
+        $data = [];        $model = new Model;
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['nic'])) {
@@ -39,7 +39,7 @@ class Login extends Controller
                     if (($_POST['password']==$row->password)) {
                         $_SESSION['USER'] = $row; // Save user details in the session
                         //session_start();
-                        $user->loggedin();
+                        $model->loggedin();
                         $_SESSION['userid'] = $row->id;
                         redirect($_SESSION['user_type']);
                     } else {

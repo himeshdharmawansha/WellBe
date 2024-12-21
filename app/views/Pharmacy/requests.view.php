@@ -14,7 +14,7 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Dashboard</title>
+   <title>WELLBE</title>
    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/medicationRequestList.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
@@ -29,7 +29,7 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
          <!-- Top Header -->
          <?php
          $pageTitle = "Medication Requests";
-         include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
 
          <!-- Dashboard Content -->

@@ -7,7 +7,7 @@ class Lab extends Controller
       'elements' => [
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
          'requests' => ["fas fa-list", "Requests"],
-         'login' => ["fa-solid fa-comment-dots", "Chat"],
+         'chat' => ["fa-solid fa-comment-dots", "Chat"],
          'report' => ["fa-solid fa-chart-simple", "Report"],
          'setting' => ["fa-solid fa-gear", "Setting"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>WellBe</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/phamacistDashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -21,7 +21,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Dashboard"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
             <!-- Dashboard Content -->
             <div class="dashboard-content">
@@ -71,80 +71,46 @@
                 </div>
                 <div class="content-container">
                     <div class="dashboard messages">
-
                         <div class="header">
                             <h3>Medication Requests</h3>
                             <a href="requests" class="see-all">See all</a>
                         </div>
-                        <table class="request-table">
-                            <tr>
-                                <th style="padding-right: 140px;">Patient_ID</th>
-                                <th>Status</th>
-                            </tr>
-                            <tr>
-                                <td>pID_123432</td>
-                                <td><span class="status progress">progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_124562</td>
-                                <td><span class="status progress">progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123782</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123472</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123430</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-
-                        </table>
+                        <div class="table-container">
+                            <table class="request-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding-right: 140px;">Patient_ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically injected here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
                     <div class="dashboard messages">
                         <div class="header">
                             <h3>New Messages</h3>
                             <a href="chat" class="see-all">See all</a>
                         </div>
-                        <table class="request-table">
-                            <tr>
-                                <th>Name</th>
-                                <th>Time</th>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-
-                        </table>
+                        <div class="table-container">
+                            <table class="message-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding-right: 140px;">Name</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically injected here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
+
                     <div class="dashboard calendar-container">
                         <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
                     </div>
@@ -241,7 +207,91 @@
             // Optionally, refresh every 5 seconds
             setInterval(updateRequestCounts, 1000);
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('.request-table tbody');
+
+            function fetchMedicationRequests() {
+                fetch('<?= ROOT ?>/Pharmacy/medicationRequests')
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        data.forEach(request => {
+                            html += `
+                        <tr>
+                            <td>${request.patient_id}</td>
+                            <td><span class="status ${request.state}">${request.state}</span></td>
+                        </tr>
+                    `;
+                        });
+                        tableBody.innerHTML = html;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            fetchMedicationRequests();
+            setInterval(fetchMedicationRequests, 3000);
+        });
+
+        function formatTimeToAmPm(time) {
+            const [hours, minutes, seconds] = time.split(':');
+            const date = new Date();
+            date.setHours(hours, minutes, seconds || 0);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('.message-table tbody');
+            const noMessagesRow = `
+        <tr>
+            <td colspan="2" style="text-align: center;">No new messages</td>
+        </tr>
+    `;
+
+            function fetchNewMessages() {
+                fetch('<?= ROOT ?>/Pharmacy/fetchNewMessages')
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        if (data.length === 0) {
+                            // No new messages, show the "No new messages" row
+                            html = noMessagesRow;
+                        } else {
+                            data.forEach(message => {
+                                const time = new Date(message.last_message_date).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                                html += `
+                            <tr>
+                                <td>${message.first_name}</td>
+                                <td>${formatTimeToAmPm(time)}</td>
+                            </tr>
+                        `;
+                            });
+                        }
+                        tableBody.innerHTML = html;
+                    })
+                    .catch(error => console.error('Error fetching messages:', error));
+            }
+
+            fetchNewMessages(); // Initial load
+            setInterval(fetchNewMessages, 5000); // Refresh every 5 seconds
+        });
+
+
+        function updateReceivedState() {
+            fetch('<?= ROOT ?>/ChatController/loggedin')
+                .catch(error => console.error("Error in loggedin :", error));
+        }
+
+        // Call the update function every 3 seconds
+        setInterval(updateReceivedState, 3000);
     </script>
+
 </body>
 
 </html>

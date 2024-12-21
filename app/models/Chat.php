@@ -99,10 +99,8 @@ class Chat extends Model
       );
 
       // Execute the query
-      return $this->readn($query, $params);
+      return $this->read($query, $params);
    }
-
-
 
    // Get the status of all user_profile
    public function getuser_profiletatuses()
@@ -130,9 +128,12 @@ class Chat extends Model
    // Send a new message
    public function sendMessage($receiver, $message)
    {
-      $sender = $_SESSION['userid'];
-      date_default_timezone_set('Asia/Colombo');
-      $date = date("Y-m-d H:i:s");
+
+      $sender = $_SESSION['userid'];  // Get the sender from session
+      date_default_timezone_set('Asia/Colombo');  // Set the timezone
+      $date = date("Y-m-d H:i:s");  // Get the current date and time
+
+      // SQL query to insert the message into the database
       $query = "INSERT INTO message (sender, receiver, message, date) VALUES (:sender, :receiver, :message, :date)";
       return $this->write($query, [
          'sender' => $sender,

@@ -54,18 +54,24 @@ $testDetails = $he->getTestDetails($requestID);
                                     </select>
                                  </td>
                                  <td>
-                                    <label class="upload-btn" for="file-input-<?= $detail['test_name'] ?>">
-                                       Upload
-                                       <i id="icon-<?= $detail['test_name'] ?>" class="fa-solid fa-circle-check" style="display: none; color: green; margin-right: 1.5px;"></i>
-                                    </label>
-                                    <input type="file" id="file-input-<?= $detail['test_name'] ?>" class="file-input" data-test-name="<?= $detail['test_name'] ?>" style="display: none;" disabled>
+                                    <form class="upload-form" data-test-name="<?= $detail['test_name'] ?>" data-request-id="<?= $requestID ?>" enctype="multipart/form-data">
+                                       <label class="upload-btn" for="file-input-<?= $detail['test_name'] ?>">
+                                          Upload
+                                          <i id="icon-<?= $detail['test_name'] ?>" class="fa-solid fa-circle-check" style="display: none; color: green; margin-right: 1.5px;" data-file-exists="<?= !empty($detail['file']) ? 'true' : 'false' ?>"></i>
+                                       </label>
+                                       <input type="file" name="file" id="file-input-<?= $detail['test_name'] ?>" class="file-input" data-test-name="<?= $detail['test_name'] ?>" style="display: none;" <?= !empty($detail['file']) ? 'disabled' : '' ?>>
+                                    </form>
                                  </td>
+
                                  <td>
-                                    <button style=" margin-right: 2px;">
-                                       <i id="icon-<?= $detail['test_name'] ?>" class="fa-solid fa-eye" style="color: green;padding:5px;"></i>
+                                    <!-- Eye Button to Open the File -->
+                                    <button class="eye-btn" id="eye-btn-<?= $detail['test_name'] ?>" style="margin-right: 2px;" data-request-id="<?= $requestID ?>" data-test-name="<?= $detail['test_name'] ?>">
+                                       <i id="eye-icon-<?= $detail['test_name'] ?>" class="fa-solid fa-eye" style="color: green; padding: 5px;"></i>
                                     </button>
-                                    <button>
-                                       <i id="icon-<?= $detail['test_name'] ?>" class="fa-solid fa-trash" style="color: red;padding:5px;"></i>
+
+                                    <!-- Trash Button to Delete the File -->
+                                    <button class="delete-btn" id="delete-btn-<?= $detail['test_name'] ?>" data-request-id="<?= $requestID ?>" data-test-name="<?= $detail['test_name'] ?>">
+                                       <i id="trash-icon-<?= $detail['test_name'] ?>" class="fa-solid fa-trash" style="color: red; padding: 5px;"></i>
                                     </button>
                                  </td>
                               </tr>
@@ -92,6 +98,129 @@ $testDetails = $he->getTestDetails($requestID);
    </div>
 
    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+         const rows = document.querySelectorAll('.test-list tbody tr');
+
+         rows.forEach(row => {
+            const testName = row.querySelector('.state-selector').dataset.testName;
+            const uploadedIcon = document.getElementById(`icon-${testName}`);
+            const eyeIcon = row.querySelector(`#eye-icon-${testName}`);
+            const deleteIcon = row.querySelector(`#trash-icon-${testName}`);
+            const eyeBtn = row.querySelector(`#eye-btn-${testName}`);
+            const deleteBtn = row.querySelector(`#delete-btn-${testName}`);
+
+            // If file exists, show the uploaded icon and enable delete and eye buttons
+            if (uploadedIcon && uploadedIcon.dataset.fileExists === "true") {
+               uploadedIcon.style.display = 'inline'; // Show the uploaded icon (circle check)
+               eyeBtn.style.display = 'inline'; // Show the eye button
+               deleteBtn.style.display = 'inline'; // Show the delete button
+            }
+
+            // Handle delete button click
+            if (deleteBtn) {
+               deleteBtn.addEventListener('click', function() {
+                  const requestID = deleteBtn.dataset.requestId; // Get the request ID from the data attribute
+                  const testName = deleteBtn.dataset.testName; // Get the test name from the data attribute
+
+                  fetch('<?= ROOT ?>/testRequests/deleteFile', {
+                        method: 'POST',
+                        headers: {
+                           'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                           requestID,
+                           testName
+                        })
+                     })
+                     .then(response => response.json())
+                     .then(data => {
+                        if (data.success) {
+                           alert('File deleted successfully!');
+                           uploadedIcon.style.display = 'none'; // Hide uploaded icon
+                        } else {
+                           alert('No file to delete.');
+                        }
+                     })
+                     .catch(error => console.error('Error:', error));
+               });
+            }
+
+            // Handle eye button click (open file)
+            if (eyeBtn) {
+               eyeBtn.addEventListener('click', function() {
+                  const requestID = eyeBtn.dataset.requestId; // Get the request ID from the data attribute
+                  const testName = eyeBtn.dataset.testName; // Get the test name from the data attribute
+
+                  fetch('<?= ROOT ?>/testRequests/getFileUrl', {
+                        method: 'POST',
+                        headers: {
+                           'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                           requestID,
+                           testName
+                        })
+                     })
+                     .then(response => response.json())
+                     .then(data => {
+                        if (data.success) {
+                           window.open(data.fileUrl, '_blank');
+                        } else {
+                           alert('No file to open.');
+                        }
+                     })
+                     .catch(error => console.error('Error:', error));
+               });
+            }
+         });
+      });
+
+      document.addEventListener('DOMContentLoaded', function() {
+         const doneButton = document.getElementById('doneButton');
+
+         doneButton.addEventListener('click', function() {
+            const requestID = doneButton.getAttribute('data-request-id');
+            const rows = document.querySelectorAll('.test-list tbody tr');
+
+            const formData = new FormData();
+            formData.append('requestID', requestID);
+
+            const tests = [];
+            rows.forEach(row => {
+               const testName = row.querySelector('.state-selector').dataset.testName;
+               const state = row.querySelector('.state-selector').value;
+               const fileInput = document.getElementById(`file-input-${testName}`);
+               const file = fileInput.files[0];
+
+               tests.push({
+                  testName,
+                  state
+               });
+
+               if (file) {
+                  formData.append(testName, file);
+               }
+            });
+
+            formData.append('tests', JSON.stringify(tests));
+
+            fetch('<?= ROOT ?>/testRequests/updateRequestDetails', {
+                  method: 'POST',
+                  body: formData,
+               })
+               .then(response => response.json())
+               .then(data => {
+                  if (data.success) {
+                     alert('Test details updated successfully!');
+                     window.location.reload();
+                  } else {
+                     alert('Failed to update test details.');
+                  }
+               })
+               .catch(error => console.error('Error:', error));
+         });
+      });
+
       document.addEventListener('DOMContentLoaded', function() {
          const fileInputs = document.querySelectorAll('.file-input');
          const stateSelectors = document.querySelectorAll('.state-selector');
@@ -132,6 +261,7 @@ $testDetails = $he->getTestDetails($requestID);
                }
             });
          });
+
 
          // Handle the 'Done' button functionality
          const doneButton = document.getElementById('doneButton');

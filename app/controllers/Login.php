@@ -5,7 +5,7 @@ class Login extends Controller
 
     public function index()
     {
-        $data = [];        $model = new Model;
+        $data = []; $model = new Model;
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['nic'])) {

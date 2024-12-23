@@ -1,25 +1,25 @@
 <?php
 
-class MedicationRequests extends Controller
+class TestRequests extends Controller
 {
-   protected $medicationRequestModel;
+   protected $testRequestModel;
 
    public function __construct()
    {
-      // Initialize the MedicationRequest model
-      $this->medicationRequestModel = new MedicationRequest();
+      // Initialize the testRequest model
+      $this->testRequestModel = new TestRequest();
    }
 
-   // Fetch all medication requests and pass them to the view
+   // Fetch all test requests and pass them to the view
    public function index()
    {
-      $pendingRequests = $this->medicationRequestModel->read("SELECT * FROM medication_requests WHERE state = 'pending'");
-      $progressRequests = $this->medicationRequestModel->read("SELECT * FROM medication_requests WHERE state = 'progress'");
-      $completedRequests = $this->medicationRequestModel->read("SELECT * FROM medication_requests WHERE state = 'completed'");
+      $pendingRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'pending'");
+      $ongoingRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'ongoing'");
+      $completedRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'completed'");
 
-      $this->view('Pharmacy/requests','requests' ,[
+      $this->view('Lab/requests', 'requests', [
          'pendingRequests' => $pendingRequests,
-         'progressRequests' => $progressRequests,
+         'ongoingRequests' => $ongoingRequests,
          'completedRequests' => $completedRequests,
       ]);
    }
@@ -27,25 +27,25 @@ class MedicationRequests extends Controller
    // API endpoint to retrieve requests as JSON for AJAX
    public function getRequestsJson()
    {
-      $requests = $this->medicationRequestModel->getAll();
+      $requests = $this->testRequestModel->getAll();
       header('Content-Type: application/json');
       echo json_encode($requests);
       exit;
    }
 
-   // API endpoint to search medication requests by Patient ID
+   // API endpoint to search test requests by Patient ID
    public function searchRequestsByPatientId()
    {
       $searchTerm = isset($_GET['patient_id']) ? htmlspecialchars($_GET['patient_id']) : '';
 
       if (!empty($searchTerm)) {
-         // Search for medication requests based on the patient_id
-         $query = "SELECT * FROM medication_requests WHERE patient_id LIKE :patient_id ORDER BY id DESC";
+         // Search for test requests based on the patient_id
+         $query = "SELECT * FROM test_requests WHERE patient_id LIKE :patient_id ORDER BY id DESC";
          $params = [
             ':patient_id' => '%' . $searchTerm . '%',
          ];
 
-         $requests = $this->medicationRequestModel->read($query, $params);
+         $requests = $this->testRequestModel->read($query, $params);
 
          header('Content-Type: application/json');
          echo json_encode($requests);
@@ -65,28 +65,28 @@ class MedicationRequests extends Controller
       if (!empty($decodedData)) {
          $requestID = $decodedData['requestID'] ?? null;
          $remarks = $decodedData['remarks'] ?? '';
-         $medications = $decodedData['medications'] ?? [];
+         $tests = $decodedData['tests'] ?? [];
 
          if ($requestID) {
             $db = new Database();
 
-            // Update the `medication_requests` table to mark the state as "completed"
-            $updateRequestQuery = "UPDATE medication_requests SET state = 'completed', remark = :remarks WHERE id = :requestID";
+            // Update the `test_requests` table to mark the state as "completed"
+            $updateRequestQuery = "UPDATE test_requests SET state = 'completed', remark = :remarks WHERE id = :requestID";
             $requestParams = [
                ':remarks' => $remarks,
                ':requestID' => $requestID,
             ];
             $db->write($updateRequestQuery, $requestParams);
 
-            // Update the `medication_request_details` table for each medication
-            foreach ($medications as $medication) {
-               $updateDetailQuery = "UPDATE medication_request_details 
+            // Update the `test_request_details` table for each test
+            foreach ($tests as $test) {
+               $updateDetailQuery = "UPDATE test_request_details 
                                         SET state = :state 
-                                        WHERE req_id = :requestID AND medication_name = :medicationName";
+                                        WHERE req_id = :requestID AND test_name = :testName";
                $detailParams = [
-                  ':state' => $medication['state'],
+                  ':state' => $test['state'],
                   ':requestID' => $requestID,
-                  ':medicationName' => $medication['medicationName'],
+                  ':testName' => $test['testName'],
                ];
                $db->write($updateDetailQuery, $detailParams);
             }
@@ -109,8 +109,8 @@ class MedicationRequests extends Controller
          $requestID = htmlspecialchars($data['requestID']);
          $newState = htmlspecialchars($data['state']);
 
-         $query = "UPDATE medication_requests SET state = :state WHERE id = :id";
-         $this->medicationRequestModel->write($query, [
+         $query = "UPDATE test_requests SET state = :state WHERE id = :id";
+         $this->testRequestModel->write($query, [
             'state' => $newState,
             'id' => $requestID,
          ]);
@@ -119,5 +119,13 @@ class MedicationRequests extends Controller
       } else {
          echo json_encode(['success' => false, 'error' => 'Invalid input.']);
       }
+   }
+
+   public function getTestDetails($requestID)
+   {
+      $db = new Database();
+      $query = "SELECT test_name, state, priority, file FROM test_request_details WHERE req_id = :requestID";
+      $params = [':requestID' => $requestID];
+      return $db->read($query, $params);
    }
 }

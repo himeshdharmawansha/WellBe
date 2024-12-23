@@ -13,7 +13,6 @@
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <!--?php include '../Components/Lab/sidebar.php'; ?-->
         <?php
         $this->renderComponent('navbar', $active);
         ?>
@@ -55,19 +54,19 @@
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
                             </span>
-                            <p>120<br>Pending</p>
+                            <p>000<br>New_Requests</p>
                         </div>
                         <div class="card ongoing" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-microscope"></i>
                             </span>
-                            <p>25 <br>Testing</p>
+                            <p>000<br>In_progress</p>
                         </div>
                         <div class="card completed" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fas icon fa-tasks"></i>
                             </span>
-                            <p>34 <br> Completed</p>
+                            <p>000<br> Completed</p>
                         </div>
                     </div>
                 </div>
@@ -76,76 +75,40 @@
 
                         <div class="header">
                             <h3>Ongoing Tests</h3>
-                            <a href="#" class="see-all">See all</a>
+                            <a href="requests" class="see-all">See all</a>
                         </div>
-                        <table class="request-table">
-                            <tr>
-                                <th style="padding-right: 140px;">Patient_ID</th>
-                                <th>Status</th>
-                            </tr>
-                            <tr>
-                                <td>pID_123432</td>
-                                <td><span class="status progress">progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_124562</td>
-                                <td><span class="status progress">progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123782</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123472</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>pID_123430</td>
-                                <td><span class="status pending">pending</span></td>
-                            </tr>
-
-                        </table>
+                        <div class="table-container">
+                            <table class="request-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding-right: 140px;">Patient_ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically injected here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="dashboard messages">
                         <div class="header">
                             <h3>New Messages</h3>
-                            <a href="#" class="see-all">See all</a>
+                            <a href="chat" class="see-all">See all</a>
                         </div>
-                        <table class="request-table">
-                            <tr>
-                                <th>Name</th>
-                                <th>Time</th>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-                            <tr>
-                                <td>Mr. K.G. Gunawardana</td>
-                                <td>3:30 pm</td>
-                            </tr>
-
-                        </table>
+                        <div class="table-container">
+                            <table class="message-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding-right: 240px;">Name</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically injected here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="dashboard calendar-container">
                         <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
@@ -157,36 +120,42 @@
     </div>
     <script src="<?= ROOT ?>/assets/js/Lab/labTechnicianDashboard.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', {
-            'packages': ['corechart']
+        document.addEventListener("DOMContentLoaded", function() {
+            google.charts.load('current', {
+                'packages': ['corechart']
+            });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                fetch('<?= ROOT ?>/Lab/getRequestsByDay')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Prepare data for the chart
+                        const chartData = [
+                            ['Day', 'Tested'],
+                            ['M', data[0]],
+                            ['T', data[1]],
+                            ['W', data[2]],
+                            ['T', data[3]],
+                            ['F', data[4]],
+                            ['S', data[5]],
+                            ['S', data[6]],
+                        ];
+
+                        const options = {
+                            title: 'Medication Requests',
+                            curveType: 'function',
+                            legend: {
+                                position: 'bottom'
+                            },
+                        };
+
+                        const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+                        chart.draw(google.visualization.arrayToDataTable(chartData), options);
+                    })
+                    .catch(error => console.error('Error fetching chart data:', error));
+            }
         });
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Day', 'Tested'],
-                ['1', 7],
-                ['2', 3],
-                ['3', 4],
-                ['4', 8],
-                ['5', 2],
-                ['6', 1],
-                ['7', 6],
-
-            ]);
-
-            var options = {
-                title: 'Test Performance',
-                curveType: 'function',
-                legend: {
-                    position: 'bottom'
-                }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-            chart.draw(data, options);
-        }
 
         function startCountdown(duration) {
             const countdown = {
@@ -215,6 +184,100 @@
 
         // Initialize the countdown with a duration in seconds (e.g., 15 hours).
         startCountdown(15 * 3600);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            function updateRequestCounts() {
+                fetch('<?= ROOT ?>/Lab/getRequestCounts')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the UI with fetched data
+                        document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
+                        document.querySelector('.ongoing p').innerHTML = `${data.ongoing} <br> In_progress`;
+                        document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
+                    })
+                    .catch(error => console.error('Error fetching request counts:', error));
+            }
+
+            // Call the function on page load
+            updateRequestCounts();
+
+            // Optionally, refresh every 5 seconds
+            setInterval(updateRequestCounts, 1000);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('.request-table tbody');
+
+            function fetchMedicationRequests() {
+                fetch('<?= ROOT ?>/Lab/testRequests')
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        data.forEach(request => {
+                            html += `
+                        <tr>
+                            <td>${request.patient_id}</td>
+                            <td><span class="status ${request.state}">${request.state}</span></td>
+                        </tr>
+                    `;
+                        });
+                        tableBody.innerHTML = html;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            fetchMedicationRequests();
+            setInterval(fetchMedicationRequests, 3000);
+        });
+
+        function formatTimeToAmPm(time) {
+            const [hours, minutes, seconds] = time.split(':');
+            const date = new Date();
+            date.setHours(hours, minutes, seconds || 0);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('.message-table tbody');
+            const noMessagesRow = `
+        <tr>
+            <td colspan="2" style="text-align: center;">No new messages</td>
+        </tr>
+    `;
+
+            function fetchNewMessages() {
+                fetch('<?= ROOT ?>/Lab/fetchNewMessages')
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        if (data.length === 0) {
+                            // No new messages, show the "No new messages" row
+                            html = noMessagesRow;
+                        } else {
+                            data.forEach(message => {
+                                const time = new Date(message.last_message_date).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                                html += `
+                            <tr>
+                                <td>${message.first_name}</td>
+                                <td>${formatTimeToAmPm(time)}</td>
+                            </tr>
+                        `;
+                            });
+                        }
+                        tableBody.innerHTML = html;
+                    })
+                    .catch(error => console.error('Error fetching messages:', error));
+            }
+
+            fetchNewMessages(); // Initial load
+            setInterval(fetchNewMessages, 5000); // Refresh every 5 seconds
+        });
 
         function updateReceivedState() {
             fetch('<?= ROOT ?>/ChatController/loggedin')

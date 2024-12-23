@@ -21,7 +21,7 @@
          <!-- Top Header -->
          <?php
          $pageTitle = "Generate Report"; // Set the text you want to display
-         include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
          <!-- Dashboard Content -->
          <div class="dashboard-content">

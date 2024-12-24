@@ -224,3 +224,13 @@
 .popup-print:hover {
    background-color: #218838;
 }
+
+@keyframes fadeIn {
+   from {
+      opacity: 0;
+   }
+
+   to {
+      opacity: 1;
+   }
+}

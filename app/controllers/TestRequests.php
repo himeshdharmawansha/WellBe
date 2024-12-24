@@ -56,51 +56,6 @@ class TestRequests extends Controller
       }
    }
 
-   public function update()
-   {
-      // Retrieve the raw POST data
-      $rawData = file_get_contents("php://input");
-      $decodedData = json_decode($rawData, true);
-
-      if (!empty($decodedData)) {
-         $requestID = $decodedData['requestID'] ?? null;
-         $remarks = $decodedData['remarks'] ?? '';
-         $tests = $decodedData['tests'] ?? [];
-
-         if ($requestID) {
-            $db = new Database();
-
-            // Update the `test_requests` table to mark the state as "completed"
-            $updateRequestQuery = "UPDATE test_requests SET state = 'completed', remark = :remarks WHERE id = :requestID";
-            $requestParams = [
-               ':remarks' => $remarks,
-               ':requestID' => $requestID,
-            ];
-            $db->write($updateRequestQuery, $requestParams);
-
-            // Update the `test_request_details` table for each test
-            foreach ($tests as $test) {
-               $updateDetailQuery = "UPDATE test_request_details 
-                                        SET state = :state 
-                                        WHERE req_id = :requestID AND test_name = :testName";
-               $detailParams = [
-                  ':state' => $test['state'],
-                  ':requestID' => $requestID,
-                  ':testName' => $test['testName'],
-               ];
-               $db->write($updateDetailQuery, $detailParams);
-            }
-
-            // Return a JSON response
-            echo json_encode(['success' => true, 'message' => 'Request updated successfully.']);
-         } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid request ID.']);
-         }
-      } else {
-         echo json_encode(['success' => false, 'message' => 'Invalid data.']);
-      }
-   }
-
    public function updateState()
    {
       $data = json_decode(file_get_contents("php://input"), true);
@@ -161,6 +116,12 @@ class TestRequests extends Controller
                   throw new Exception("Failed to upload file for test: $testName");
                }
             }
+
+            $updateRequestQuery = "UPDATE test_requests SET state = 'completed' WHERE id = :requestID";
+            $requestParams = [
+               ':requestID' => $data['requestID'],
+            ];
+            $db->query($updateRequestQuery, $requestParams);
 
             $query = "UPDATE test_request_details 
                       SET state = :state, file = COALESCE(:file, file)

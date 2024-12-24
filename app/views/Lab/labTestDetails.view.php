@@ -261,49 +261,6 @@ $testDetails = $he->getTestDetails($requestID);
                }
             });
          });
-
-
-         // Handle the 'Done' button functionality
-         const doneButton = document.getElementById('doneButton');
-         doneButton.addEventListener('click', function() {
-            const requestID = doneButton.getAttribute('data-request-id');
-            const remarks = document.getElementById('additionalRemarks').value;
-            const rows = document.querySelectorAll('.test-table tbody tr');
-
-            // Prepare data
-            const tests = [];
-            rows.forEach(row => {
-               const testName = row.cells[0].textContent.trim();
-               const state = row.querySelector('select').value;
-
-               tests.push({
-                  testName,
-                  state,
-               });
-            });
-
-            // Send data to the server
-            fetch('<?= ROOT ?>/testRequests/update', {
-                  method: 'POST',
-                  headers: {
-                     'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                     requestID,
-                     remarks,
-                     tests,
-                  }),
-               })
-               .then(response => response.json())
-               .then(data => {
-                  if (data.success) {
-                     window.location.href = `requests`;
-                  } else {
-                     alert('Failed to update test request.');
-                  }
-               })
-               .catch(error => console.error('Error:', error));
-         });
       });
    </script>
 

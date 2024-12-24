@@ -27,8 +27,8 @@
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="welcome-message">
-                    <h4 class="welcome">Welcome Mr. K.S.Perera</h4>
-                    <h4 class="date">10 August, 2024</h4>
+                    <h4 class="welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
+                    <h4 class="date"><?php echo date('j M, Y'); ?></h4>
                 </div>
                 <div class="topbar">
                     <div id="countdown">

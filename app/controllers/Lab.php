@@ -8,7 +8,6 @@ class Lab extends Controller
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
          'requests' => ["fas fa-list", "Requests"],
          'chat' => ["fa-solid fa-comment-dots", "Chat"],
-         'report' => ["fa-solid fa-chart-simple", "Report"],
          'setting' => ["fa-solid fa-gear", "Setting"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
@@ -48,10 +47,6 @@ class Lab extends Controller
    public function logout()
    {
       $this->view('Lab/logout', 'logout');
-   }
-   public function report()
-   {
-      $this->view('Pharmacy/report', 'report');
    }
 
    public function renderComponent($component, $active)

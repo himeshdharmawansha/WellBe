@@ -2,122 +2,225 @@
 
 /* General Reset */
 * {
-   margin: 0;
-   padding: 0;
-   box-sizing: border-box;
-   font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
 /* Dashboard Container */
 .dashboard-container {
-   display: flex;
-   height: 100vh;
+    display: flex;
+    height: 100vh;
 }
 
 /* Main Content */
 .main-content {
-   flex-grow: 1;
-   background-color: #f0f8ff;
-   display: flex;
-   flex-direction: column;
+    flex-grow: 1;
+    background-color: #f0f8ff;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Dashboard Content */
 .dashboard-content {
-   flex-grow: 1;
-   position: relative;
-   padding: 20px;
-   background-color: white;
-   border-radius: 15px;
-   margin: 20px;
-   background-image: url(../../images/medi.png);
-   background-repeat: no-repeat;
-   background-position: center;
-   background-size: 600px 550px;
-   animation: fadeIn 1s ease-in;
+    flex-grow: 1;
+    position: relative;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    margin: 20px;
+    background-image: url(../../images/medi.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 600px 550px;
+    animation: fadeIn 1s ease-in;
 }
 
 .welcome-message {
-   display: flex;
-   margin-bottom: 20px;
+    display: flex;
+    margin-bottom: 20px;
 }
 
+.welcome-message h4 {
+    font-size: 18px;
+    color: #333;
+}
 
 /* Other styling */
 .content-container {
-   display: flex;
-   gap: 20px;
-   justify-content: space-between;
-}
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+ }
+ 
+ .dashboard {
+    flex: 1;
+ }
 
-.dashboard {
-   flex: 1;
-}
+ .calendar-container {
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+ }
+ 
+ .date {
+    flex: 1;
+    text-align: right;
+ }
+ 
+ .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ }
+ 
+ .header .see-all {
+    color: #683CFC;
+ }
+ 
 
-.calendar-container {
-   background-color: #f0f8ff;
-   padding: 20px;
-   border-radius: 10px;
-   text-align: center;
-   margin-bottom: 20px;
-}
-
-
-.date {
-   flex: 1;
-   text-align: right;
-}
-
-.header {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-}
-
-.header .see-all {
-   color: #683CFC;
-}
-
+/* Generate Report Button */
 .generate {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   /* Center items horizontally */
-   justify-content: center;
-   /* Center items vertically */
-}
-
-@keyframes fadeIn {
-   from {
-      opacity: 0;
-   }
-
-   to {
-      opacity: 1;
-   }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .report {
-   display: inline-block;
-   margin: 250px auto;
-   padding: 10px 20px;
-   border: none;
-   border-radius: 5px;
-   cursor: pointer;
-   font-size: 16px;
-   background-color: #007bff;
-   color: white;
-   /* Apply the fade-in animation */
+    display: inline-block;
+    margin: 250px auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    transition: all 0.3s ease-in-out;
 }
 
 .report:hover {
-   cursor: pointer;
-   transform: translateY(-5px);
-
+    transform: translateY(-5px);
+    background-color: #0056b3;
 }
 
-a {
-   text-decoration: none;
-   color: inherit;
-   /* Inherits the color from the parent element */
+/* Popup Overlay */
+.popup-overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background-color: rgba(0, 0, 0, 0.7);
+   display: none;
+   justify-content: center;
+   align-items: center;
+   z-index: 1000;
+}
+
+/* Popup Content */
+.popup-content {
+   width: 90%;
+   max-width: 800px;
+   background-color: white;
+   padding: 15px; /* Reduced padding */
+   border-radius: 10px;
+   text-align: center;
+   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+   position: relative;
+   max-height: 95vh; /* Adjusted max-height to fit content better */
+   overflow-y: auto; /* Allows scrolling if content exceeds the height */
+}
+
+/* Popup Body */
+.popup-body {
+   margin-bottom: 60px; /* Create space for the print button */
+}
+
+/* Header Container */
+.header-container {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 15px; /* Reduced margin */
+}
+
+/* Header Title */
+.header-title {
+   flex: 1;
+   text-align: center;
+}
+
+.header-title h1 {
+   font-size: 22px; /* Slightly smaller font size */
+   margin: 0;
+   color: #333;
+}
+
+/* Header Right (Logo) */
+.header-right img {
+   position: absolute;
+   top: 15px;
+   right: 15px; /* Adjusted position */
+   width: 50px; /* Reduced size */
+   height: 50px;
+   object-fit: contain;
+   opacity: 0.5;
+}
+
+/* Header Left Details */
+.header-left {
+   text-align: left;
+   margin-top: 5px; /* Reduced margin */
+}
+
+.header-left h4 {
+   font-size: 16px; /* Smaller font size */
+   margin-bottom: 5px;
+   color: #444;
+}
+
+.header-left p {
+   font-size: 13px; /* Slightly smaller font size */
+   color: #555;
+   margin: 2px 0;
+}
+
+/* Popup Close Button */
+.popup-close {
+   position: absolute;
+   top: 1px; /* Adjusted position */
+   right: 5px;
+   font-size: 26px; /* Slightly larger close icon */
+   color: rgb(10, 24, 63);
+   cursor: pointer;
+   background: none;
+   border: none;
+}
+
+/* Charts */
+#bar_chart, #line_chart {
+    margin: 15px 0; /* Reduced margin */
+    width: 100%;
+    height: 250px; /* Reduced height */
+}
+
+/* Print Button */
+.popup-print {
+   padding: 8px 30px; /* Reduced padding */
+   background-color: #007bff;
+   color: white;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 16px; /* Reduced font size */
+   transition: background-color 0.3s ease-in-out;
+}
+
+.popup-print:hover {
+   background-color: #218838;
 }

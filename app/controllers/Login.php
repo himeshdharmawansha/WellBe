@@ -10,40 +10,39 @@ class Login extends Controller
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['nic'])) {
 
-                $id = $_POST['nic'];
+                $id = htmlspecialchars(trim($_POST['nic']));
+                $password = htmlspecialchars(trim($_POST['password']));
 
-                // Check if 'd' exists in the string
+                // Determine user type based on the NIC identifier
                 if (strpos($id, 'd') !== false) {
                     $_SESSION['user_type'] = "doctor";
                     $user = new Doctor;
                 } elseif (strpos($id, 'p') !== false) {
-                    $user = new Patient;
                     $_SESSION['user_type'] = "patient";
+                    $user = new Patient;
                 } elseif (strpos($id, 'h') !== false) {
-                    $user = new Pharmacy;
                     $_SESSION['user_type'] = "pharmacy";
+                    $user = new Pharmacy;
                 } elseif (strpos($id, 'l') !== false) {
-                    $user = new Lab;
                     $_SESSION['user_type'] = "lab";
+                    $user = new Lab;
                 } elseif (strpos($id, 'a') !== false) {
-                    $user = new Admin;
                     $_SESSION['user_type'] = "admin";
+                    $user = new Admin;
                 }
 
-
-                //password_verify($_POST['password'], $row->password
-                $arr['nic'] = $_POST['nic'];
+                $arr['nic'] = $id;
                 $row = $user->first($arr);
 
                 if ($row) {
-                    if (password_verify($_POST['password'], $row->password)) {
+                    // Compare plain-text passwords
+                    if ($password === $row->password) {
                         $_SESSION['USER'] = $row; // Save user details in the session
-                        //session_start();
-                        $user->loggedin();
+                       // $user->loggedin();
                         $_SESSION['userid'] = $row->id;
                         redirect($_SESSION['user_type']);
                     } else {
-                        $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password
+                        $user->errors['password'] = 'Wrong password';
                     }
                 } else {
                     $user->errors['nic'] = 'NIC not found';

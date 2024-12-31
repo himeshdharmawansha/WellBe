@@ -117,4 +117,31 @@ class Doctor extends Model
         return empty($this->errors);
     }
 
+    public function getAllDoctors()
+    {
+        $query = "SELECT first_name FROM doctor";
+        return $this->query($query);
+    }
+    
+    public function getAllSpecializations()
+    {
+        $query = "SELECT DISTINCT specialization FROM doctor";
+        return $this->query($query);
+    }
+
+    public function getSpecializationsByDoctor($doctorName)
+    {
+        // Adjust this query based on your actual table schema
+        $query = "SELECT specialization FROM doctor WHERE doctor_id = (SELECT id FROM doctor WHERE first_name = ?)";
+        return $this->query($query, [$doctorName]);
+    }
+    
+    public function findDoctorByNameAndSpecialization($name, $specialization)
+    {
+        $query = "SELECT * FROM doctor WHERE name = :name AND specialization = :specialization";
+        $params = ['name' => $name, 'specialization' => $specialization];
+        return $this->first($query, $params);
+    }
+    
+
 }

@@ -95,4 +95,35 @@ class Timeslot extends Model
         $this->query($query);
         redirect("doctor");
     }
-}
+
+    public function getappDate() {
+      
+
+
+            $query = "
+                        SELECT 
+                            t.date,
+                            td.start_time AS start,
+                            td.end_time AS end
+                        FROM 
+                            timeslot t
+                        JOIN 
+                            timeslot_doctor td ON t.slot_id = td.slot_id
+                        JOIN 
+                            doctor d ON td.doctor_id = d.id
+                        WHERE 
+                            d.id = '{$_SESSION['doctor_id']->id}'
+                            AND t.date >= CURDATE()
+                            AND t.date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+                        ORDER BY 
+                            t.date, td.start_time;
+                    ";
+
+
+            $appointmentDates = $this->query($query);
+        
+            return $appointmentDates;
+        }
+        
+        
+    }

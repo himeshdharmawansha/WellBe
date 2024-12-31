@@ -1,26 +1,61 @@
+<?php
+session_start();
+
+require 'dbconnection.php';
+
+if (!isset($_GET['nic']) || empty($_GET['nic'])) {
+  die("Invalid access");
+}
+
+$nic = htmlspecialchars($_GET['nic']);
+
+if (!isset($_GET['nic']) || empty($_GET['nic'])) {
+  die("Invalid NIC provided");
+}
+
+$nic = htmlspecialchars($_GET['nic']); // Sanitize input
+
+// Prepare and execute the query
+$stmt = $con->prepare("SELECT * FROM patient WHERE nic = ?");
+$stmt->bind_param("s", $nic); // Bind NIC as a string
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+  $patient = $result->fetch_assoc(); // Fetch patient data
+} else {
+  die("No patient found with NIC: " . htmlspecialchars($nic));
+}
+
+// Close resources
+$stmt->close();
+$con->close();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Report Download</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/Lab_download.css">
+    <link rel="stylesheet" href="./Lab_download.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <?php
+    <?php
         $this->renderComponent('navbar', $active);
         ?>
-    
+      
 
         <!-- Main Content -->
         <div class="main-content">
-        <?php
-            $pageTitle = "Lab Reports"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
+            <!-- Top Header -->
+            <?php
+            $pageTitle = "Appointments"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe-1/app/views/Components/Patient/header.php';
             ?>
-            </header>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">

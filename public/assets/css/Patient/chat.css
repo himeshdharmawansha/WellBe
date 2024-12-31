@@ -1,0 +1,484 @@
+/* General Reset */
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+  
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    
+}
+
+/* Sidebar */
+.sidebar {
+    width: 80px; /* Show icons only */
+    background-color: #172554;
+    color: white;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 250px; /* Expands on hover */
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-logo h2 {
+    margin-left: 10px;
+    font-size: 30px;
+    color: #00C67A;
+}
+
+.sidebar-logo img {
+    margin-left: 5px;
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 20px 0;
+    margin-left: 10px;
+    margin-top: 20px;;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+.sidebar-menu li:hover {
+    background-color: #1C407F;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li.active {
+    background-color: #fff;
+    color: #172554;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 30px 0 0 30px;
+}
+
+
+.sidebar-menu li i {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172554;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d1d9f1; /* Placeholder for avatar */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.name{
+    margin: 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.role{
+    color: #525151;
+    font-size: 12px;
+}
+
+.notification img{
+    margin-right: 20px;
+    max-width: 25px;
+}
+
+/* Dashboard Content */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+}
+
+.left-panel {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+}
+
+.profile-picture {
+    width: 100px;
+    height: 100px;
+    background-color: #ddd;
+    border-radius: 50%;
+}
+
+.info-field {
+    display: flex;
+    justify-content: space-between;
+}
+
+.appointments {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.appointment-count {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    flex: 1;
+}
+
+.send-message {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #1a237e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.appointment-list {
+    background-color: #E3F2FD;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.appointment-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+
+}
+
+.button {
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.green-button {
+    background-color: #4CAF50;
+    width: 400px;
+    height: 100px;
+}
+
+.purple-button {
+    background-color: #9C27B0;
+    width: 400px;
+}
+
+.bmi-panel {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    height: 500px;
+}
+
+.bmi-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bmi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+/* Dashboard Content */
+.dashboard-content {
+   flex-grow: 1;
+   padding: 10px;
+   background-color: white;
+   border-radius: 15px;
+   margin-left: 5px;
+   margin-right: 5px;
+   
+}
+
+
+.container {
+   display: flex;
+   width: 100%;
+   height: 85vh;
+   background-color: #fff;
+   border-radius: 10px;
+   overflow: hidden;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chat-list {
+   width: 25%;
+   background-color: #f5f5f5;
+   border-right: 1px solid #e0e0e0;
+   display: flex;
+   flex-direction: column;
+}
+
+.search-bar {
+   padding: 20px;
+   background-color: #fff;
+}
+
+.search-bar input {
+   width: 100%;
+   padding: 10px;
+   border: 1px solid #ccc;
+   border-radius: 20px;
+   outline: none;
+}
+
+ul {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+}
+
+.chat-item {
+   display: flex;
+   padding: 15px;
+   align-items: center;
+   cursor: pointer;
+   transition: background-color 0.3s;
+}
+
+.chat-item:hover,
+.chat-item.active {
+   background-color: #d9e2ff;
+}
+
+.avatar {
+   width: 40px;
+   height: 40px;
+   background-color: #ccc;
+   border-radius: 50%;
+   margin-right: 15px;
+}
+
+.chat-info h4 {
+   margin: 0;
+   font-size: 16px;
+}
+
+.chat-info p {
+   margin: 0;
+   color: #666;
+   font-size: 12px;
+}
+
+.time {
+   margin-left: auto;
+   color: #999;
+   font-size: 12px;
+}
+
+.chat-window {
+   width: 75%;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+}
+
+.chat-header {
+   display: flex;
+   padding: 15px;
+   background-color: #007bff;
+   color: #fff;
+   align-items: center;
+}
+
+.header-info h4 {
+   margin: 0;
+}
+
+.header-info p {
+   margin: 0;
+   font-size: 12px;
+}
+
+.chat-messages {
+   flex: 1;
+   padding: 20px;
+   background-color: #f9f9f9;
+   overflow-y: auto;
+   height: 400px; /* Increase this value to make the message box taller */
+}
+
+
+.message {
+   max-width: 60%;
+   margin-bottom: 15px;
+   padding: 10px;
+   border-radius: 10px;
+   position: relative;
+}
+
+.message.received {
+   background-color: #f1f1f1;
+   align-self: flex-start;
+}
+
+.message.sent {
+   background-color: #007bff;
+   color: #fff;
+   align-self: flex-end;
+   margin-left: auto;
+   /* This ensures the message is aligned to the right */
+   margin-right: 0;
+   margin-top: 25px;
+   /* Optional, for ensuring proper spacing */
+}
+
+.message p {
+   margin: 0;
+}
+
+.message .time {
+   font-size: 10px;
+   color: #999;
+   position: absolute;
+   bottom: -18px;
+   right: 10px;
+}
+
+.chat-input {
+   display: flex;
+   padding: 10px;
+   background-color: #fff;
+   border-top: 1px solid #e0e0e0;
+}
+
+.chat-input input {
+   flex: 1;
+   padding: 10px;
+   border: 1px solid #ccc;
+   border-radius: 20px;
+   outline: none;
+   margin-right: 10px;
+}
+
+.chat-input button {
+   background-color: #007bff;
+   border: none;
+   color: #fff;
+   padding: 10px 20px;
+   border-radius: 20px;
+   cursor: pointer;
+}
+
+.chat-input button:hover {
+   background-color: #0056b3;
+}
+
+a {
+   text-decoration: none;
+   color: inherit;
+   /* Inherits the color from the parent element */
+}
+
+.sidebar-menu li a {
+    text-decoration: none; /* Removes underline */
+    color: inherit; /* Inherits color from parent element */
+    display: flex; /* Ensures alignment of icon and text */
+    align-items: center; /* Vertically aligns the items */
+  
+  }
+  
+  .sidebar-menu li a:hover,
+  .sidebar-menu li a:focus {
+    color: #ddd; /* Change color on hover/focus */
+  }

@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    
+}
+
+/* Sidebar */
+.sidebar {
+    width: 80px; /* Show icons only */
+    background-color: #172554;
+    color: white;
+    transition: width 0.3s ease;
+    height: 132vh;
+}
+
+.sidebar:hover {
+    width: 250px; /* Expands on hover */
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-logo h2 {
+    margin-left: 10px;
+    font-size: 30px;
+    color: #00C67A;
+}
+
+.sidebar-logo img {
+    margin-left: 5px;
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 20px 0;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+.sidebar-menu li:hover {
+    background-color: #1C407F;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li.active {
+    background-color: #fff;
+    color: #172554;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 30px 0 0 30px;
+}
+
+.sidebar-menu li i {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.menu-text {
+    display: none; /* Hidden by default */
+    font-size: 14px;
+}
+
+.sidebar:hover .menu-text {
+    display: inline; /* Show on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+    
+}
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172554;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d1d9f1; /* Placeholder for avatar */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.name {
+    margin: 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.role {
+    color: #525151;
+    font-size: 12px;
+}
+
+.notification img {
+    margin-right: 20px;
+    max-width: 25px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.welcome-message p {
+    font-size: 18px;
+    color: #172554;
+}
+
+/* Container */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; /* Ensures all child elements have the same height */
+    padding: 20px;
+    background-color: #E8EBF8;
+    height: 119vh; /* Adjust as necessary for your layout */
+}
+
+
+
+/* Patient Details */
+/* Patient Details - Centered and Smaller */
+.patient-details {
+    background-color: #ffffff;
+    padding: 30px;
+    width: 40%; /* Reduced width */
+    border-radius: 15px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Softer shadow for depth */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    gap: 8px; /* Adds consistent spacing between elements */
+    height: auto; /* Adjust height to content */
+    margin: auto; /* Centers horizontally and vertically */
+    margin-top: 5px; /* Adds space from the top */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.patient-details:hover {
+    transform: scale(1.02); /* Slight zoom effect on hover */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+}
+
+
+.patient-details h2.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #172554; /* Dark blue text color */
+    margin-bottom: 20px; /* Add space below the title */
+    border-bottom: 2px solid #E8EBF8; /* Subtle divider */
+    padding-bottom: 5px;
+}
+
+.patient-details p {
+    font-size: 16px; /* Larger, readable font */
+    line-height: 1.6; /* Improves readability */
+    color: #333333; /* Neutral text color */
+    margin-bottom: 10px;
+}
+
+.patient-details strong {
+    color: #172554; /* Highlighted text color */
+}
+
+.button-container {
+    display: flex; /* Enables flexbox layout */
+    justify-content: center; /* Optional: Centers the buttons horizontally */
+    gap: 10px; /* Adds spacing between buttons */
+}
+
+.patient-details button.submit-btn {
+    padding: 15px 25px;
+    background-color: #00C67A; /* Bright green */
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    align-self: center; /* Centers the button */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 250px;
+    
+}
+
+.patient-details button.submit-btn:hover {
+    background-color: #009958; /* Darker green on hover */
+    transform: scale(1.05); /* Slight pop-out effect */
+}
+
+.patient-details .cha-container {
+    padding: 15px;
+    border: 1px solid #E8EBF8; /* Light border for separation */
+    border-radius: 10px;
+    background-color: #F9FBFF; /* Soft blue background */
+    margin-bottom: 10px; /* Space below the container */
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    height: 150vh;
+}
+
+label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #172554;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #EEF3FF;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+button.submit-btn {
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 150px;
+}
+
+button.submit-btn:hover {
+    background-color: #333333;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox input {
+    margin-right: 10px;
+}
+
+.checkbox label {
+    font-size: 14px;
+    color: #172554;
+}
+
+input[type="radio"] {
+    transform: scale(1.3); /* Increase the scale value to make the radio buttons bigger */
+    margin-right: 10px; /* Adjust the spacing as needed */
+}
+
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap between radio buttons and labels */
+    margin-bottom: 15px;
+}
+
+.radio-group label {
+    margin-right: 15px; /* Adjust space between each radio button and label */
+}
+
+.sidebar-menu li a {
+    text-decoration: none; /* Removes underline */
+    color: inherit; /* Inherits color from parent element */
+    display: flex; /* Ensures alignment of icon and text */
+    align-items: center; /* Vertically aligns the items */
+}
+
+.sidebar-menu li a:hover,
+.sidebar-menu li a:focus {
+    color: #ddd; /* Change color on hover/focus */
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h2 {
+    color: #333333;
+    margin: 0;
+}
+
+.modal-body p {
+    color: #666666;
+    margin: 15px 0;
+}
+
+.modal-footer button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-footer button:hover {
+    background: #45a049;
+}
+
+.hidden {
+    display: none;
+}
+

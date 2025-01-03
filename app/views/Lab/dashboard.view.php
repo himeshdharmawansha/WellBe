@@ -143,7 +143,7 @@
                         ];
 
                         const options = {
-                            title: 'Medication Requests',
+                            title: 'Test Requests',
                             curveType: 'function',
                             legend: {
                                 position: 'bottom'
@@ -208,7 +208,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('.request-table tbody');
 
-            function fetchMedicationRequests() {
+            function fetchTestRequests() {
                 fetch('<?= ROOT ?>/Lab/testRequests')
                     .then(response => response.json())
                     .then(data => {
@@ -226,8 +226,8 @@
                     .catch(error => console.error('Error:', error));
             }
 
-            fetchMedicationRequests();
-            setInterval(fetchMedicationRequests, 3000);
+            fetchTestRequests();
+            setInterval(fetchTestRequests, 3000);
         });
 
         function formatTimeToAmPm(time) {

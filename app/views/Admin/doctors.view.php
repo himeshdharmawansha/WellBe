@@ -39,13 +39,29 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table class="patient-table">
+                    <table class="doctor-table">
                         <tr class="header-row">
-                            <th>Doctor ID</th>
+                            <th>NIC</th>
                             <th>Name</th>
                             <th>Age</th>
+                            <th>specialization</th>
                             <th>Contact No</th>
                         </tr>
+                        <?php if (!empty($doctors)): ?>
+                            <?php foreach ($doctors as $doctor): ?>
+                                <tr onclick="window.location.href='<?= ROOT ?>/Admin/doctorProfile?nic=<?= $doctor->nic ?>'">
+                                    <td><?= htmlspecialchars($doctor->nic) ?></td>
+                                    <td><?= htmlspecialchars($doctor->name) ?></td>
+                                    <td><?= htmlspecialchars($doctor->age) ?></td>
+                                    <td><?= htmlspecialchars($doctor->specialization) ?></td>
+                                    <td><?= htmlspecialchars($doctor->contact) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">No doctors found.</td>
+                            </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
             </div>        

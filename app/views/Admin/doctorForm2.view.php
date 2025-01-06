@@ -31,29 +31,40 @@
                     
                     <form class="patient-form" action="<?php echo ROOT; ?>/Admin/doctorForm2" method="POST">
                         <span class="form-title">Professional Information</span>
+
+                        <div class = "error-messages">
+                            <?php if (!empty($errors)): ?>
+                                <ul>
+                                    <?php foreach ($errors as $error): ?>
+                                        <li><?= htmlspecialchars($error) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+
                         <div class="form-row">
                             <label for="medical history">Medical License Number:</label>
-                            <input type="text" id="medical_license_no" name="medical_license_no">
+                            <input type="text" id="medical_license_no" name="medical_license_no" value="<?= htmlspecialchars($formData['medical_license_no'] ?? '') ?>" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="specializtion">Specialization/ Field of Expertise:</label>
-                            <input type="text" id="specialization" name="specialization">
+                            <input type="text" id="specialization" name="specialization" value="<?= htmlspecialchars($formData['specialization'] ?? '') ?>" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="experience">Years of Experience:</label>
-                            <input type="text" id="experience" name="experience">
+                            <input type="text" id="experience" name="experience" value="<?= htmlspecialchars($formData['experience'] ?? '') ?>" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="qualifications">Qualifications and Certifications:</label>
-                            <input type="text" id="qualifications" name="qualifications">
+                            <input type="text" id="qualifications" name="qualifications" value="<?= htmlspecialchars($formData['qualifications'] ?? '') ?>" required>
                         </div>
 
                         <div class="form-row">
                             <label for="medical_school">Medical School/ University Attended:</label>
-                            <input type="text" id="medical_school" name="medical_school">
+                            <input type="text" id="medical_school" name="medical_school" value="<?= htmlspecialchars($formData['medical_school'] ?? '') ?>" required>
                         </div>
                         
                         <div class="buttons-bar">

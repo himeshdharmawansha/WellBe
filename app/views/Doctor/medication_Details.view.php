@@ -92,12 +92,7 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Top Header -->
-            <?php
-            $pageTitle = "Medical Reports"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/test2/app/views/Components/Patient/header.php';
-            ?>
-
+           
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                   <label for="dr-name">Doctor's Name:</label>

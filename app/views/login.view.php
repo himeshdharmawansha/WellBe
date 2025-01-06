@@ -8,8 +8,6 @@
 </head>
 <body>
 
-  <?php $errors = $data['errors']; ?>
-
   <div class="loginsignup" >
     <div class="loginsignup-container">
       <div class="logo-container">

@@ -8,50 +8,63 @@ class Login extends Controller
         $data = [];
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            if (isset($_POST['nic'])) {
+            if (isset($_POST['nic'])){
 
-                $id = htmlspecialchars(trim($_POST['nic']));
-                $password = htmlspecialchars(trim($_POST['password']));
-
-                // Determine user type based on the NIC identifier
+                $id = $_POST['nic'];
+            
+                // Check if 'd' exists in the string
                 if (strpos($id, 'd') !== false) {
                     $_SESSION['user_type'] = "doctor";
                     $user = new Doctor;
-                } elseif (strpos($id, 'p') !== false) {
-                    $_SESSION['user_type'] = "patient";
+                }
+                elseif (strpos($id, 'p') !== false) {
                     $user = new Patient;
-                } elseif (strpos($id, 'h') !== false) {
-                    $_SESSION['user_type'] = "pharmacy";
+                    $_SESSION['user_type'] = "patient";
+                }
+                elseif (strpos($id, 'h') !== false) {
                     $user = new Pharmacy;
-                } elseif (strpos($id, 'l') !== false) {
-                    $_SESSION['user_type'] = "lab";
+                    $_SESSION['user_type'] = "pharmacy";
+                }
+                elseif (strpos($id, 'l') !== false) {
                     $user = new Lab;
-                } elseif (strpos($id, 'a') !== false) {
-                    $_SESSION['user_type'] = "admin";
+                    $_SESSION['user_type'] = "lab";
+                }
+                elseif (strpos($id, 'a') !== false) {
                     $user = new Admin;
+                    $_SESSION['user_type'] = "admin";
+                }else{
+                    $_SESSION['user_type'] = "undifined";
                 }
 
-                $arr['nic'] = $id;
-                $row = $user->first($arr);
+            
+                //password_verify($_POST['password'], $row->password
+                if($_SESSION['user_type'] != "undifined"){
+                    $arr['nic'] = $_POST['nic'];
+                    $row = $user->first($arr);
 
-                if ($row) {
-                    // Compare plain-text passwords
-                    if ($password === $row->password) {
-                        $_SESSION['USER'] = $row; // Save user details in the session
-                       // $user->loggedin();
-                        $_SESSION['userid'] = $row->id;
-                        redirect($_SESSION['user_type']);
+
+                    if ($row) {
+                        if ($_POST['password'] === $row->password) {
+                            $_SESSION['USER'] = $row; // Save user details in the session
+                            //session_start();
+                          //password_verify($_POST['password'], $row->password)
+                            redirect($_SESSION['user_type']);
+                        } else {
+                            $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password
+                        }
+
                     } else {
-                        $user->errors['password'] = 'Wrong password';
+                        $user->errors['nic'] = 'NIC not found';
                     }
-                } else {
-                    $user->errors['nic'] = 'NIC not found';
+    
+                    $data['errors'] = $user->errors;
+                }else{
+                    $data['errors'] = ['nic' => 'NIC not found'];
                 }
-
-                $data['errors'] = $user->errors;
             }
-        }
 
-        $this->view('login', '', $data);
+        }
+        
+        $this->view('login','', $data);
     }
 }

@@ -7,19 +7,46 @@ class Database
 		$con = new PDO($string, DBUSER, DBPASS);
 		return $con;
 	}
+
+	// public function query($query, $data = [])
+	// {
+	// 	$con = $this->connect();
+	// 	$stm = $con->prepare($query);
+	// 	$check = $stm->execute($data);
+	// 	if ($check) {
+	// 		$result = $stm->fetchAll(PDO::FETCH_OBJ);
+	// 		if (is_array($result) && count($result)) {
+	// 			return $result;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
+
 	public function query($query, $data = [])
 	{
-		$con = $this->connect();
-		$stm = $con->prepare($query);
-		$check = $stm->execute($data);
-		if ($check) {
-			$result = $stm->fetchAll(PDO::FETCH_OBJ);
-			if (is_array($result) && count($result)) {
-				return $result;
+		try {
+			$con = $this->connect();
+			$stm = $con->prepare($query);
+
+			$check = $stm->execute($data);
+
+			// Check if this is a SELECT query
+			if (stripos(trim($query), 'SELECT') === 0) {
+				// Fetch results for SELECT queries
+				$result = $stm->fetchAll(PDO::FETCH_OBJ);
+				return is_array($result) && count($result) ? $result : [];
 			}
+
+			// For non-SELECT queries (INSERT/UPDATE/DELETE), return true if executed successfully
+			return $check;
+
+		} catch (PDOException $e) {
+			// Log the error for debugging
+			error_log("Database Query Failed: " . $e->getMessage());
+			return false;
 		}
-		return false;
 	}
+
 	public function get_row($query, $data = [])
 	{
 		$con = $this->connect();

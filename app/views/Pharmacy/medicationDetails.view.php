@@ -103,7 +103,6 @@
                   // Remarks section
                   echo "<div class='remarks-section'>
                            <h3>Remarks</h3>
-                           <p>Request ID: {$requestID}</p>
                            <p>Patient ID: {$patientID}</p>
                            <p>Doctor ID: {$doctorID}</p>
                            <p>Date: <span id='currentDate'></span></p>

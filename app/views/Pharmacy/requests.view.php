@@ -2,8 +2,7 @@
 require_once(__DIR__ . "/../../core/Database.php");
 $DB = new Database();
 
-$pendingRequests = $DB->read("SELECT * FROM medication_requests WHERE state in ('pending', 'progress') ORDER BY id DESC");
-$progressRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 'progress' ORDER BY id DESC");
+$pendingRequests = $DB->read("SELECT * FROM medication_requests WHERE state in ('pending') ORDER BY id DESC");
 $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 'completed' ORDER BY id DESC");
 
 ?>
@@ -37,7 +36,6 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
             <!-- Tabs for Requests States -->
             <div class="tabs">
                <button class="tab active" onclick="showTab('pending-requests')">Pending Requests</button>
-               <button class="tab" onclick="showTab('progress-requests')">Progress Requests</button>
                <button class="tab" onclick="showTab('completed-requests')">Completed Requests</button>
             </div>
 
@@ -79,7 +77,6 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
             }
 
             renderTable($pendingRequests, 'pending');
-            renderTable($progressRequests, 'progress');
             renderTable($completedRequests, 'completed');
             ?>
 
@@ -100,37 +97,6 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
             let currentPage = 1;
             let totalPages = 0;
             let currentTable = null;
-
-            // Update request state on row click
-            document.addEventListener('click', e => {
-               const pendingRequestsSection = document.getElementById('pending-requests');
-               const row = e.target.closest('tr[data-id]');
-
-               if (row && pendingRequestsSection.contains(row)) {
-                  const requestID = row.getAttribute('data-id');
-
-                  fetch('<?= ROOT ?>/MedicationRequests/updateState', {
-                        method: 'POST',
-                        headers: {
-                           'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                           requestID: requestID,
-                           state: 'progress',
-                        }),
-                     })
-                     .then(response => response.json())
-                     .then(data => {
-                        if (data.success) {
-                           row.remove();
-                           document.getElementById('progress-requests-body').appendChild(row);
-                        } else {
-                           alert('Failed to update state: ' + data.error);
-                        }
-                     })
-                     .catch(console.error);
-               }
-            });
 
             // Setup pagination
             function setupPagination(table) {
@@ -223,12 +189,10 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                      .then(response => response.json())
                      .then(data => {
                         const pending = document.getElementById('pending-requests-body');
-                        const progress = document.getElementById('progress-requests-body');
                         const completed = document.getElementById('completed-requests-body');
 
                         // Clear existing table data
                         pending.innerHTML = '';
-                        progress.innerHTML = '';
                         completed.innerHTML = '';
 
                         // Iterate over the data
@@ -253,8 +217,7 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                     </tr>`;
 
                            // Append rows to the appropriate table body
-                           if (request.state === 'progress' || request.state === 'pending') pending.innerHTML += row;
-                           if (request.state === 'progress') progress.innerHTML += row;
+                           if (request.state === 'pending') pending.innerHTML += row;
                            if (request.state === 'completed') completed.innerHTML += row;
                         });
                         setupPagination(currentTable);
@@ -305,13 +268,7 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                        <td>${request.doctor_id}</td>
                                     </tr>`;
 
-                                 // If the request state is "pending", also add it to the "progress" section
-                                 if (request.state == "progress") {
-                                    const tableBody = document.querySelector("#pending-requests-body");
-                                    tableBody.innerHTML += row;
-                                 }
-
-                                 // Add rows to the appropriate table based on request state
+                                    // Add rows to the appropriate table based on request state
                                  const tableBody = document.querySelector(`#${request.state}-requests-body`);
                                  tableBody.innerHTML += row;
 

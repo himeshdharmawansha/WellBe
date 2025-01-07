@@ -1,297 +1,306 @@
+<?php
+require_once(__DIR__ . "/../../core/Database.php");
+$DB = new Database();
+
+$pendingRequests = $DB->read("SELECT * FROM medication_requests WHERE state in ('pending') ORDER BY id DESC");
+$completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 'completed' ORDER BY id DESC");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WellBe</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/phamacistDashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>WELLBE</title>
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/medicationRequestList.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <?php
-        $this->renderComponent('navbar', $active);
-        ?>
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Header -->
-            <?php
-            $pageTitle = "Dashboard"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
-            ?>
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <div class="welcome-message">
-                    <h4 class="welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
-                    <h4 class="date"><?php echo date('j M, Y'); ?></h4>
-                </div>
-                <div class="topbar">
-                    <div id="countdown">
-                        <div class="time-unit">
-                            <span id="hours">00</span>
-                            <p>HOURS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="minutes">00</span>
-                            <p>MINS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="seconds">00</span>
-                            <p>SEC</p>
-                        </div>
-                    </div>
+   <div class="dashboard-container">
+      <!-- Sidebar -->
+      <?php $this->renderComponent('navbar', $active); ?>
 
-                    <div class="cards-container">
-                        <!-- Statistics Cards -->
-                        <div class="card new-request" onclick="window.location.href='requests'">
-                            <span class="circle-background">
-                                <i class="fa-solid icon fa-hourglass-start"></i>
-                            </span>
-                            <p>000 <br>New_Requests</p>
-                        </div>
-                        <div class="card ongoing" onclick="window.location.href='requests'">
-                            <span class="circle-background">
-                                <i class="fas icon fa-pills"></i>
-                            </span>
-                            <p>000 <br>In_progress</p>
-                        </div>
-                        <div class="card completed" onclick="window.location.href='requests'">
-                            <span class="circle-background">
-                                <i class="fas icon fa-tasks"></i>
-                            </span>
-                            <p>000 <br> Completed</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-container">
-                    <div class="dashboard messages">
-                        <div class="header">
-                            <h3>Medication Requests</h3>
-                            <a href="requests" class="see-all">See all</a>
-                        </div>
-                        <div class="table-container">
-                            <table class="request-table">
-                                <thead>
-                                    <tr>
-                                        <th style="padding-right: 140px;">Patient_ID</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Rows will be dynamically injected here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+      <!-- Main Content -->
+      <div class="main-content">
+         <!-- Top Header -->
+         <?php
+         $pageTitle = "Medication Requests";
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
+         ?>
 
-                    <div class="dashboard messages">
-                        <div class="header">
-                            <h3>New Messages</h3>
-                            <a href="chat" class="see-all">See all</a>
-                        </div>
-                        <div class="table-container">
-                            <table class="message-table">
-                                <thead>
-                                    <tr>
-                                        <th style="padding-right: 140px;">Name</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Rows will be dynamically injected here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
-                    <div class="dashboard calendar-container">
-                        <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
-                    </div>
-
-                </div>
+         <!-- Dashboard Content -->
+         <div class="dashboard-content">
+            <!-- Tabs for Requests States -->
+            <div class="tabs">
+               <button class="tab active" onclick="showTab('pending-requests')">Pending Requests</button>
+               <button class="tab" onclick="showTab('completed-requests')">Completed Requests</button>
             </div>
-        </div>
-    </div>
-    <script src="<?= ROOT ?>/assets/js/Pharmacy/phamacistDashboard.js"></script>
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function() {
-            google.charts.load('current', {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(drawChart);
 
-            function drawChart() {
-                fetch('<?= ROOT ?>/Pharmacy/getRequestsByDay')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Prepare data for the chart
-                        const chartData = [
-                            ['Day', 'Given'],
-                            ['M', data[0]],
-                            ['T', data[1]],
-                            ['W', data[2]],
-                            ['T', data[3]],
-                            ['F', data[4]],
-                            ['S', data[5]],
-                            ['S', data[6]],
-                        ];
+            <!-- Search Bar -->
+            <div class="search-container">
+               <input type="text" class="search-input" placeholder="Search PatientID" id="searchPatientId" oninput="filterResults()">
+            </div>
 
-                        const options = {
-                            title: 'Medication Requests',
-                            curveType: 'function',
-                            legend: {
-                                position: 'bottom'
-                            },
-                        };
+            <!-- Requests Sections -->
+            <?php
+            function renderTable($requests, $state)
+            {
+               echo "<div id='{$state}-requests' class='requests-section" . ($state === 'pending' ? " active" : "") . "'>
+                        <table class='requests-table'>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Date</th>
+                                    <th>Patient ID</th>
+                                    <th>Doctor ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id='{$state}-requests-body'>";
 
-                        const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-                        chart.draw(google.visualization.arrayToDataTable(chartData), options);
-                    })
-                    .catch(error => console.error('Error fetching chart data:', error));
+               if (!empty($requests)) {
+                  foreach ($requests as $request) {
+                     echo "<tr data-id='" . htmlspecialchars($request['id']) . "' data-patient-id='" . htmlspecialchars($request['patient_id']) . "'>
+                                <td>" . date('h:i A', strtotime($request['time'])) . "</td>
+                                <td>" . htmlspecialchars($request['date']) . "</td>
+                                <td>" . htmlspecialchars($request['patient_id']) . "</td>
+                                <td>" . htmlspecialchars($request['doctor_id']) . "</td>
+                            </tr>";
+                  }
+               } else {
+                  echo "<tr><td colspan='4'>No $state requests found.</td></tr>";
+               }
+
+               echo "</tbody></table></div>";
             }
-        });
 
+            renderTable($pendingRequests, 'pending');
+            renderTable($completedRequests, 'completed');
+            ?>
 
+            <!-- Pagination -->
+            <div class="pagination" id="pagination-controls">
+               <button class="pagination-btn" onclick="changePage(-1)">Previous</button>
+               <span id="pagination-pages"></span>
+               <button class="pagination-btn" onclick="changePage(1)">Next</button>
+            </div>
+         </div>
+      </div>
 
-        function startCountdown(duration) {
-            const countdown = {
-                hours: document.getElementById("hours"),
-                minutes: document.getElementById("minutes"),
-                seconds: document.getElementById("seconds"),
+      <!-- Scripts -->
+      <script src="<?= ROOT ?>/assets/js/Pharmacy/medicationRequestList.js"></script>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+            const rowsPerPage = 9;
+            let currentPage = 1;
+            let totalPages = 0;
+            let currentTable = null;
+
+            // Setup pagination
+            function setupPagination(table) {
+               if (!table) return;
+
+               const rows = table.querySelectorAll('tbody tr');
+               totalPages = Math.ceil(rows.length / rowsPerPage);
+
+               const paginationContainer = document.querySelector('.pagination');
+               paginationContainer.innerHTML = '';
+
+               const createButton = (text, className, onClick, disabled = false) => {
+                  const button = document.createElement('button');
+                  button.textContent = text;
+                  button.className = className;
+                  button.disabled = disabled;
+                  button.addEventListener('click', onClick);
+                  return button;
+               };
+
+               const prevButton = createButton('Previous', 'pagination-btn', () => {
+                  if (currentPage > 1) {
+                     currentPage--;
+                     displayPage(currentPage);
+                  }
+               }, currentPage === 1);
+
+               paginationContainer.appendChild(prevButton);
+
+               for (let i = 1; i <= totalPages; i++) {
+                  const pageButton = createButton(i, `pagination-page ${i === currentPage ? 'active' : ''}`, () => {
+                     currentPage = i;
+                     displayPage(currentPage);
+                  });
+                  paginationContainer.appendChild(pageButton);
+               }
+
+               const nextButton = createButton('Next', 'pagination-btn', () => {
+                  if (currentPage < totalPages) {
+                     currentPage++;
+                     displayPage(currentPage);
+                  }
+               }, currentPage === totalPages);
+
+               paginationContainer.appendChild(nextButton);
+            }
+
+            function displayPage(page) {
+               if (!currentTable) return;
+
+               const rows = currentTable.querySelectorAll('tbody tr');
+               const start = (page - 1) * rowsPerPage;
+               const end = start + rowsPerPage;
+
+               rows.forEach((row, index) => {
+                  row.style.display = index >= start && index < end ? '' : 'none';
+               });
+
+               const pageButtons = document.querySelectorAll('.pagination-page');
+               pageButtons.forEach(button => {
+                  button.classList.toggle('active', parseInt(button.textContent) === page);
+               });
+            }
+
+            // Tab navigation
+            window.showTab = function(tabId) {
+               document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+               document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
+
+               document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+               const selectedSection = document.getElementById(tabId);
+               selectedSection.classList.add('active');
+
+               currentTable = selectedSection.querySelector('.requests-table');
+               currentPage = 1;
+               setupPagination(currentTable);
+               displayPage(currentPage);
             };
 
-            let timer = duration,
-                hours, minutes, seconds;
+            window.showTab('pending-requests');
 
-            setInterval(function() {
-                hours = Math.floor(timer / 3600);
-                minutes = Math.floor((timer % 3600) / 60);
-                seconds = timer % 60;
+            // Polling for new data
+            let isSearching = false;
 
-                countdown.hours.textContent = String(hours).padStart(2, '0');
-                countdown.minutes.textContent = String(minutes).padStart(2, '0');
-                countdown.seconds.textContent = String(seconds).padStart(2, '0');
+            // Poll for new data every 2 seconds
+            setInterval(() => {
+               // Only poll if no search is active
+               if (!isSearching) {
+                  fetch('<?= ROOT ?>/MedicationRequests/getRequestsJson')
+                     .then(response => response.json())
+                     .then(data => {
+                        const pending = document.getElementById('pending-requests-body');
+                        const completed = document.getElementById('completed-requests-body');
 
-                if (--timer < 0) {
-                    timer = 0; // Reset timer if it reaches zero.
-                }
-            }, 1000);
-        }
+                        // Clear existing table data
+                        pending.innerHTML = '';
+                        completed.innerHTML = '';
 
-        // Initialize the countdown with a duration in seconds (e.g., 15 hours).
-        startCountdown(15 * 3600);
-
-        document.addEventListener("DOMContentLoaded", function() {
-            function updateRequestCounts() {
-                fetch('<?= ROOT ?>/Pharmacy/getRequestCounts')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Update the UI with fetched data
-                        document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
-                        document.querySelector('.ongoing p').innerHTML = `${data.progress} <br> In_progress`;
-                        document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
-                    })
-                    .catch(error => console.error('Error fetching request counts:', error));
-            }
-
-            // Call the function on page load
-            updateRequestCounts();
-
-            // Optionally, refresh every 5 seconds
-            setInterval(updateRequestCounts, 1000);
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableBody = document.querySelector('.request-table tbody');
-
-            function fetchMedicationRequests() {
-                fetch('<?= ROOT ?>/Pharmacy/medicationRequests')
-                    .then(response => response.json())
-                    .then(data => {
-                        let html = '';
+                        // Iterate over the data
                         data.forEach(request => {
-                            html += `
-                        <tr>
-                            <td>${request.patient_id}</td>
-                            <td><span class="status ${request.state}">${request.state}</span></td>
-                        </tr>
-                    `;
+                           // Parse time without assuming it is UTC
+                           const [hours, minutes, seconds] = request.time.split(':');
+                           const date = new Date();
+                           date.setHours(hours, minutes, seconds || 0);
+
+                           const formattedTime = date.toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true
+                           });
+
+                           const row = `
+                                    <tr data-id="${request.id}">
+                                       <td>${formattedTime}</td>
+                                       <td>${request.date}</td>
+                                       <td>${request.patient_id}</td>
+                                       <td>${request.doctor_id}</td>
+                                    </tr>`;
+
+                           // Append rows to the appropriate table body
+                           if (request.state === 'pending') pending.innerHTML += row;
+                           if (request.state === 'completed') completed.innerHTML += row;
                         });
-                        tableBody.innerHTML = html;
-                    })
-                    .catch(error => console.error('Error:', error));
+                        setupPagination(currentTable);
+                        displayPage(currentPage);
+                     })
+                     .catch(console.error);
+               }
+            }, 1000);
+
+            // Format time to hh:mm AM/PM
+            function formatTimeToAmPm(time) {
+               const [hours, minutes, seconds] = time.split(':');
+               const date = new Date();
+               date.setHours(hours, minutes, seconds || 0);
+               return date.toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+               });
             }
 
-            fetchMedicationRequests();
-            setInterval(fetchMedicationRequests, 3000);
-        });
+            // Search functionality with debouncing
+            let debounceTimeout;
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+               clearTimeout(debounceTimeout);
+               debounceTimeout = setTimeout(() => {
+                  const searchTerm = e.target.value;
+                  if (searchTerm) {
+                     isSearching = true;
 
-        function formatTimeToAmPm(time) {
-            const [hours, minutes, seconds] = time.split(':');
-            const date = new Date();
-            date.setHours(hours, minutes, seconds || 0);
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
+                     fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
+                        .then(response => response.json())
+                        .then(data => {
+                           // Clear previous results
+                           const requestBodies = document.querySelectorAll('.requests-section tbody');
+                           requestBodies.forEach(body => body.innerHTML = '');
+
+                           // Handle search results
+                           if (data.length) {
+                              data.forEach(request => {
+                                 const formattedTime = formatTimeToAmPm(request.time); // Format the time
+
+                                 const row = `
+                                    <tr data-id="${request.id}">
+                                       <td>${formattedTime}</td>
+                                       <td>${request.date}</td>
+                                       <td>${request.patient_id}</td>
+                                       <td>${request.doctor_id}</td>
+                                    </tr>`;
+
+                                    // Add rows to the appropriate table based on request state
+                                 const tableBody = document.querySelector(`#${request.state}-requests-body`);
+                                 tableBody.innerHTML += row;
+
+                              });
+                           } else {
+                              alert('No results found.');
+                           }
+                           setupPagination(currentTable);
+                           displayPage(currentPage);
+                        })
+                        .catch(console.error);
+                  } else {
+                     // Reset the flag when search input is cleared
+                     isSearching = false;
+                  }
+               });
             });
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableBody = document.querySelector('.message-table tbody');
-            const noMessagesRow = `
-        <tr>
-            <td colspan="2" style="text-align: center;">No new messages</td>
-        </tr>
-    `;
-
-            function fetchNewMessages() {
-                fetch('<?= ROOT ?>/Pharmacy/fetchNewMessages')
-                    .then(response => response.json())
-                    .then(data => {
-                        let html = '';
-                        if (data.length === 0) {
-                            // No new messages, show the "No new messages" row
-                            html = noMessagesRow;
-                        } else {
-                            data.forEach(message => {
-                                const time = new Date(message.last_message_date).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                                html += `
-                            <tr>
-                                <td>${message.first_name}</td>
-                                <td>${formatTimeToAmPm(time)}</td>
-                            </tr>
-                        `;
-                            });
-                        }
-                        tableBody.innerHTML = html;
-                    })
-                    .catch(error => console.error('Error fetching messages:', error));
-            }
-
-            fetchNewMessages(); // Initial load
-            setInterval(fetchNewMessages, 5000); // Refresh every 5 seconds
-        });
 
 
-        function updateReceivedState() {
-            fetch('<?= ROOT ?>/ChatController/loggedin')
-                .catch(error => console.error("Error in loggedin :", error));
-        }
+            // Redirect to details page on row click
+            document.addEventListener('click', e => {
+               const row = e.target.closest('tr[data-id]');
+               if (row) {
+                  const requestID = row.getAttribute('data-id');
+                  const doctorID = row.querySelector('td:nth-child(4)').textContent.trim();
+                  const patientID = row.querySelector('td:nth-child(3)').textContent.trim();
 
-        // Call the update function every 3 seconds
-        setInterval(updateReceivedState, 3000);
-    </script>
-
+                  window.location.href = `medicationDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
+               }
+            });
+         });
+      </script>
 </body>
 
 </html>

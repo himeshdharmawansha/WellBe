@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    width: 96.5%;
+    height: 130vh;
+    background-image: linear-gradient(
+      to right,
+      rgba(18, 172, 141, 0.345),
+      rgba(18, 172, 142, 0.7)
+    ),
+    url("http://localhost/mvc/public/assets/images/login.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+    padding: 25px;
+    justify-content: space-between; /* Distributes space between the container and image */
+    align-items: center;
+
+}
+
+/* Sidebar */
+.logo-container {
+    display: flex; /* Enables flexbox layout */
+    align-items: center; /* Vertically centers the logo and text */
+}
+
+.logo {
+    max-width: 55px; /* Sets the maximum width of the logo */
+    margin-right: 10px; /* Adds space between the logo and text */
+}
+
+.logo_text {
+    font-size: 18px; /* Adjust as needed */
+    font-weight: bold; /* Optional styling */
+    color: #333; /* Optional styling */
+}
+
+.loginsignup-container h1{
+    margin: 20px 0px;
+}
+
+
+.form-container {
+    width: 600px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 3000px;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.form-title {
+    font-size: 16px;
+    color: #172554;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-tabs .tab {
+    padding: 5px 20px;
+    font-size: 16px;
+    font-weight: normal;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.form-tabs .tab.active {
+    border-bottom: 2px solid #172554;
+    font-weight: normal;
+}
+
+.patient-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.gender-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gender-options input[type="radio"] {
+    margin-right: 5px;
+}
+
+.next-button {
+    background-color: #172554;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 14px;
+}
+
+.next-button:hover {
+    background-color: #0e1b3d;
+}
+
+.next-button a{
+    color: inherit;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+}
+
+.form-row label {
+    margin-right: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="date"],
+.form-row input[type="number"],
+.form-row input[type="password"] {
+    flex: 2;
+    padding: 10px;
+    border:none;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+}
+
+.form-row input[type="radio"] {
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.form-title{
+    font-weight: bold;
+}
+
+.age-label {
+    margin-left: 20px;
+}
+
+
+
+
+.buttons-bar {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    align-self: flex-end;
+    cursor: pointer;
+}
+
+.prev-button {
+    color: #001848;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-button {
+    background-color: #172554;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 14px;
+}
+
+.buttons-bar a{
+    color: inherit;
+}
+
+
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block; /* Ensures the message appears below the input */
+  }
+  
+  input.error, select.error, textarea.error {
+    border: 1px solid red; /* Highlight input fields with errors */
+  }
+  

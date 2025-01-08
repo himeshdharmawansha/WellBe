@@ -174,11 +174,6 @@
     gap: 10px;
 }
 
-/* Google Fonts - Poppins */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-
-
-
 
 .profile-card {
   margin-top: 15px;
@@ -230,6 +225,7 @@
   align-items: center;
   color: #333;
 }
+
 
 .text-data .name {
   font-size: 22px;
@@ -454,65 +450,273 @@
     margin-top: 10px;
 }
 
-.calendar-header {
-    margin-bottom: 10px;
-}
 
-.calendar-header h3 {
-    font-size: 18px;
-    color: #172554;
-    margin-bottom: 5px;
-}
 
-.calendar-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.calendar-nav span {
-    font-size: 16px;
-    color: #1b2748;
-}
-
-.calendar-nav button {
-    background-color: transparent;
-    border: none;
-    font-size: 20px;
-    color: #1b2748;
-    cursor: pointer;
-}
-
-.calendar-table {
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    border-collapse: collapse;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.calendar-table th,
-.calendar-table td {
-    padding: 5px;
-    width: 20px;
-    height: 20px;
+.modal-content {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
     text-align: center;
-    color: #333;
+    width: 300px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-table th {
-    font-weight: bold;
-    color: #1b2748;
+.modal-header h2 {
+    color: #333333;
+    margin: 0;
 }
 
-.calendar-table td {
+.modal-body p {
+    color: #666666;
+    margin: 15px 0;
+}
+
+.modal-footer button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-footer button:hover {
+    background: #45a049;
+}
+
+.hidden {
+    display: none;
+}
+
+.medical-info strong {
+    color: red;
+  }
+  
+  .image {
+    position: relative;
+    height: 150px;
+    width: 150px;
     border-radius: 50%;
+    background-color: #172554;
+    padding: 3px;
+    margin-bottom: 10px;
+    overflow: hidden; /* Ensures any overflow (extra part of the image) is clipped */
+  }
+  
+  .image .profile-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* This ensures the image covers the container without distorting */
+    object-position: center; /* Optional: Keeps the image centered within the frame */
+    border-radius: 50%; /* Keeps the image circular */
+    border: 3px solid #fff; /* Adds a white border around the image */
+    padding-right: 15px;
+  }
+
+
+   .image .profile-img1 {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* This ensures the image covers the container without distorting */
+    object-position: center; /* Optional: Keeps the image centered within the frame */
+    border-radius: 50%; /* Keeps the image circular */
+    border: 3px solid #fff; /* Adds a white border around the image */
+    padding-left: 15px;
+  }
+
+  .notification-icon {
+    position: relative;
+    padding-top: 6px;
+    font-size: 28px;
+    color: #a0a0a0;
+    margin-right: 15px;
+ }
+
+ .notification-badge {
+    position: absolute;
+    top: 3px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+ }
+
+ .header-left h1 {
+    font-size: 24px;
+    color: #172554;
+ }
+
+.big{
+    width: 100%;
+    height: auto;
+    background-image: linear-gradient(
+      to right,
+      rgba(18, 172, 141, 0.345),
+      rgba(18, 172, 142, 0.7)
+    ),
+    url("http://localhost/mvc/public/assets/images/login.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+    padding: 25px;
+    justify-content: space-between; /* Distributes space between the container and image */
+    align-items: center;
+
+}
+
+ .edit-profile-container {
+    width: 600px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 3000px;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-profile-container input[type="text"],
+.edit-profile-container input[type="email"]{
+    flex: 2;
+    padding: 10px;
+    border:none;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+}
+
+.edit-profile-container textarea{
+    flex: 2;
+    padding: 10px;
+    border:none;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+}
+
+
+.edit-profile-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edit-profile-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.edit-profile-container input,
+.edit-profile-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-profile-container .button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 10px;
+    background: #172554;
+    color: #fff;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.calendar-table td.inactive {
-    color: #b0b0b0;
-    /* Dim color for other month's dates */
+.edit-profile-container .button:hover {
+    background: #0056b3;
 }
 
-.date {
-    flex: 1;
-    text-align: right;
+
+  .bmi-form label {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .bmi-form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .bmi-form .submit-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 25px;
+  }
+  
+  .bmi-form .submit-btn:hover {
+    background-color: #218838;
+  }
+  
+  .bmi-result {
+    margin-top: 15px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .refresh-btn {
+    margin-left: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .refresh-btn:hover {
+    background-color: #d32f2f;
+  }
+  
+  .calendar-container h3{
+    margin-bottom: 50px;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+textarea {
+  resize: none;
+  /* Optional: Set a fixed width and height */
+  width: 100%; 
+  height: 100px;
+  box-sizing: border-box; /* Ensures padding is included in the width and height */
+}
+
+.text-data{
+  text-align: center;
 }

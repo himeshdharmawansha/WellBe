@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Details Collection</title>
-    <link rel="stylesheet" href="./hello.css">
+    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/hello.css?v=<?= time() ?>">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
@@ -42,7 +42,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe-1/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
 
 
@@ -70,17 +70,16 @@
                     <h2 class="title">Appointment Details</h2>
                     <div class="cha-container">
 
-                        <p><strong>Doctor:</strong><?php echo htmlspecialchars($doctor); ?></p>
-                        <p><strong>Specialization:</strong> <?php echo htmlspecialchars($specialization); ?></p>
-                        <p><strong>Appointment Date & Time:</strong> <?php echo htmlspecialchars($date); ?></p>
-                        <p><strong>Appointment Number:</strong> <?php echo htmlspecialchars($date); ?></p>
-                        <p><strong>Appointment Fees:</strong> <?php echo htmlspecialchars($date); ?></p>
+                        <p><strong>Doctor:</strong></p>
+                        <p><strong>Specialization:</strong></p>
+                        <p><strong>Appointment Date & Time:</strong></p>
+                        <p><strong>Appointment Number:</strong></p>
+                        <p><strong>Appointment Fees:</strong></p>
                     </div>
                     <div class="cha-container">
-                        <p><strong>Patient Name:</strong><?= htmlspecialchars($patient['first_name']) ?>
-                        <?= htmlspecialchars($patient['last_name']) ?></p>
-                        <p><strong>Contact No.:</strong><?= htmlspecialchars($patient['contact']) ?></p>
-                        <p><strong>Emergency Contact No.:</strong><?= htmlspecialchars($patient['emergency_contact_no']) ?></p>
+                        <p><strong>Patient Name:</strong></p>
+                        <p><strong>Contact No.:</strong></p>
+                        <p><strong>Emergency Contact No.:</strong></p>
                         
 
                     </div>
@@ -105,7 +104,7 @@
                 <p>Your details have been successfully submitted. Thanks!</p>
             </div>
             <div class="modal-footer">
-                <button id="closeModal" class="submit-btn" onclick="window.location.href='patient_dashboard.php?nic=<?= isset($nic) ? urlencode($nic) : ''; ?>'">OK</button>
+                <button id="closeModal" class="submit-btn" onclick="window.location.href='patient_dashboard'">OK</button>
             </div>
         </div>
     </div>

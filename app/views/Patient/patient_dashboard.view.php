@@ -23,7 +23,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe-1/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
 
       <!-- Dashboard Content -->
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="buttons">
-              <button class="button" onclick="window.location.href='chat.php'">Message</button>
+              <button class="button" onclick="window.location.href='chat'">Message</button>
               <button class="button" onclick="window.location.href='edit_profile'">Edit Profile</button>
 
             </div>
@@ -67,7 +67,7 @@
                   <i class="fas fa-user icon"></i>
                 </div>
 
-                <div class="label" onclick="window.location.href='medicalreports.php'">View Medical Reports</div>
+                <div class="label" onclick="window.location.href='medicalreports'">View Medical Reports</div>
 
               </div>
 
@@ -76,7 +76,7 @@
                   <i class="fas fa-user icon"></i>
                 </div>
 
-                <div class="label" onclick="window.location.href='labreports.php'">View Lab Reports</div>
+                <div class="label" onclick="window.location.href='labreports'">View Lab Reports</div>
 
               </div>
 
@@ -84,7 +84,7 @@
                 <div class="circle-background">
                   <i class="fas fa-flask icon"></i>
                 </div>
-                <div class="label" onclick="window.location.href='doc_appointment.php'">Book an Appointment</div>
+                <div class="label" onclick="window.location.href='doc_appointment'">Book an Appointment</div>
 
               </div>
             </div>

@@ -23,7 +23,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe-1/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
       
             <!-- Dashboard Content -->
@@ -50,7 +50,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td onclick="window.location.href='Medication_Details'">Medi_Rec_001 </td>
+                                    <td onclick="window.location.href='medical_rec'">Medi_Rec_001 </td>
                                     <td>12/08/2024</td>
                                     <td>7:00 - 10:00</td>
                                     <td>Dr. K. G. Gunawardana</td>

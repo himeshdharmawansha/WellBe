@@ -1,31 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrative Staff Dashboard</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/patients.css">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/signup.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Header -->
-            <?php
-            $pageTitle = "Patients"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/test/app/views/Components/header.php';
-            ?>
 
-            <!--Content Container-->
-            <div class="content-container">
-                <div class="form-tabs">
-                    <span class="tab active">User Details</span>
-                </div>
                 <div class="form-container">
                     
-                <form class="patient-form" action="<?= ROOT ?>/signup/form2" method="post">
+                <form id='patient-form2' class="patient-form" action="./signup" method="post">
+                <div class="logo-container">
+                    <img class="logo" src="<?= ROOT?>/assets/images/logo.png" />
+                    <div class="logo_text">WELL BE</div>
+                </div>
                     <span class="form-title">Health Information</span>
                     
                     <div class="form-row">
@@ -56,7 +49,7 @@
                     </div>
                     
                     <div class="buttons-bar">
-                        <button type="button" class="prev-button" onclick="window.location.href='<?= ROOT ?>/signup';">Previous</button>
+                        <button type="button" class="prev-button" onclick="window.location.href='./form1.php';">Previous</button>
                         <button type="submit" class="submit-button">Submit</button>
                     </div>
                 </form>
@@ -69,6 +62,7 @@
                 
         </div>
     </div>
+    <script src="signup-validation.js"></script>
 
 </body>
 </html>

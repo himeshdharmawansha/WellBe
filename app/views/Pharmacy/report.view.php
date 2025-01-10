@@ -24,16 +24,42 @@
                <h4 class="date"><?php echo date('j M, Y'); ?></h4>
             </div>
             <div class="generate">
+               <div class="inputs">
+                  <label for="start">Start:</label>
+                  <input type="date" name="start" id="start">
+                  <label for="end">End:</label>
+                  <input type="date" name="end" id="end">
+               </div>
                <button class="report">Generate Report</button>
             </div>
          </div>
+
       </div>
    </div>
+   </div>
+
    <script>
       document.addEventListener('DOMContentLoaded', () => {
          const reportButton = document.querySelector('.report');
+         const startDateInput = document.getElementById('start');
+         const endDateInput = document.getElementById('end');
          const popupOverlay = document.createElement('div');
          popupOverlay.classList.add('popup-overlay');
+
+         // Set default dates
+         const today = new Date();
+         const thirtyDaysAgo = new Date();
+         thirtyDaysAgo.setDate(today.getDate() - 30);
+
+         const formatDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+         };
+
+         startDateInput.value = formatDateInputValue(thirtyDaysAgo);
+         endDateInput.value = formatDateInputValue(today);
 
          popupOverlay.innerHTML = `
             <div class="popup-content">
@@ -55,10 +81,9 @@
                   <div id="bar_chart" style="width: 100%; height: 300px;"></div>
                   <div id="line_chart" style="width: 100%; height: 300px;"></div>
                </div>
-               <!-- Print Button -->
                <button class="popup-print" onclick="window.print()">Print</button>
             </div>
-              `;
+         `;
 
          document.body.appendChild(popupOverlay);
 
@@ -68,25 +93,41 @@
          });
 
          reportButton.addEventListener('click', () => {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+
+            if (!startDate || !endDate) {
+               alert('Please select both start and end dates.');
+               return;
+            }
+
+            const formatDateDisplay = (date) => {
+               return new Date(date).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+               });
+            };
+
+            document.getElementById('date-range').textContent = `${formatDateDisplay(startDate)} to ${formatDateDisplay(endDate)}`;
+
             popupOverlay.style.display = 'flex';
-            drawCharts();
+            drawCharts(startDate, endDate);
          });
 
-         function drawCharts() {
-            // Load Google Charts library
+         function drawCharts(startDate, endDate) {
             google.charts.load('current', {
                packages: ['corechart']
             });
 
-            // Callback after Google Charts is loaded
             google.charts.setOnLoadCallback(() => {
-               fetch('<?= ROOT ?>/PharmacyReport/generateReport')
-                  .then(response => response.json())
-                  .then(data => {
+               fetch(`<?= ROOT ?>/PharmacyReport/generateReport?start_date=${startDate}&end_date=${endDate}`)
+                  .then((response) => response.json())
+                  .then((data) => {
                      drawBarChart(data.medications);
                      drawLineChart(data.requests);
                   })
-                  .catch(error => console.error('Error fetching report data:', error));
+                  .catch((error) => console.error('Error fetching report data:', error));
             });
          }
 
@@ -94,7 +135,7 @@
             const chartData = [
                ['Medication', 'Usage']
             ];
-            medications.forEach(med => {
+            medications.forEach((med) => {
                chartData.push([med.medication_name, parseInt(med.count)]);
             });
 
@@ -103,10 +144,10 @@
             const options = {
                title: 'Medication Usage',
                hAxis: {
-                  title: 'Type of Medications',
+                  title: 'Type of Medications'
                },
                vAxis: {
-                  title: 'Usage',
+                  title: 'Usage'
                },
                colors: ['#1a73e8'],
             };
@@ -117,79 +158,30 @@
 
          function drawLineChart(requests) {
             const chartData = [
-               ['Day', 'Requests'] // Header row
+               ['Date', 'Requests']
             ];
-
-            // Map each date to a day number (1 to 30)
-            const today = new Date();
-            const dateToDayNumber = {};
-
-            // Generate date-to-day mappings
-            for (let i = 0; i < 30; i++) {
-               const date = new Date();
-               date.setDate(today.getDate() - i); // Subtract days to get past dates
-               const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-               dateToDayNumber[formattedDate] = 30 - i; // Map to day number
-            }
-
-            // Populate chart data
-            requests.forEach(req => {
-               const dayNumber = dateToDayNumber[req.request_date];
-               if (dayNumber) {
-                  chartData.push([
-                     dayNumber.toString(), // Day as a string ('1', '2', ..., '30')
-                     parseInt(req.request_count) // Request count
-                  ]);
-               }
+            requests.forEach((req) => {
+               chartData.push([new Date(req.request_date), parseInt(req.request_count)]);
             });
 
-            // Prepare data for the chart
             const data = google.visualization.arrayToDataTable(chartData);
 
-            // Chart options
             const options = {
-               title: 'Medication Requests',
+               title: 'Daily Medication Requests',
                curveType: 'function',
                hAxis: {
-                  title: 'Past 30 days',
+                  title: 'Date',
+                  format: 'MMM dd, yyyy'
                },
                vAxis: {
-                  title: 'Requests',
+                  title: 'Number of Requests'
                },
                colors: ['#34a853'],
             };
 
-            // Draw the chart
             const chart = new google.visualization.LineChart(document.getElementById('line_chart'));
             chart.draw(data, options);
          }
-
-         function updateDateRangeDisplay() {
-            const today = new Date();
-            const pastDate = new Date();
-            pastDate.setDate(today.getDate() - 29); // Subtract 29 to include today as the 30th day
-
-            // Format dates as "1 August, 2024"
-            const formatDate = (date) => {
-               return date.toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric'
-               });
-            };
-
-            // Get formatted date range
-            const startDate = formatDate(pastDate);
-            const endDate = formatDate(today);
-
-            // Update the HTML dynamically
-            const dateRangeElement = document.getElementById('date-range');
-            dateRangeElement.textContent = `${startDate} to ${endDate}`;
-         }
-
-         // Call the function to update the date range when the page loads
-         updateDateRangeDisplay();
-
       });
    </script>
 </body>

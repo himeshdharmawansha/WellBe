@@ -39,7 +39,14 @@ class Patient extends Controller
    }
    public function doc_appointment()
    {
-      $this->view('Patient/doc_appointment', 'search_for_doctor');
+      $data = [];
+      $doctor = new Doctor(); // Instantiate the Doctor model
+
+      $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
+    
+
+      $this->view('Patient/doc_appointment', 'doc_appointment', $data);
+
    }
    public function appointments()
    {

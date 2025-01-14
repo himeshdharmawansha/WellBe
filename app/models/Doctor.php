@@ -205,6 +205,19 @@ class Doctor extends Model
         return $this->query($query); // Use the query method to execute and fetch data
     }
 
+    public function getDocname()
+    {
+        $query = "SELECT  CONCAT(first_name, ' ', last_name) AS name FROM doctor";
+        return $this->query($query);
+    }
+
+    public function getDoctorsWithSpecializations()
+    {
+        $query = "SELECT CONCAT(first_name, ' ', last_name) AS name, specialization FROM doctor";
+        return $this->query($query);
+    }
+    
+
     public function getDoctorById($nic)
     {
         $query = "SELECT * FROM doctor WHERE nic = :nic";

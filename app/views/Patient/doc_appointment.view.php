@@ -42,25 +42,36 @@
                                 <label for="doctor">Select Doctor</label>
                                 <input list="doctors" id="doctor" name="doctor" placeholder="Type doctor name">
                                 <datalist id="doctors">
+                                    <?php foreach ($doctors as $doctor): ?>
+                                        <option value="<?= htmlspecialchars($doctor->name) ?>"></option>
+                                    <?php endforeach; ?>
                                 </datalist>
                             </div>
 
                             <!-- Specialization Selection -->
                             <div class="input-box">
                                 <label for="specialization">Specialization</label>
-                                <input list="specializations" id="specialization" name="specialization" placeholder="Type specialization">
-                                <datalist id="specializations"> 
+                                <input list="specializations" id="specialization" name="specialization"
+                                    placeholder="Type specialization">
+                                <datalist id="specializations">
+                                <?php foreach ($doctors as $doctor): ?>
+                                        <option value="<?= htmlspecialchars($doctor->specialization); ?>">
+                                        
+                                        </option>
+                                    <?php endforeach; ?>
                                 </datalist>
                             </div>
 
                             <div class="input-box">
                                 <label for="date">Select Date and Time</label>
                                 <select id="date" name="date-input">
-    
+                                    <datalist id="date">
+                                    </datalist>
                                 </select>
                             </div>
 
-                            <button class="find-doctor-btn" onclick="window.location.href='hello'">Book Appointment</button>
+                            <button class="find-doctor-btn" onclick="window.location.href='hello'">Book
+                                Appointment</button>
                         </form>
 
                     </div>
@@ -69,43 +80,7 @@
         </div>
     </div>
 
-    <!-- JavaScript for Dynamic Updates -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-    // Event listener for doctor input change
-    document.getElementById("doctor").addEventListener("input", function () {
-        const doctorName = this.value;
 
-        if (doctorName) {
-            // Fetch specializations based on the selected doctor
-            fetch("Patient/get_specializations_by_doctor", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: "doctor=" + encodeURIComponent(doctorName),
-            })
-                .then((response) => response.json())
-                .then((specializations) => {
-                    const specializationList = document.getElementById("specializations");
-                    specializationList.innerHTML = ""; // Clear previous options
-
-                    if (specializations.length > 0) {
-                        specializations.forEach((spec) => {
-                            specializationList.innerHTML += `<option value="${spec.specialization}"></option>`;
-                        });
-                    } else {
-                        specializationList.innerHTML = `<option value="">No specializations found</option>`;
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching specializations:", error);
-                });
-        }
-    });
-});
-
-    </script>
 </body>
 
 </html>

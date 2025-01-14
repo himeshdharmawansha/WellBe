@@ -95,4 +95,6 @@ class Timeslot extends Model
         $this->query($query);
         redirect("doctor");
     }
+
+    
 }

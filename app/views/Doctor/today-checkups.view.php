@@ -52,7 +52,7 @@
                                 <div class="boxQueue" style="<?php echo ($appointment->state === 'PRESENT') ? 'background-color: #5D93FF;' : ''; ?>">
                                     <div class="box-itemQueue">
                                         <div>
-                                            <img src="http://localhost/test3/public/assets/images/patient.png">
+                                            <img src="http://localhost/newWellBe/WellBe/public/assets/images/patient.png">
                                         </div>
                                         <div class="test">
                                             <p>

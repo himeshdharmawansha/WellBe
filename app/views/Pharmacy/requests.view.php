@@ -1,10 +1,19 @@
+<?php
+require_once(__DIR__ . "/../../core/Database.php");
+$DB = new Database();
+
+$pendingRequests = $DB->read("SELECT * FROM medication_requests WHERE state in ('pending') ORDER BY id DESC");
+$completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 'completed' ORDER BY id DESC");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Dashboard</title>
+   <title>WELLBE</title>
    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/medicationRequestList.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
@@ -19,172 +28,277 @@
          <!-- Top Header -->
          <?php
          $pageTitle = "Medication Requests";
-         include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
+
          <!-- Dashboard Content -->
          <div class="dashboard-content">
+            <!-- Tabs for Requests States -->
             <div class="tabs">
                <button class="tab active" onclick="showTab('pending-requests')">Pending Requests</button>
-               <button class="tab" onclick="showTab('progress-requests')">Progress Requests</button>
                <button class="tab" onclick="showTab('completed-requests')">Completed Requests</button>
             </div>
 
+            <!-- Search Bar -->
             <div class="search-container">
-               <input type="text" class="search-input" placeholder="Search">
+               <input type="text" class="search-input" placeholder="Search PatientID" id="searchPatientId" oninput="filterResults()">
             </div>
 
             <!-- Requests Sections -->
-            <div id="pending-requests" class="requests-section active">
-               <table class="requests-table">
-                  <thead>
-                     <tr>
-                        <th>Time</th>
-                        <th>Date</th>
-                        <th>Patient ID</th>
-                        <th>Doctor ID</th>
-                     </tr>
-                  </thead>
-                  <tbody id="pending-requests-body">
-                     <!-- Debugging output in the view -->
-                     <?php if (!empty($pendingRequests)): ?>
-                        <?php foreach ($pendingRequests as $request): ?>
-                           <tr data-patient-id="<?= $request['patient_id'] ?>">
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
-                              <td><?= htmlspecialchars($request['date']) ?></td>
-                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
-                              <td><?= htmlspecialchars($request['doctor_id']) ?></td>
-                           </tr>
-                        <?php endforeach; ?>
-                     <?php else: ?>
-                        <tr>
-                           <td colspan="4">No pending requests found.</td>
-                        </tr>
-                     <?php endif; ?>
-                  </tbody>
-               </table>
-            </div>
+            <?php
+            function renderTable($requests, $state)
+            {
+               echo "<div id='{$state}-requests' class='requests-section" . ($state === 'pending' ? " active" : "") . "'>
+                        <table class='requests-table'>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Date</th>
+                                    <th>Patient ID</th>
+                                    <th>Doctor ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id='{$state}-requests-body'>";
 
-            <div id="progress-requests" class="requests-section">
-               <table class="requests-table">
-                  <thead>
-                     <tr>
-                        <th>Time</th>
-                        <th>Date</th>
-                        <th>Patient ID</th>
-                        <th>Doctor ID</th>
-                     </tr>
-                  </thead>
-                  <tbody id="progress-requests-body">
-                     <?php if (!empty($progressRequests)): ?>
-                        <?php foreach ($progressRequests as $request): ?>
-                           <tr data-patient-id="<?= $request['patient_id'] ?>">
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
-                              <td><?= htmlspecialchars($request['date']) ?></td>
-                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
-                              <td><?= htmlspecialchars($request['doctor_id']) ?></td>
-                           </tr>
-                        <?php endforeach; ?>
-                     <?php else: ?>
-                        <tr>
-                           <td colspan="4">No progress requests found.</td>
-                        </tr>
-                     <?php endif; ?>
-                  </tbody>
-               </table>
-            </div>
+               if (!empty($requests)) {
+                  foreach ($requests as $request) {
+                     echo "<tr data-id='" . htmlspecialchars($request['id']) . "' data-patient-id='" . htmlspecialchars($request['patient_id']) . "'>
+                                <td>" . date('h:i A', strtotime($request['time'])) . "</td>
+                                <td>" . htmlspecialchars($request['date']) . "</td>
+                                <td>" . htmlspecialchars($request['patient_id']) . "</td>
+                                <td>" . htmlspecialchars($request['doctor_id']) . "</td>
+                            </tr>";
+                  }
+               } else {
+                  echo "<tr><td colspan='4'>No $state requests found.</td></tr>";
+               }
 
-            <div id="completed-requests" class="requests-section">
-               <table class="requests-table">
-                  <thead>
-                     <tr>
-                        <th>Time</th>
-                        <th>Date</th>
-                        <th>Patient ID</th>
-                        <th>Doctor ID</th>
-                     </tr>
-                  </thead>
-                  <tbody id="completed-requests-body">
-                     <?php if (!empty($completedRequests)): ?>
-                        <?php foreach ($completedRequests as $request): ?>
-                           <tr data-patient-id="<?= $request['patient_id'] ?>">
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
-                              <td><?= htmlspecialchars($request['date']) ?></td>
-                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
-                              <td><?= htmlspecialchars($request['doctor_id']) ?></td>
-                           </tr>
-                        <?php endforeach; ?>
-                     <?php else: ?>
-                        <tr>
-                           <td colspan="4">No completed requests found.</td>
-                        </tr>
-                     <?php endif; ?>
-                  </tbody>
-               </table>
-            </div>
+               echo "</tbody></table></div>";
+            }
+
+            renderTable($pendingRequests, 'pending');
+            renderTable($completedRequests, 'completed');
+            ?>
 
             <!-- Pagination -->
-            <div class="pagination">
-               <button class="pagination-btn">Previous</button>
-               <button class="pagination-page active">1</button>
-               <button class="pagination-page">2</button>
-               <button class="pagination-page">3</button>
-               <button class="pagination-page">4</button>
-               <button class="pagination-btn">Next</button>
+            <div class="pagination" id="pagination-controls">
+               <button class="pagination-btn" onclick="changePage(-1)">Previous</button>
+               <span id="pagination-pages"></span>
+               <button class="pagination-btn" onclick="changePage(1)">Next</button>
             </div>
          </div>
       </div>
+
+      <!-- Scripts -->
       <script src="<?= ROOT ?>/assets/js/Pharmacy/medicationRequestList.js"></script>
       <script>
-         // Format time to hh:mm AM/PM
-         function formatTimeToAmPm(time) {
-            const date = new Date(`1970-01-01T${time}Z`); // Create a Date object from time
-            return date.toLocaleTimeString([], {
-               hour: '2-digit',
-               minute: '2-digit',
-               hour12: true
-            });
-         }
+         document.addEventListener('DOMContentLoaded', function() {
+            const rowsPerPage = 9;
+            let currentPage = 1;
+            let totalPages = 0;
+            let currentTable = null;
 
-         // Poll for new data every 5 seconds
-         setInterval(() => {
-            fetch('<?= ROOT ?>/MedicationRequestsController/getRequestsJson')
-               .then(response => response.json())
-               .then(data => {
-                  const pending = document.getElementById('pending-requests-body');
-                  const progress = document.getElementById('progress-requests-body');
-                  const completed = document.getElementById('completed-requests-body');
+            // Setup pagination
+            function setupPagination(table) {
+               if (!table) return;
 
-                  // Clear existing table data
-                  pending.innerHTML = '';
-                  progress.innerHTML = '';
-                  completed.innerHTML = '';
+               const rows = table.querySelectorAll('tbody tr');
+               totalPages = Math.ceil(rows.length / rowsPerPage);
 
-                  // Populate tables with new data
-                  data.forEach(request => {
-                     const formattedTime = formatTimeToAmPm(request.time); // Format the time
-                     const row = `
-               <tr data-patient-id="${request.patient_id}">
-                  <td>${formattedTime}</td>
-                  <td>${request.date}</td>
-                  <td>${request.patient_id}</td>
-                  <td>${request.doctor_id}</td>
-               </tr>
-            `;
-                     if (request.state === 'pending') pending.innerHTML += row;
-                     if (request.state === 'progress') progress.innerHTML += row;
-                     if (request.state === 'completed') completed.innerHTML += row;
+               const paginationContainer = document.querySelector('.pagination');
+               paginationContainer.innerHTML = '';
+
+               const createButton = (text, className, onClick, disabled = false) => {
+                  const button = document.createElement('button');
+                  button.textContent = text;
+                  button.className = className;
+                  button.disabled = disabled;
+                  button.addEventListener('click', onClick);
+                  return button;
+               };
+
+               const prevButton = createButton('Previous', 'pagination-btn', () => {
+                  if (currentPage > 1) {
+                     currentPage--;
+                     displayPage(currentPage);
+                  }
+               }, currentPage === 1);
+
+               paginationContainer.appendChild(prevButton);
+
+               for (let i = 1; i <= totalPages; i++) {
+                  const pageButton = createButton(i, `pagination-page ${i === currentPage ? 'active' : ''}`, () => {
+                     currentPage = i;
+                     displayPage(currentPage);
                   });
-               })
-               .catch(console.error);
-         }, 5000);
+                  paginationContainer.appendChild(pageButton);
+               }
 
-         // Redirect to details page on row click
-         document.addEventListener('click', e => {
-            const row = e.target.closest('tr[data-patient-id]');
-            if (row) {
-               const patientID = row.getAttribute('data-patient-id');
-               window.location.href = `medicationDetails?patientID=${patientID}`;
+               const nextButton = createButton('Next', 'pagination-btn', () => {
+                  if (currentPage < totalPages) {
+                     currentPage++;
+                     displayPage(currentPage);
+                  }
+               }, currentPage === totalPages);
+
+               paginationContainer.appendChild(nextButton);
             }
+
+            function displayPage(page) {
+               if (!currentTable) return;
+
+               const rows = currentTable.querySelectorAll('tbody tr');
+               const start = (page - 1) * rowsPerPage;
+               const end = start + rowsPerPage;
+
+               rows.forEach((row, index) => {
+                  row.style.display = index >= start && index < end ? '' : 'none';
+               });
+
+               const pageButtons = document.querySelectorAll('.pagination-page');
+               pageButtons.forEach(button => {
+                  button.classList.toggle('active', parseInt(button.textContent) === page);
+               });
+            }
+
+            // Tab navigation
+            window.showTab = function(tabId) {
+               document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+               document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
+
+               document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+               const selectedSection = document.getElementById(tabId);
+               selectedSection.classList.add('active');
+
+               currentTable = selectedSection.querySelector('.requests-table');
+               currentPage = 1;
+               setupPagination(currentTable);
+               displayPage(currentPage);
+            };
+
+            window.showTab('pending-requests');
+
+            // Polling for new data
+            let isSearching = false;
+
+            // Poll for new data every 2 seconds
+            setInterval(() => {
+               // Only poll if no search is active
+               if (!isSearching) {
+                  fetch('<?= ROOT ?>/MedicationRequests/getRequestsJson')
+                     .then(response => response.json())
+                     .then(data => {
+                        const pending = document.getElementById('pending-requests-body');
+                        const completed = document.getElementById('completed-requests-body');
+
+                        // Clear existing table data
+                        pending.innerHTML = '';
+                        completed.innerHTML = '';
+
+                        // Iterate over the data
+                        data.forEach(request => {
+                           // Parse time without assuming it is UTC
+                           const [hours, minutes, seconds] = request.time.split(':');
+                           const date = new Date();
+                           date.setHours(hours, minutes, seconds || 0);
+
+                           const formattedTime = date.toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true
+                           });
+
+                           const row = `
+                                    <tr data-id="${request.id}">
+                                       <td>${formattedTime}</td>
+                                       <td>${request.date}</td>
+                                       <td>${request.patient_id}</td>
+                                       <td>${request.doctor_id}</td>
+                                    </tr>`;
+
+                           // Append rows to the appropriate table body
+                           if (request.state === 'pending') pending.innerHTML += row;
+                           if (request.state === 'completed') completed.innerHTML += row;
+                        });
+                        setupPagination(currentTable);
+                        displayPage(currentPage);
+                     })
+                     .catch(console.error);
+               }
+            }, 1000);
+
+            // Format time to hh:mm AM/PM
+            function formatTimeToAmPm(time) {
+               const [hours, minutes, seconds] = time.split(':');
+               const date = new Date();
+               date.setHours(hours, minutes, seconds || 0);
+               return date.toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+               });
+            }
+
+            // Search functionality with debouncing
+            let debounceTimeout;
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+               clearTimeout(debounceTimeout);
+               debounceTimeout = setTimeout(() => {
+                  const searchTerm = e.target.value;
+                  if (searchTerm) {
+                     isSearching = true;
+
+                     fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
+                        .then(response => response.json())
+                        .then(data => {
+                           // Clear previous results
+                           const requestBodies = document.querySelectorAll('.requests-section tbody');
+                           requestBodies.forEach(body => body.innerHTML = '');
+
+                           // Handle search results
+                           if (data.length) {
+                              data.forEach(request => {
+                                 const formattedTime = formatTimeToAmPm(request.time); // Format the time
+
+                                 const row = `
+                                    <tr data-id="${request.id}">
+                                       <td>${formattedTime}</td>
+                                       <td>${request.date}</td>
+                                       <td>${request.patient_id}</td>
+                                       <td>${request.doctor_id}</td>
+                                    </tr>`;
+
+                                    // Add rows to the appropriate table based on request state
+                                 const tableBody = document.querySelector(`#${request.state}-requests-body`);
+                                 tableBody.innerHTML += row;
+
+                              });
+                           } else {
+                              alert('No results found.');
+                           }
+                           setupPagination(currentTable);
+                           displayPage(currentPage);
+                        })
+                        .catch(console.error);
+                  } else {
+                     // Reset the flag when search input is cleared
+                     isSearching = false;
+                  }
+               });
+            });
+
+
+            // Redirect to details page on row click
+            document.addEventListener('click', e => {
+               const row = e.target.closest('tr[data-id]');
+               if (row) {
+                  const requestID = row.getAttribute('data-id');
+                  const doctorID = row.querySelector('td:nth-child(4)').textContent.trim();
+                  const patientID = row.querySelector('td:nth-child(3)').textContent.trim();
+
+                  window.location.href = `medicationDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
+               }
+            });
          });
       </script>
 </body>

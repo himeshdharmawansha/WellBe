@@ -141,6 +141,32 @@
     color: #172554;
 }
 
+.table-container {
+    max-height: 370px;
+    /* Approx height for 6 rows */
+    overflow-y: auto;
+    border: 0px solid #ccc;
+    border-radius: 5px;
+}
+
+.request-table tbody tr:nth-child(even) {
+    background-color: hsl(221, 67%, 95%);
+}
+
+.message-table tbody tr:nth-child(even) {
+    background-color: hsl(221, 67%, 95%);
+}
+
+.status.progress {
+    color: rgb(37, 37, 37);
+    font-weight: bold;
+}
+
+.status.pending {
+    color: rgb(37, 37, 37);
+    font-weight: bold;
+}
+
 /* Card color backgrounds */
 .new-request {
     background-color: #00C38F;
@@ -166,24 +192,48 @@
     margin-bottom: 15px;
 }
 
-/* Search bar styling */
-.search-bar {
-    flex-grow: 1;
+#countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(to right, #46cefc, #6bdcde);
+    border-radius: 10px;
+    padding: 5px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    height: 109px;
+    width: 220px;
 }
 
-.search-bar input {
-    border: none;
-    background-color: #EBF5FF;
-    padding: 10px;
-    border-radius: 25px;
-    width: 260px;
-    height: 45px;
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.6rem;
 }
 
-.search-bar button {
-    border: none;
-    cursor: pointer;
-    margin-left: -40px;
+.time-unit span {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0;
+    width: 2.5ch;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.inline-separator {
+
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1 5px;
+    margin-top: 23px;
+    /* Adjust spacing if needed */
+    align-self: flex-start;
+    /* Align with the numbers */
+    line-height: 2rem;
+    /* Match the height of numbers */
 }
 
 .fa-solid.fa-magnifying-glass {
@@ -295,10 +345,22 @@
     border-bottom: 1px solid #CCCCCC;
 }
 
+.message-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.message-table th,
+.message-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #CCCCCC;
+}
+
 .status {
     padding: 5px;
     text-align: center;
-    width: 80px;
+    width: 85px;
     display: inline-block;
 }
 

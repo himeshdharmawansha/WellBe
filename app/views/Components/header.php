@@ -79,8 +79,8 @@
          <div class="user-details">
             <div class="user-avatar"></div>
             <div class="user-info">
-               <p style="font-weight: bold;">K.S.Perera</p>
-               <p style="padding-top:4px;color:#989898">Administrative Staff</p>
+               <p style="font-weight: bold;"><?=$_SESSION['USER']->first_name?></p>
+               <p style="color:#989898"><?=$_SESSION['user_type']?></p>
             </div>
          </div>
       </div>

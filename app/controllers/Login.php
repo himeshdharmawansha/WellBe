@@ -5,7 +5,7 @@ class Login extends Controller
 
     public function index()
     {
-        $data = [];
+        $data = []; $model = new Model;
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['nic'])){
@@ -52,6 +52,7 @@ class Login extends Controller
                         } else {
                             $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password
                         }
+
 
                     } else {
                         $user->errors['nic'] = 'NIC not found';

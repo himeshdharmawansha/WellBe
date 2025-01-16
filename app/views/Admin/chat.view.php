@@ -1,34 +1,11 @@
 <?php
-// session_start();
 
-// if (!isset($_SESSION['userid'])) {
-//    header("Location: login.php");
-//    exit();
-// }
-
-require_once(__DIR__ . "/../../core/Database.php");
-$DB = new Database();
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+$he = new ChatController();
+$unseenCounts = $he->UnseenCounts([1, 2, 4, 5]);
+$user_profile = $unseenCounts;
 $currentUserId = $_SESSION['userid'];
 
-
-// Query to get user_profile and unseen status of the last message, excluding the logged-in user
-$query = "SELECT user_profile.*, 
-          (SELECT seen FROM message 
-           WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-           OR (sender = :currentUserId AND receiver = user_profile.id) 
-           ORDER BY date DESC LIMIT 1) AS seen,
-          (SELECT date FROM message 
-           WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-           OR (sender = :currentUserId AND receiver = user_profile.id) 
-           ORDER BY date DESC LIMIT 1) AS last_message_date,
-          (SELECT COUNT(*) FROM message 
-           WHERE sender = user_profile.id AND receiver = :currentUserId AND seen = 0) AS unseen_count
-          from user_profile
-          WHERE user_profile.id != :currentUserId AND user_profile.role in (1,2,4,5)
-          ORDER BY 
-             unseen_count DESC,  
-             last_message_date DESC";
-$user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
 ?>
 
 <!DOCTYPE html>
@@ -37,8 +14,8 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Dashboard</title>
-   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/admin/message.css">
+   <title>WELLBE</title>
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/lab/message.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -53,7 +30,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
          <!-- Top Header -->
          <?php
          $pageTitle = "Chat"; // Set the text you want to display
-         include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
          <div class="dashboard-content">
             <div class="container">
@@ -65,7 +42,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
                      <?php foreach ($user_profile as $user): ?>
                         <li>
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
-                              data-receiver-id="<?php echo $user['id']; ?>"
+                              data-receiver-id="<?php echo ($user['id']); ?>"
                               onclick="selectChat(this, <?php echo $user['id']; ?>)">
                               <div class="avatar"></div>
                               <div class="chat-info">
@@ -75,9 +52,17 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
                                     <?php
-                                    echo !empty($user['last_message_date'])
-                                       ? date('d/m/Y', strtotime($user['last_message_date']))
-                                       : '';
+                                    if (!empty($user['last_message_date'])) {
+                                       $lastMessageDate = strtotime($user['last_message_date']);
+                                       $currentDate = strtotime('today');
+                                       if ($lastMessageDate >= $currentDate) {
+                                          // If the last message is today, show the time
+                                          echo date('h:i A', $lastMessageDate);
+                                       } else {
+                                          // If the last message is from another day, show the date
+                                          echo date('d/m/Y', $lastMessageDate);
+                                       }
+                                    }
                                     ?>
                                  </span>
                                  <span class="circle"></span>
@@ -121,7 +106,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
       </ul>
    </div>
 
-   <script src="<?= ROOT ?>/assets/js/admin/message.js"></script>
+   <script src="<?= ROOT ?>/assets/js/lab/message.js"></script>
    <script>
       let selectedUserId = null;
       let selectedMessage = null;
@@ -220,6 +205,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
                chatMessages.innerHTML = '';
                data.messages.forEach(message => {
                   const div = document.createElement('div');
+                  // window.alert(message.sender);
                   div.classList.add('message', message.sender == receiverId ? 'received' : 'sent');
                   div.setAttribute('data-message-id', message.id);
 
@@ -251,6 +237,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
                      const chatMessages = document.getElementById("chat-messages");
                      chatMessages.innerHTML = '';
                      data.messages.forEach(message => {
+                        // window.alert(selectedUserId);
                         const div = document.createElement('div');
                         div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
                         div.setAttribute('data-message-id', message.id);
@@ -316,18 +303,31 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
             alert("Please select a chat.");
             return;
          }
-         fetch(`<?= ROOT ?>/ChatController/sendMessage/${selectedUserId}/${message}`)
+
+         // Prepare data to send via POST
+         const data = {
+            message: message,
+            receiver: selectedUserId
+         };
+
+         fetch('<?= ROOT ?>/ChatController/sendMessage', {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json' // Ensure the body is treated as JSON
+               },
+               body: JSON.stringify(data) // Send data as JSON
+            })
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  document.getElementById('message-input').value = '';
-                  pollMessages();
+                  document.getElementById('message-input').value = ''; // Clear input field
+                  pollMessages(); // Refresh chat
                } else {
                   alert('Error sending message');
                }
-            });
+            })
+            .catch(error => console.error("Error:", error));
       }
-
 
       setInterval(refreshuser_profiletatuses, 3000);
 
@@ -382,9 +382,19 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
 
                user_profile.forEach(user => {
                   const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-                  const lastMessageDate = user.last_message_date ?
-                     new Date(user.last_message_date).toLocaleDateString('en-GB') :
-                     '';
+
+                  // Prepare last message date or time
+                  let lastMessageDisplay = '';
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     const today = new Date();
+
+                     if (messageDate.toDateString() === today.toDateString()) {
+                        lastMessageDisplay = formatTimeToAmPm(messageDate);
+                     } else {
+                        lastMessageDisplay = messageDate.toLocaleDateString('en-GB');
+                     }
+                  }
 
                   const chatItemHTML = `
                   <li>
@@ -397,7 +407,7 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
                            <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDate}</span>
+                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
                            <span class="circle"></span>
                         </div>
                      </div>
@@ -411,10 +421,18 @@ $user_profile = $DB->readn($query, ['currentUserId' => $currentUserId]);
             .catch(error => console.error("Error fetching unseen counts:", error));
       }
 
+      // Utility function for formatting time to AM/PM
+      function formatTimeToAmPm(date) {
+         return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+         });
+      }
+
       // Set interval to poll unseen message counts every 3 seconds
       // Poll unseen counts every 3 seconds
       setInterval(() => refreshUnseenCounts([1, 2, 4, 5]), 3000);
-
 
       // Mark messages as seen when chat is opened
       function markMessagesAsSeen(receiverId) {

@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/../models/Chat.php';
 
-class ChatController
+class ChatController extends Controller
 {
    private $chatModel;
 
@@ -75,6 +75,24 @@ class ChatController
       }
    }
 
+   public function UnseenCounts($roles)
+   {
+      if (empty($roles)) {
+         echo json_encode(['error' => 'Invalid or missing roles parameter']);
+         return null;
+      }
+
+      try {
+         // Fetch unseen counts from the model
+         $result = $this->chatModel->getUnseenCounts($roles);
+         return $result; // Return the result instead of rendering directly
+
+      } catch (Exception $e) {
+         // Handle errors gracefully
+         return ['error' => $e->getMessage()];
+      }
+   }
+
 
    public function getuser_profiletatuses()
    {
@@ -86,15 +104,32 @@ class ChatController
       return $this->chatModel->markMessagesSeen($receiver);
    }
 
-   public function sendMessage($receiver, $message)
+   public function sendMessage()
    {
-      $response = $this->chatModel->sendMessage($receiver, $message);
-      if ($response) {
-         echo json_encode(["status" => "success", "message" => "Message sent."]);
+      // Get the raw POST data
+      $data = json_decode(file_get_contents('php://input'), true);
+
+      // Check if message and receiver are provided
+      if (isset($data['receiver']) && isset($data['message'])) {
+         $receiver = $data['receiver'];
+         $message = $data['message'];
+
+         // Call the model's sendMessage method
+         $response = $this->chatModel->sendMessage($receiver, $message);
+
+         if ($response) {
+            // Respond with success
+            echo json_encode(["status" => "success", "message" => "Message sent."]);
+         } else {
+            // Respond with error
+            echo json_encode(["status" => "error", "message" => "Error sending message."]);
+         }
       } else {
-         echo json_encode(["status" => "error", "message" => "Error sending message."]);
+         // Respond if the required data is missing
+         echo json_encode(["status" => "error", "message" => "Missing required parameters."]);
       }
    }
+
 
    public function userDetails($currentUserId)
    {
@@ -114,5 +149,17 @@ class ChatController
       } else {
          echo json_encode(["status" => "error", "message" => "Could not edit the message."]);
       }
+   }
+
+   public function loggedin()
+   {
+      $DB = new Database();
+      // Update user state to 1 (logged in)
+      $updateStateQuery = "UPDATE user_profile SET state = 1 WHERE id = :userid";
+      $DB->write($updateStateQuery, ['userid' => $_SESSION['userid']]);
+
+      // Update messages as received
+      $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
+      $DB->write($updateQuery, ['receiver' => $_SESSION['userid']]);
    }
 }

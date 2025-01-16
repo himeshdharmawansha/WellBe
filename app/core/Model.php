@@ -140,4 +140,13 @@ class Model extends Database
        $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
        $DB->write($updateQuery, ['receiver' => $_SESSION['userid']]);
     }
+
+    public function getAll()
+    {
+        $query = "select * from $this->table ORDER BY id DESC";
+
+        //show($query);
+        return $this->query($query);
+    }
+
 }

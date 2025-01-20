@@ -8,6 +8,16 @@ $currentUserId = $_SESSION['userid'];
 
 ?>
 
+<?php
+
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+$he = new ChatController();
+$unseenCounts = $he->UnseenCounts([3]);
+$user_profile = $unseenCounts;
+$currentUserId = $_SESSION['userid'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,7 +25,7 @@ $currentUserId = $_SESSION['userid'];
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>WELLBE</title>
-   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/chat.css">
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/patient/chat.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -137,8 +147,8 @@ $currentUserId = $_SESSION['userid'];
             }
          }
 
-         popupMenu.style.left = ${x}px;
-         popupMenu.style.top = ${y}px;
+         popupMenu.style.left = `${x}px`;
+         popupMenu.style.top = `${y}px`;
          popupMenu.style.display = 'block';
          document.addEventListener('click', hidePopupMenu);
       }
@@ -160,7 +170,7 @@ $currentUserId = $_SESSION['userid'];
             const messageId = selectedMessage.getAttribute('data-message-id');
             const isSender = selectedMessage.classList.contains('sent');
 
-            fetch(<?= ROOT ?>/ChatController/deleteMessage/${messageId}/${isSender ? 1 : 0})
+            fetch(`<?= ROOT ?>/ChatController/deleteMessage/${messageId}/${isSender ? 1 : 0}`)
                .then(response => {
                   if (!response.ok) {
                      throw new Error('Failed to delete message');
@@ -198,7 +208,7 @@ $currentUserId = $_SESSION['userid'];
 
       async function startChat(receiverId) {
          try {
-            const response = await fetch(<?= ROOT ?>/ChatController/getMessages/${receiverId});
+            const response = await fetch(`<?= ROOT ?>/ChatController/getMessages/${receiverId}`);
             if (response.ok) {
                const data = await response.json();
                const chatMessages = document.getElementById("chat-messages");
@@ -229,7 +239,7 @@ $currentUserId = $_SESSION['userid'];
 
       function pollMessages() {
          if (selectedUserId) {
-            fetch(<?= ROOT ?>/ChatController/getMessages/${selectedUserId})
+            fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
                .then(response => response.json())
                .then(data => {
                   if (data.messages.length > 0) {
@@ -276,7 +286,7 @@ $currentUserId = $_SESSION['userid'];
             return;
          }
 
-         fetch(<?= ROOT ?>/ChatController/editMessage/${messageId}/${encodeURIComponent(newMessage)})
+         fetch(`<?= ROOT ?>/ChatController/editMessage/${messageId}/${encodeURIComponent(newMessage)}`)
             .then(response => {
                if (!response.ok) {
                   throw new Error('Failed to edit message');
@@ -338,7 +348,7 @@ $currentUserId = $_SESSION['userid'];
             if (xhr.readyState == 4 && xhr.status == 200) {
                const user_profile = JSON.parse(xhr.responseText);
                user_profile.forEach(user => {
-                  const chatItem = document.querySelector(.chat-item[data-receiver-id="${user.id}"]);
+                  const chatItem = document.querySelector(`.chat-item[data-receiver-id="${user.id}"]`);
                   if (chatItem) {
                      const statusElement = chatItem.querySelector('.chat-status');
                      statusElement.textContent = user.state ? 'Online' : 'Offline';
@@ -354,7 +364,7 @@ $currentUserId = $_SESSION['userid'];
             .then(response => response.json())
             .then(dates => {
                dates.forEach(item => {
-                  const timeElement = document.getElementById(time-${item.id});
+                  const timeElement = document.getElementById(`time-${item.id}`);
                   if (timeElement) {
                      timeElement.textContent = item.date;
                   }
@@ -369,7 +379,7 @@ $currentUserId = $_SESSION['userid'];
       function refreshUnseenCounts(roleArray) {
          const roles = roleArray.join(','); // Serialize roles into a comma-separated string
 
-         fetch(<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles})
+         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
             .then(response => response.json())
             .then(user_profile => {
                if (user_profile.error) {
@@ -436,9 +446,9 @@ $currentUserId = $_SESSION['userid'];
 
       // Mark messages as seen when chat is opened
       function markMessagesAsSeen(receiverId) {
-         fetch(<?= ROOT ?>/ChatController/markMessagesSeen/${receiverId})
+         fetch(`<?= ROOT ?>/ChatController/markMessagesSeen/${receiverId}`)
             .then(() => {
-               const chatItem = document.querySelector(.chat-item[data-receiver-id="${receiverId}"]);
+               const chatItem = document.querySelector(`.chat-item[data-receiver-id="${receiverId}"]`);
                if (chatItem) chatItem.classList.remove('unseen'); // Remove unseen indicator
             });
       }

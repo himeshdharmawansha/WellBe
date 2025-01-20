@@ -87,7 +87,6 @@ class Pharmacy extends Controller
       // Structure the data for easier use in the frontend
       $response = [
          'pending' => 0,
-         'progress' => 0,
          'completed' => 0,
       ];
 
@@ -135,8 +134,8 @@ class Pharmacy extends Controller
       // Query to fetch the medication requests
       $query = "SELECT patient_id, state 
                   FROM medication_requests 
-                  WHERE state IN ('progress', 'pending') 
-                  ORDER BY FIELD(state, 'progress', 'pending') 
+                  WHERE state IN ('pending') 
+                  ORDER BY FIELD(state,'pending') 
                   LIMIT 20";
 
       // Execute the query

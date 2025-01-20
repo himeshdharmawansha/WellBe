@@ -8,15 +8,7 @@ $currentUserId = $_SESSION['userid'];
 
 ?>
 
-<?php
 
-require_once(__DIR__ . "/../../controllers/ChatController.php");
-$he = new ChatController();
-$unseenCounts = $he->UnseenCounts([3]);
-$user_profile = $unseenCounts;
-$currentUserId = $_SESSION['userid'];
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">

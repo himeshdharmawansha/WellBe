@@ -26,6 +26,7 @@ class Patient extends Controller
 
    public function index()
    {
+         
       $this->view('Patient/patient_dashboard', 'patient_dashboard');
    }
 
@@ -33,7 +34,7 @@ class Patient extends Controller
    {
       $this->view('Patient/medicalreports', 'medicalreports');
    }
-   public function labreports()
+   public function labreports()   
    {
       $this->view('Patient/labreports', 'labreports');
    }
@@ -56,7 +57,7 @@ class Patient extends Controller
    {
       $this->view('Patient/chat', 'chat');
    }
-   public function logout()
+    public function logout()
    {
       $this->view('Patient/logout', 'logout');
    }

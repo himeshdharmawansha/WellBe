@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,6 +28,7 @@
       <!-- Dashboard Content -->
       <div class="container">
         <div class="dashboard">
+          
           <div class="profile-card">
             <div class="image">
                 <img src="./assets/male_pro.png" alt="Profile Picture" class="profile-img" />
@@ -40,8 +40,8 @@
             </div>
             <br>
             <div class="profile-details">
-              <p><strong>Gender:</strong> </p>
-              <p><strong>Contact:</strong></p>
+              <p><strong>Name:</strong> </p>
+              <p><strong>Gender:</strong></p>
               <p><strong>Emergency Contact:</strong></p>
               <p><strong>Email:</strong></p>
               <p><strong>Address:</strong></p>

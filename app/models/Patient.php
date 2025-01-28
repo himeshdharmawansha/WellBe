@@ -80,7 +80,8 @@ class Patient extends Model
         return empty($this->errors);
     }
 
-    public function validate_second_form($data){
+    public function validate_second_form($data)
+    {
 
         $this->errors = [];
 
@@ -115,5 +116,26 @@ class Patient extends Model
 
         return empty($this->errors);
     }
+
+    public function get_profile()
+    {
+        $query = "
+                SELECT
+                CONCAT(first_name, ' ', last_name) AS full_name,
+                nic,
+                gender,
+                address,
+                email,
+                contact,
+                medical_history,
+                allergies,
+                emergency_contact_no
+                FROM patient
+            ";
+
+        return $this->query($query);
+    }
+
+
 
 }

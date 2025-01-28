@@ -35,20 +35,25 @@ class Login extends Controller
                 $arr['nic'] = $_POST['nic'];
                 $row = $user->first($arr);
 
-                if ($row) {
-                    if (($_POST['password']== $row->password)) {
-                        $_SESSION['USER'] = $row; // Save user details in the session
-                        $model->loggedin();
-                        $_SESSION['userid'] = $row->id;
-                        redirect($_SESSION['user_type']);
-                    } else {
-                        $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password
-                    }
-                } else {
-                    $user->errors['nic'] = 'NIC not found';
-                }
+                    if ($row) {
+                        if (password_verify($_POST['password'], $row->password)) {
+                            $_SESSION['USER'] = $row; // Save user details in the session
+                            //session_start();
+                            //$user->loggedin();
+                            $_SESSION['userid'] = $row->id;
+                            redirect($_SESSION['user_type']);
+                        } else {
+                            $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password
+                        }
 
-                $data['errors'] = $user->errors;
+                    } else {
+                        $user->errors['nic'] = 'NIC not found';
+                    }
+    
+                    $data['errors'] = $user->errors;
+                }else{
+                    $data['errors'] = ['nic' => 'NIC not found'];
+                }
             }
         }
 

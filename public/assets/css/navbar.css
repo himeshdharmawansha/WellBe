@@ -22,6 +22,7 @@
     color: white;
     transition: width 0.3s ease;
     overflow: hidden;
+    height: auto;
 }
 
 .sidebar:hover {

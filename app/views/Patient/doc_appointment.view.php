@@ -61,13 +61,13 @@
                 </datalist>
             </div>
 
-            <button class="find-doctor-btn" onclick="window.location.href='hello'">Search</button>
-        </form>
+            <button type="button" class="find-doctor-btn" id="searchDoctorBtn">Search</button>
+            </form>
     </div>
 
     <!-- Date & Time Selection Section -->
-    <div class="selection-section">
-        <!-- Available Dates -->
+    <div id="selectionSection" class="selection-section" style="display: none;">
+    <!-- Available Dates -->
         <div class="input-box">
             <label for="dates">Available Dates</label>
             <div id="dates-container" class="dates-grid">
@@ -92,6 +92,8 @@
                 <button class="timeslot-btn">5:00 PM</button>
             </div>
         </div>
+        <button class="find-doctor-btn" onclick="window.location.href='hello'">Confirm</button>
+
     </div>
 </div>
 
@@ -132,6 +134,36 @@
             });
         });
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const searchButton = document.getElementById("searchDoctorBtn");
+    const selectionSection = document.getElementById("selectionSection");
+    const dateButtons = document.querySelectorAll(".date-btn");
+    const timeslotButtons = document.querySelectorAll(".timeslot-btn");
+
+    // Show selection section when search button is clicked
+    searchButton.addEventListener("click", () => {
+        selectionSection.style.display = "block";
+    });
+
+    // Handle date selection
+    dateButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            dateButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+            console.log(`Selected date: ${button.textContent}`);
+        });
+    });
+
+    // Handle time slot selection
+    timeslotButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            timeslotButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+            console.log(`Selected time slot: ${button.textContent}`);
+        });
+    });
+});
     </script>
 
 </body>

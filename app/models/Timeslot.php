@@ -6,6 +6,9 @@ class Timeslot extends Model
 {
     public function createTimeslot(){
 
+        $today = date('Y-m-d');
+        //print_r($today);
+
         for ($i = 0; $i < 15; $i++) {
 
             $exist = [];
@@ -19,7 +22,7 @@ class Timeslot extends Model
             if (!isset($exist[0])) {
                 print_r($exist);
                 $sql_insert = "INSERT INTO timeslot (date) VALUES (?)";
-                //$this->query($sql_insert, [$currentDate]);
+                $this->query($sql_insert, [$currentDate]);
             }else{
         
                 $count = $exist[0]->count;

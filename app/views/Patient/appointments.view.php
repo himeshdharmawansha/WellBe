@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Details</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/Appointment.css">
+    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/appointments.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
@@ -14,13 +14,14 @@
         <?php
         $this->renderComponent('navbar', $active);
         ?>
+      
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
 
             
@@ -28,7 +29,7 @@
             <div class="dashboard-content">
                 <div class="header">
                     <p>Appointments
-                        <button class="btn" onclick="window.location.href='search_for_doctor'">Schedule an Appointment</button>
+                        <button class="btn" onclick="window.location.href='doc_appointment'">Schedule an Appointment</button>
                         <span>
                             <button class="btn1">Reschedule/ Cancellation Policy</button>
                         </span>

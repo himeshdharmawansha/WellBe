@@ -116,6 +116,15 @@
       visibility: hidden;
    }
 
+   .btn {
+      display: none !important;
+   }
+
+   /* Specific button (if needed) */
+   #remarksButton {
+      display: none !important;
+   } 
+   
    .dashboard-content,
    .dashboard-content * {
       visibility: visible;

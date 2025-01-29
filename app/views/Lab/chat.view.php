@@ -1,40 +1,11 @@
 <?php
-// session_start();
 
-// if (!isset($_SESSION['userid'])) {
-//    header("Location: login.php");
-//    exit();
-// }
-
-require_once(__DIR__ . "/../../core/Database.php");
-$DB = new Database();
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+$he = new ChatController();
+$unseenCounts = $he->UnseenCounts([3]);
+$user_profile = $unseenCounts;
 $currentUserId = $_SESSION['userid'];
 
-// Query to get user_profile and unseen status of the last message, excluding the logged-in user
-$query = "SELECT user_profile.*, 
-               (SELECT seen 
-               FROM message 
-               WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-                  OR (sender = :currentUserId AND receiver = user_profile.id) 
-               ORDER BY date DESC LIMIT 1) AS seen,
-               
-               (SELECT date 
-               FROM message 
-               WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-                  OR (sender = :currentUserId AND receiver = user_profile.id) 
-               ORDER BY date DESC LIMIT 1) AS last_message_date,
-               
-               (SELECT COUNT(*) 
-               FROM message 
-               WHERE sender = user_profile.id AND receiver = :currentUserId AND seen = 0) AS unseen_count
-         FROM user_profile
-         WHERE user_profile.id != :currentUserId  
-         AND user_profile.role = :role          
-         ORDER BY 
-         unseen_count DESC,                     
-         last_message_date DESC;                
-         ";
-$user_profile = $DB->read($query, ['currentUserId' => $currentUserId, 'role' => 3]);
 ?>
 
 <!DOCTYPE html>
@@ -59,7 +30,7 @@ $user_profile = $DB->read($query, ['currentUserId' => $currentUserId, 'role' => 
          <!-- Top Header -->
          <?php
          $pageTitle = "Chat"; // Set the text you want to display
-         include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Lab/header.php';
+         include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
          <div class="dashboard-content">
             <div class="container">

@@ -53,9 +53,30 @@
    width: 100%;
    border-spacing: 0 10px;
 }
-
-.completed-btn,
 .upload-btn {
+   width: 80%;
+   text-align: center;
+   background-color: #3b9ff7;
+   color: white;
+   cursor: pointer;
+   padding: 1px 8px 1px 8px;
+   border: none;
+   border-radius: 5px;
+   transition: background-color 0.3s, cursor 0.3s;
+}
+
+.file-input {
+   display: none;
+}
+
+.button-container {
+   position: fixed;
+   bottom: 35px;
+   right: 30px;
+   z-index: 1000; /* Ensure the button stays above other elements */
+}
+
+.completed-btn {
    background-color: #007bff;
    color: white;
    border: none;
@@ -66,105 +87,7 @@
    transition: background-color 0.3s ease;
 }
 
-.upload-btn {
-   margin-right: 10px;
-}
-
 .completed-btn:hover {
    background-color: #0056b3;
 }
 
-/* Modal Styling */
-.modal {
-   display: none;
-   position: fixed;
-   z-index: 1;
-   left: 0;
-   top: 0;
-   width: 100%;
-   height: 100%;
-   overflow: auto;
-   background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-   background-color: #f4f7fc;
-   margin: 10% auto;
-   padding: 20px;
-   border: 1px solid #888;
-   width: 400px;
-   border-radius: 10px;
-   position: relative;
-}
-
-.close {
-   position: absolute;
-   top: 10px;
-   right: 10px;
-   color: #000;
-   font-size: 24px;
-   font-weight: bold;
-   cursor: pointer;
-}
-
-/* Button container */
-.button-container {
-   position: absolute;
-   bottom: 20px;
-   right: 20px;
-   display: flex;
-   gap: 10px;
-}
-
-.popup-actions {
-   display: flex;
-   justify-content: flex-end;
-   margin-top: 20px;
-}
-
-.popup-actions button {
-   background-color: #337ab7;
-   color: white;
-   border: none;
-   padding: 10px 20px;
-   font-size: 14px;
-   border-radius: 5px;
-   cursor: pointer;
-   transition: background-color 0.3s ease;
-}
-
-#uploadButton {
-   background-color: #5bc0de;
-   margin-right: 10px;
-}
-
-/* Table styling for the file list */
-.file-table {
-   width: 100%;
-   border-collapse: collapse;
-}
-
-.file-table td {
-   padding: 10px;
-   vertical-align: middle;
-}
-
-.file-info {
-   display: flex;
-   align-items: center;
-   white-space: nowrap;
-   overflow: hidden;
-   text-overflow: ellipsis;
-}
-
-.delete-icon-cell {
-   width: 30px;
-   text-align: center;
-}
-
-.delete-icon {
-   font-size: 20px;
-   cursor: pointer;
-   color: #d9534f;
-   /* Red color for delete icon */
-}

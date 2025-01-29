@@ -104,7 +104,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     background-color: #f0f8ff; /* Light blue background */
     border-bottom: 2px solid #d1d9f1;
 }
@@ -174,36 +174,87 @@
     height: 119vh; /* Adjust as necessary for your layout */
 }
 
-/* Channel Details */
-.channel-details {
-    background-color: #ffffff;
-    padding: 20px;
-    width: 25%;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    color: #000000;
-    display: flex;
-    flex-direction: column;
-    height: 50%; /* Matches the container height */
-}
+
 
 /* Patient Details */
+/* Patient Details - Centered and Smaller */
 .patient-details {
     background-color: #ffffff;
-    padding: 20px;
-    width: 60%;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 40%; /* Reduced width */
+    border-radius: 15px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Softer shadow for depth */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Adjust content within */
-    height: 100%; /* Matches the container height */
-    margin-right: 150px;
+    justify-content: space-between; 
+    gap: 8px; /* Adds consistent spacing between elements */
+    height: auto; /* Adjust height to content */
+    margin: auto; /* Centers horizontally and vertically */
+    margin-top: 5px; /* Adds space from the top */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.patient-details:hover {
+    transform: scale(1.02); /* Slight zoom effect on hover */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+}
+
 
 .patient-details h2.title {
     text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #172554; /* Dark blue text color */
+    margin-bottom: 20px; /* Add space below the title */
+    border-bottom: 2px solid #E8EBF8; /* Subtle divider */
+    padding-bottom: 5px;
 }
+
+.patient-details p {
+    font-size: 16px; /* Larger, readable font */
+    line-height: 1.6; /* Improves readability */
+    color: #333333; /* Neutral text color */
+    margin-bottom: 10px;
+}
+
+.patient-details strong {
+    color: #172554; /* Highlighted text color */
+}
+
+.button-container {
+    display: flex; /* Enables flexbox layout */
+    justify-content: center; /* Optional: Centers the buttons horizontally */
+    gap: 10px; /* Adds spacing between buttons */
+}
+
+.patient-details button.submit-btn {
+    padding: 15px 25px;
+    background-color: #00C67A; /* Bright green */
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    align-self: center; /* Centers the button */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 250px;
+    
+}
+
+.patient-details button.submit-btn:hover {
+    background-color: #009958; /* Darker green on hover */
+    transform: scale(1.05); /* Slight pop-out effect */
+}
+
+.patient-details .cha-container {
+    padding: 15px;
+    border: 1px solid #E8EBF8; /* Light border for separation */
+    border-radius: 10px;
+    background-color: #F9FBFF; /* Soft blue background */
+    margin-bottom: 10px; /* Space below the container */
+}
+
 
 form {
     display: flex;
@@ -287,3 +338,54 @@ input[type="radio"] {
 .sidebar-menu li a:focus {
     color: #ddd; /* Change color on hover/focus */
 }
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h2 {
+    color: #333333;
+    margin: 0;
+}
+
+.modal-body p {
+    color: #666666;
+    margin: 15px 0;
+}
+
+.modal-footer button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-footer button:hover {
+    background: #45a049;
+}
+
+.hidden {
+    display: none;
+}
+

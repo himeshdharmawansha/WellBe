@@ -287,6 +287,13 @@ class Doctor extends Model
         $query = "SELECT CONCAT(first_name, ' ', last_name) AS name, specialization FROM doctor";
         return $this->query($query);
     }
+
+    public function getDoctorId($firstName,$lastName)
+    {
+        $query = "SELECT id FROM doctor WHERE first_name = :firstName AND last_name = :lastName";
+        $data = ['firstName'=>$firstName,'lastName'=>$lastName];
+        return $this->query($query,$data);
+    }
     
 
 }

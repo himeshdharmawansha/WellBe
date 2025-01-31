@@ -7,7 +7,7 @@ class Timeslot extends Model
     public function createTimeslot(){
 
         $today = date('Y-m-d');
-        //print_r($today);
+        // print_r($today);
 
         for ($i = 0; $i < 15; $i++) {
 
@@ -75,15 +75,14 @@ class Timeslot extends Model
         $timeSlots = explode(',', $timeslot);
         
         $query = "INSERT INTO timeslot_doctor (slot_id, doctor_id, start_time, end_time)
-                    VALUES (
-                        (SELECT slot_id FROM timeslot WHERE date = '$date'), 
-                        '{$_SESSION['USER']->id}', 
-                        '$timeSlots[0]', 
-                        '$timeSlots[1]'
-                    );";
+                VALUES (
+                    (SELECT slot_id FROM timeslot WHERE date = ?), 
+                    ?, 
+                    ?, 
+                    ?
+                );";
 
-        $this->query($query);
-
+        $this->query($query, [$date, $id, $timeSlots[0], $timeSlots[1]]);
         redirect("doctor");
     }
 
@@ -97,5 +96,47 @@ class Timeslot extends Model
 
         $this->query($query);
         redirect("doctor");
+    }
+
+    public function getAvailableDays($id){
+
+        $query = "SELECT slot_id FROM timeslot WHERE date = :date";
+        $data = ['date'=>date('Y-m-d')];
+        $today = $this->query($query,$data);
+        $todayId =  $today[0]->slot_id;
+
+        $query = "SELECT slot_id, date FROM timeslot WHERE slot_id > :todayId";
+        $data = ['todayId'=>$todayId];
+        $dates = $this->query($query,$data);
+        /*foreach($dates as $date){
+            echo $date->slot_id;
+        }*/
+
+        //get a doctors available dates
+        $query = "SELECT start_time, slot_id FROM timeslot_doctor WHERE slot_id >= :todayId AND doctor_id = :id";
+        $data = ['todayId'=>$todayId, 'id'=>$id];
+        $availableDays = $this ->query($query, $data);
+        
+
+        $matchedDates = [];
+        
+        foreach($dates as $date){
+            foreach($availableDays as $availableDay){
+                if($date->slot_id === $availableDay->slot_id){
+                    $day = [
+                        'slot_id' => $date->slot_id,
+                        'day' => $date->date,
+                        'start_time' => $availableDay->start_time
+                    ];
+                    
+                    $matchedDates[] = $day;//faster than array_push
+                }
+            }
+        }
+
+        
+        $dateDetails = ['matchedDates'=>$matchedDates,'todayId'=>$todayId];
+
+        return $dateDetails;
     }
 }

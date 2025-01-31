@@ -17,7 +17,7 @@
         ?>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content" >
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
@@ -28,7 +28,7 @@
             
             <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-botton: 10px">
+                <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-bottom: 10px">
                 <form action="" method="GET" style="display: flex; align-items: center;">
                     <label for="date-select" style="margin-right: 10px; font-weight: bold;">Select Date:</label>
                     <input type="date" id="date-select" name="selected_date" 
@@ -63,6 +63,23 @@
                         <p >Gender:<span class="doc_name"> Male</span></p>
                         <p >Date :<span class="doc_name"> 2024-11-28</span></p>
                         <div class="new_patient" style="margin-top: 10px;">New Patient</div>
+                        
+                    </div>
+                    <div class="card">
+                        <p >Name :<span class="doc_name"> Mr Samitha Jayasooriya</span></p>
+                        <p >Appointment id :<span class="doc_name"> 03</span></p>
+                        <p >Gender:<span class="doc_name"> Male</span></p>
+                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
+                        <div class="new_patient" style="margin-top: 10px;">New Patient</div>
+                        
+                    </div>
+                    <div class="card">
+                        <p >Name :<span class="doc_name"> Mr Tiran Perera</span></p>
+                        <p >Appointment id :<span class="doc_name"> 02</span></p>
+                        <p >Gender:<span class="doc_name"> Male</span></p>
+                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
+                        <div class="new_patient" style="margin-top: 10px;">Returning Patient</div>
+                        <button class="returning_patient"><a style="color: #f3f3f3;" href="<?= ROOT ?>/doctor/display_record">Patient Records</a></button>
                         
                     </div>
                     <div class="card">

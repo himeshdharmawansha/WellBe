@@ -65,6 +65,31 @@ class Appointments extends Model{
 
         $this->query($query,[$app_id]);
     }
+
+    public function getAppointment($id,$today_id){
+
+        
+        $query = "SELECT a.*
+          FROM appointment a
+          JOIN (
+              SELECT date, MAX(appointment_id) AS max_appointment_id
+              FROM appointment
+              WHERE doctor_id = :doctor_id AND date > :date
+              GROUP BY date
+              ORDER BY date ASC
+          ) max_appt 
+          ON a.date = max_appt.date 
+          AND a.appointment_id = max_appt.max_appointment_id
+          WHERE a.doctor_id = :doctor_id
+          ORDER By a.date ASC";
+
+        $data = ['doctor_id' => $id,'date'=>$today_id];
+
+        $result = $this->query($query, $data);
+
+        //print_r($result);
+        return $result;
+    }
 }
 
 ?>

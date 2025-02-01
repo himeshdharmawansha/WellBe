@@ -42,7 +42,51 @@ class Patient extends Controller
       $data = [];
       $doctor = new Doctor(); // Instantiate the Doctor model
 
-      
+      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+         
+         $doctor_name = isset($_POST['doctor']) ? $_POST['doctor'] : '';
+         $specialization = isset($_POST['specialization']) ? $_POST['specialization'] : '';
+ 
+         $data['doctor_name'] = $doctor_name;
+
+         if (empty($doctor_name) || empty($specialization)) {
+             $data['error'] = "Please select a doctor.";
+         } else {
+
+            $name = explode(" ",$doctor_name);
+
+            $first_name = $name[0];
+            $last_name = isset($name[1]) ? $name[1] : "";
+
+            $docId = $doctor->getDoctorId($first_name,$last_name);
+            //echo $docId[0]->id;
+
+            $timeslot = new Timeslot();
+
+            //get available dates of a doctor
+            $availableDates = $timeslot->getAvailableDays($docId[0]->id);
+
+            $appointment = new Appointments();
+
+            //get current appointment num
+            $appointmentNums = $appointment->getAppointment($docId[0]->id,$availableDates['todayId']);
+
+            foreach($availableDates['matchedDates'] as &$day){
+               $isScheduled = NULL;
+               foreach($appointmentNums as $appointmentNum){
+                  if($day['slot_id'] === $appointmentNum->date){
+                     $isScheduled = $appointmentNum->appointment_id+1;
+                  }
+               }
+               if(!$isScheduled){
+                  $isScheduled = 1;
+               }
+               $day['appointment_id'] = $isScheduled;
+            }
+
+            $data['dates'] = $availableDates['matchedDates'];
+         }
+      }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
 

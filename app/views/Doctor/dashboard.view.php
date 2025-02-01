@@ -1,8 +1,5 @@
-
-<?php ob_start();
-
-
-
+<?php
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,13 +18,13 @@
     </style>
 </head>
 <body>
-    <div class="flex h-full">
+    <div class=" h-full" style="display: flex;">
        <?php 
         $this -> renderComponent('navbar',$active);
         ?>
         
     
-        <div class="relative" style="background-color: rgb(255, 255, 255);width: 100%; margin-top: 0%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;">
+        <div style="background-color: rgb(255, 255, 255);width: 100vw; margin-top: 0%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;flex: grow 1;">
 
             <?php
             $pageTitle = "Doctor Portal"; // Set the text you want to display

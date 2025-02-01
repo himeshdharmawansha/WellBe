@@ -37,7 +37,7 @@
         <div class="header">
             <p class="header-title">Search Your Doctor</p>
         </div>
-        <form method="POST">
+        <form method="POST" action="">
             <!-- Doctor Selection -->
             <div class="input-box">
                 <label for="doctor">Select Doctor</label>
@@ -71,12 +71,12 @@
         <div class="input-box">
             <label for="dates">Available Dates</label>
             <div id="dates-container" class="dates-grid">
-                <button class="date-btn">Jan 29, 2025</button>
-                <button class="date-btn">Jan 30, 2025</button>
-                <button class="date-btn">Jan 31, 2025</button>
-                <button class="date-btn">Feb 1, 2025</button>
-                <button class="date-btn">Feb 2, 2025</button>
-                <button class="date-btn">Feb 3, 2025</button>
+                <?php foreach($data['dates'] as $day){ ?>
+                    <?php if($day['appointment_id']<=15) {?>
+                        <button class="date-btn"><div><?= $day['day'] ?></div><div>App.Number : <?= $day['appointment_id'] ?></div>
+                        <div><?= $day['start_time'] ?></div></button>
+                    <?php }?>
+                <?php } ?>
             </div>
         </div>
 

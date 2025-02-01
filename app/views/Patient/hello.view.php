@@ -125,7 +125,7 @@
 
 
     <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
-    <script src="checkout.js"></script>
+    <script src="<?= ROOT ?>/assets/js/Patient/checkout.js"></script>
     <script>
 
 document.addEventListener('DOMContentLoaded', function () {

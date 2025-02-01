@@ -103,19 +103,39 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const searchButton = document.getElementById("searchDoctorBtn");
+        const selectionSection = document.getElementById("selectionSection");
         const dateButtons = document.querySelectorAll(".date-btn");
         const timeslotButtons = document.querySelectorAll(".timeslot-btn");
+        const docName = document.getElementById("doctor");
+        const specialization = document.getElementById("specialization");
+
+        // Ensure selection section starts hidden
+        selectionSection.style.display = "none";
+        selectionSection.style.opacity = "0";
+        selectionSection.style.transition = "opacity 0.5s ease-in-out";
+
+        // Show selection section when search button is clicked (only if inputs are filled)
+        searchButton.addEventListener("click", () => {
+            if (docName.value.trim() === "" || specialization.value.trim() === "") {
+                alert("Please select a doctor and specialization before proceeding.");
+                return;
+            }
+
+            selectionSection.style.display = "block";
+            setTimeout(() => {
+                selectionSection.style.opacity = "1";
+            }, 10);
+
+            console.log(`Selected Doctor: ${docName.value}`);
+            console.log(`Selected Specialization: ${specialization.value}`);
+        });
 
         // Handle date selection
         dateButtons.forEach(button => {
             button.addEventListener("click", () => {
-                // Remove active state from other date buttons
                 dateButtons.forEach(btn => btn.classList.remove("active"));
-
-                // Add active state to clicked date button
                 button.classList.add("active");
-
-                // Log the selected date
                 console.log(`Selected date: ${button.textContent}`);
             });
         });
@@ -123,48 +143,14 @@
         // Handle time slot selection
         timeslotButtons.forEach(button => {
             button.addEventListener("click", () => {
-                // Remove active state from other time slot buttons
                 timeslotButtons.forEach(btn => btn.classList.remove("active"));
-
-                // Add active state to clicked time slot button
                 button.classList.add("active");
-
-                // Log the selected time slot
                 console.log(`Selected time slot: ${button.textContent}`);
             });
         });
     });
+</script>
 
-    document.addEventListener("DOMContentLoaded", () => {
-    const searchButton = document.getElementById("searchDoctorBtn");
-    const selectionSection = document.getElementById("selectionSection");
-    const dateButtons = document.querySelectorAll(".date-btn");
-    const timeslotButtons = document.querySelectorAll(".timeslot-btn");
-
-    // Show selection section when search button is clicked
-    searchButton.addEventListener("click", () => {
-        selectionSection.style.display = "block";
-    });
-
-    // Handle date selection
-    dateButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            dateButtons.forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-            console.log(`Selected date: ${button.textContent}`);
-        });
-    });
-
-    // Handle time slot selection
-    timeslotButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            timeslotButtons.forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-            console.log(`Selected time slot: ${button.textContent}`);
-        });
-    });
-});
-    </script>
 
 </body>
 

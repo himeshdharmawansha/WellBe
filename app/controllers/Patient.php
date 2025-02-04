@@ -122,10 +122,11 @@ class Patient extends Controller
       $this->view('Patient/Lab_download', 'Lab_download');
    }
 
-   public function hello()
-   {
-      $this->view('Patient/hello', 'hello');
-   }
+public function hello($doctorId)
+{
+
+    $this->view('Patient/hello', 'hello');
+}
 
  
 

@@ -72,10 +72,7 @@
          <h1><?php echo isset($pageTitle) ? $pageTitle : ''; ?></h1>
       </div>
       <div class="header-right">
-         <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge"></span>
-         </div>
+
          <div class="user-details">
             <div class="user-avatar"></div>
             <div class="user-info">

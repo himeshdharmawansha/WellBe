@@ -96,7 +96,7 @@ input {
 }
 
 /* Button Styles */
-button {
+.find-doctor-btn {
     padding: 10px 15px;
     background-color: #4f77f3;
     color: white;
@@ -107,7 +107,7 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+.find-doctor-btn:hover {
     background-color: #3e63d1;
 }
 
@@ -120,31 +120,35 @@ button:hover {
     width: 45%;
 }
 
+.selection-section p {
+    text-align: left;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light border for definition */
+    color: red;
+}
+
+
+.selection-section label{
+font-size: 20px;
+font-weight: 600;
+margin-bottom: 15px;
+color: #333;
+}
+
 .dates-grid,
 .timeslots-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 }
 
-.date-btn,
-.timeslot-btn {
-    padding: 10px;
-    background-color: #f4f4f4;
-    color: #333;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
 
-.date-btn:hover,
-.timeslot-btn:hover {
-    background-color: #4f77f3;
-    color: white;
-}
 
 .active {
     background-color: #4f77f3;
@@ -175,4 +179,66 @@ button:hover {
     .timeslots-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+.refresh-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #49bb4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 30px;
+}
+
+.refresh-btn:hover {
+    background-color: #45a148;
+}
+
+.date-btn {
+    padding: 15px 20px;
+    background-color: #ffffff;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    max-width: 100%;
+}
+
+.date-btn:hover {
+    background-color: #f0f8ff;
+    transform: translateY(-3px); /* Adds a subtle lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.dawasa{
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.time{
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.appnmbr{
+    margin-top: 5px;
+    font-size: 16px;
+    color: rgb(101, 178, 71);
 }

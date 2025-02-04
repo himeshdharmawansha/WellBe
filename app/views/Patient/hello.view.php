@@ -40,7 +40,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
             ?>
 
 
@@ -58,9 +58,9 @@
                         <p><strong>Appointment Fees:</strong></p>
                     </div>
                     <div class="cha-container">
-                        <p><strong>Patient Name:</strong></p>
-                        <p><strong>Contact No.:</strong></p>
-                        <p><strong>Emergency Contact No.:</strong></p>
+                        <p><strong>Patient Name: </strong><?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></p>
+                        <p><strong>Contact Number: </strong><?= $_SESSION['USER']->contact; ?></p>
+                        <p><strong>Emergency Contact Number: </strong><?= $_SESSION['USER']->emergency_contact_no; ?></p>
 
 
                     </div>
@@ -108,7 +108,7 @@
 
 
         <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
-        <script src="checkout.js"></script>
+        <script src="<?= ROOT ?>/assets/js/Patient/checkout.js"></script>
         <script>
 
             document.addEventListener('DOMContentLoaded', function () {

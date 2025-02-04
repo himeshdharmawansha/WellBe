@@ -127,6 +127,8 @@ class Patient extends Controller
       $this->view('Patient/hello', 'hello');
    }
 
+ 
+
    public function renderComponent($component, $active)
    {
       $elements = $this->data['elements'];

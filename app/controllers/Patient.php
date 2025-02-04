@@ -86,10 +86,11 @@ class Patient extends Controller
 
             $data['dates'] = $availableDates['matchedDates'];
          }
+         //$this->view('Patient/doc_appointment', 'doc_appointment', $data);
       }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
-
+    
 
       $this->view('Patient/doc_appointment', 'doc_appointment', $data);
 
@@ -127,51 +128,6 @@ class Patient extends Controller
       $this->view('Patient/hello', 'hello');
    }
 
-   public function generatehash()
-   {
-      $order_id = $_POST['order_id'];
-      $amount = 3000;
-      $merchant_id = "1228628";
-      $merchant_secret = "MzkxMDUxMDYzNzIxMTExNDMyOTMyMDQ1NTQ0ODU3MzM1MTk3MDU4NA==";
-      $currency = "LKR";
-
-      $hash = strtoupper(
-         md5(
-            $merchant_id .
-            $order_id .
-            number_format($amount, 2, '.', '') .
-            $currency .
-            strtoupper(md5($merchant_secret))
-         )
-      );
-
-      $array = [];
-
-      $array["first_name"] = "Amrah";
-      $array["last_name"] = "Slamath";
-      $array["email"] = "amrah@gmail.com";
-      $array["phone"] = "07712345672";
-      $array["address"] = "No. 123, ABC road";
-      $array["city"] = "Colombo";
-      $array["country"] = "Sri Lanka";
-      $array["delivery_address"] = "No. 173, ABD road";
-      $array["delivery_city"] = "Jaffna";
-      $array["delivery_country"] = "Sri Lanka";
-      $array["items"] = "Appointment";
-      $array["amount"] = $amount;
-      $array["merchant_id"] = $merchant_id;
-      $array["order_id"] = $order_id;
-      $array["merchant_secret"] = $merchant_secret;
-      $array["currency"] = $currency;
-      $array["hash"] = $hash;
-
-      $jsonObj = json_encode($array);
-
-      echo $jsonObj;
-   }
-
-
-
    public function renderComponent($component, $active)
    {
       $elements = $this->data['elements'];
@@ -180,53 +136,4 @@ class Patient extends Controller
       $filename = "../app/views/Components/{$component}.php";
       require $filename;
    }
-
-   public function getPaymentData()
-    {
-
-//coming from view form
-        try {
-            $merchant_id         = $_POST['merchant_id'];
-            // $assignment_id       = $_POST['custom_1'];
-            $order_id            = $_POST['order_id'];
-            $payhere_amount      = $_POST['payhere_amount'];
-            $payhere_currency    = $_POST['payhere_currency'];
-            $status_code         = $_POST['status_code'];
-            $md5sig              = $_POST['md5sig'];
-
-            $merchant_secret = $_ENV['PAYHERE_SECRET']; // Replace with your Merchant Secret
-
-            $local_md5sig = strtoupper(
-                md5(
-                    $merchant_id .
-                        $order_id .
-                        $payhere_amount .
-                        $payhere_currency .
-                        $status_code .
-                        strtoupper(md5($merchant_secret))
-                )
-            );
-
-            if (($local_md5sig === $md5sig) and ($status_code === "2")) {
-                $payment = new Payment();//my model name
-                $result = $payment->addPayment($order_id, $payhere_amount, $payhere_currency, $status_code);
-                if($result == true){
-                header('Content-Type:application/json');
-                echo json_encode(["status" => "success", "message" => "Payment Successfully Recorded"]);
-                }
-                else{
-                header('Content-Type:application/json');
-                echo json_encode(["status" => "failed", "message" => "Payment Failed to  Record"]);
-
-                }
-            } else {
-                header('HTTP/1.1 400 Bad Request');
-                echo json_encode(['error' => 'Invalid Payment Details or Signature']);
-            }
-        } catch (Exception $e) {
-            error_log($e);
-            header('HTTP/1.1 500 Internal Server Error');
-            echo json_encode(['error' => 'Error fetching Data']);
-        }
-      }
 }

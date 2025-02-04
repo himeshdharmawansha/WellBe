@@ -24,7 +24,7 @@ ob_start();
         ?>
         
     
-        <div style="background-color: rgb(255, 255, 255);width: 100vw; margin-top: 0%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;flex: grow 1;">
+        <div style="background-color: rgb(255, 255, 255);width: 100vw; margin-top: 0%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;flex: grow 1;height:700px;">
 
             <?php
             $pageTitle = "Doctor Portal"; // Set the text you want to display

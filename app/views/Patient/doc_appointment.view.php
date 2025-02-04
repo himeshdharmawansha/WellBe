@@ -71,27 +71,27 @@
         <div class="input-box">
             <label for="dates">Available Dates</label>
             <div id="dates-container" class="dates-grid">
-                <?php foreach($data['dates'] as $day){ ?>
-                    <?php if($day['appointment_id']<=15) {?>
-                        <button class="date-btn"><div><?= $day['day'] ?></div><div>App.Number : <?= $day['appointment_id'] ?></div>
-                        <div><?= $day['start_time'] ?></div></button>
-                    <?php }?>
-                <?php } ?>
+              
+            
+
+            <?php if (!empty($data['dates'])): ?>
+    <?php foreach ($data['dates'] as $day): ?>
+        <?php if ($day['appointment_id'] <= 15): ?>
+            <button class="date-btn">
+                <div><?= htmlspecialchars($day['day']) ?></div>
+                <div>App. Number: <?= htmlspecialchars($day['appointment_id']) ?></div>
+                <div><?= htmlspecialchars($day['start_time']) ?></div>
+            </button>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php else: ?>
+    <p>No available dates.</p>
+<?php endif; ?>
+
+
             </div>
         </div>
 
-        <!-- Available Time Slots -->
-        <div class="input-box">
-            <label for="timeslots">Available Time Slots</label>
-            <div id="timeslots-container" class="timeslots-grid">
-                <button class="timeslot-btn">9:00 AM</button>
-                <button class="timeslot-btn">10:30 AM</button>
-                <button class="timeslot-btn">12:00 PM</button>
-                <button class="timeslot-btn">2:00 PM</button>
-                <button class="timeslot-btn">3:30 PM</button>
-                <button class="timeslot-btn">5:00 PM</button>
-            </div>
-        </div>
         <button class="find-doctor-btn" onclick="window.location.href='hello'">Confirm</button>
 
     </div>
@@ -101,9 +101,19 @@
         </div>
     </div>
 
+    <div id="customAlert" class="modal">
+    <div class="modal-content">
+        <p>Please select a doctor and specialization before proceeding.</p>
+        <button id="closeAlert">OK</button>
+    </div>
+</div>
+
+
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const searchButton = document.getElementById("searchDoctorBtn");
+        const customAlert = document.getElementById("customAlert");
+        const closeAlert = document.getElementById("closeAlert");
         const selectionSection = document.getElementById("selectionSection");
         const dateButtons = document.querySelectorAll(".date-btn");
         const timeslotButtons = document.querySelectorAll(".timeslot-btn");
@@ -117,19 +127,24 @@
 
         // Show selection section when search button is clicked (only if inputs are filled)
         searchButton.addEventListener("click", () => {
-            if (docName.value.trim() === "" || specialization.value.trim() === "") {
-                alert("Please select a doctor and specialization before proceeding.");
-                return;
-            }
+    if (docName.value.trim() === "" || specialization.value.trim() === "") {
+        customAlert.style.display = "flex"; // Show modal 
+        return;
+    }
 
-            selectionSection.style.display = "block";
-            setTimeout(() => {
-                selectionSection.style.opacity = "1";
-            }, 10);
+    selectionSection.style.display = "block";
+    setTimeout(() => {
+        selectionSection.style.opacity = "1";
+    }, 10);
 
-            console.log(`Selected Doctor: ${docName.value}`);
-            console.log(`Selected Specialization: ${specialization.value}`);
-        });
+    console.log(`Selected Doctor: ${docName.value}`);
+    console.log(`Selected Specialization: ${specialization.value}`);
+});
+
+// Close modal when clicking "OK"
+closeAlert.addEventListener("click", () => {
+    customAlert.style.display = "none";
+});
 
         // Handle date selection
         dateButtons.forEach(button => {

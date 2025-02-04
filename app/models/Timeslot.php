@@ -99,7 +99,7 @@ class Timeslot extends Model
     }
 
     public function getAvailableDays($id){
-
+        
         $query = "SELECT slot_id FROM timeslot WHERE date = :date";
         $data = ['date'=>date('Y-m-d')];
         $today = $this->query($query,$data);

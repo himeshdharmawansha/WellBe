@@ -29,35 +29,33 @@
       <!-- Dashboard Content -->
       <div class="container">
         <div class="dashboard">
-          <div class="profile-card">
-            <div class="image">
-                <img src="./assets/male_pro.png" alt="Profile Picture" class="profile-img" />
-            </div>
-            <div class="text-data">
-              <span class="name"></span>
-                
-              <span class="job"><strong>Patient_id:</strong></span>
-            </div>
-            <br>
-            <div class="profile-details">
-              <p><strong>Gender:</strong> </p>
-              <p><strong>Contact:</strong></p>
-              <p><strong>Emergency Contact:</strong></p>
-              <p><strong>Email:</strong></p>
-              <p><strong>Address:</strong></p>
-              <br>
-              <div class="medical-info">
-                <p><strong>Medical History:</strong> </p>
-                <p><strong>Allergies:</strong></p>
-              </div>
-            </div>
-            <div class="buttons">
-              <button class="button" onclick="window.location.href='chat'">Message</button>
-              <button class="button" onclick="window.location.href='edit_profile'">Edit Profile</button>
+        <div class="profile-card">
+    <div class="image">
+        <!-- <img src="<?= ROOT ?>/assets/css/Patient/patient_dashboard.css" alt="Profile Picture" class="profile-img" /> -->
+    </div>
+    <div class="text-data">
+        <span class="name">John Doe</span> <!-- Add name dynamically if necessary -->
+        <span class="job"><strong>Patient ID:</strong> 123456</span> <!-- Add Patient ID dynamically -->
+    </div>
+    <br>
+    <div class="profile-details">
+        <p><strong>Gender:</strong> Male</p> <!-- Add gender dynamically -->
+        <p><strong>Contact:</strong> +1 123-456-7890</p> <!-- Add contact dynamically -->
+        <p><strong>Emergency Contact:</strong> +1 987-654-3210</p> <!-- Add emergency contact dynamically -->
+        <p><strong>Email:</strong> john.doe@example.com</p> <!-- Add email dynamically -->
+        <p><strong>Address:</strong> 123 Main St, Springfield, USA</p> <!-- Add address dynamically -->
+    </div>
+    <br>
+    <div class="medical-info">
+        <p><strong>Medical History:</strong> Hypertension, Diabetes</p> <!-- Add medical history dynamically -->
+        <p><strong>Allergies:</strong> Penicillin</p> <!-- Add allergies dynamically -->
+    </div>
+    <div class="buttons">
+        <button class="button" onclick="window.location.href='chat'">Message</button>
+        <button class="button" onclick="window.location.href='edit_profile'">Edit Profile</button>
+    </div>
+</div>
 
-            </div>
-
-          </div>
 
           <div class="right">
 

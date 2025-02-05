@@ -192,7 +192,6 @@ class Admin extends Controller
    public function doctorForm1()
    {
       $data = [];
-      echo "controller";
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          $doctor = new Doctor();
@@ -324,12 +323,64 @@ class Admin extends Controller
 
    public function pharmacistForm1()
    {
-      $this->view('Admin/pharmacistForm1', 'pharmacists');
+      $data = [];
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         $pharmacist = new Pharmacy();
+         $pharmacistData = $_POST;
+
+         // Validate step 1 fields
+         if ($pharmacist->formValidate($pharmacistData, 1)) {
+            // Temporarily store validated data in session
+            echo "step01";
+            $_SESSION['pharmacist_data'] = $pharmacistData;
+            header('Location: ' . ROOT . '/Admin/pharmacistForm2');
+            exit;
+         } 
+         else {
+            // Add validation errors to data array
+            $data['errors'] = $pharmacist->getErrors();
+            $data['formData'] = $pharmacistData; // Pass submitted data back to the view
+         }
+      }
+
+      $this->view('Admin/pharmacistForm1', 'pharmacists', $data ?? []);
    }
 
    public function pharmacistForm2()
    {
-      $this->view('Admin/pharmacistForm2', 'pharmacists');
+      $data = [];
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         $pharmacist = new Pharmacy();
+
+         // Merge previously stored data with current data
+         $pharmacistData = array_merge($_SESSION['pharmacist_data'] ?? [], $_POST);
+
+         // Validate step 2 fields
+         if ($pharmacist->formValidate($pharmacistData, 2)) {
+               echo "validated";
+               // Debugging: Check submitted data
+               echo(print_r($pharmacistData, true));
+               // Add doctor to the database
+               if ($pharmacist->addPharmacist($pharmacistData)) {
+                  echo "<script>
+                        alert('Pharmacist Profile Created Successfully!');
+                        window.location.href = '" . ROOT . "/Admin/pharmacists';
+                  </script>";
+                  unset($_SESSION['pharmacist_data']); 
+                  exit;
+               } else {
+                  echo "<script>alert('Database insertion failed.');</script>";
+               }
+         } else {
+               // Add validation errors to data array
+               $data['errors'] = $pharmacist->getErrors();
+               $data['formData'] = $pharmacistData; // Pass submitted data back to the view
+         }   
+      }
+
+      $this->view('Admin/pharmacistForm2', 'pharmacists', $data ?? []);
    }
 
    public function labTechs()

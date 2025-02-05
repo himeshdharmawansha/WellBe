@@ -332,14 +332,13 @@ class Admin extends Controller
          // Validate step 1 fields
          if ($pharmacist->formValidate($pharmacistData, 1)) {
             // Temporarily store validated data in session
-            echo "step01";
             $_SESSION['pharmacist_data'] = $pharmacistData;
             header('Location: ' . ROOT . '/Admin/pharmacistForm2');
             exit;
          } 
          else {
             // Add validation errors to data array
-            $data['errors'] = $pharmacist->getErrors();
+            $data['errors'] = $labTech->getErrors();
             $data['formData'] = $pharmacistData; // Pass submitted data back to the view
          }
       }
@@ -359,9 +358,6 @@ class Admin extends Controller
 
          // Validate step 2 fields
          if ($pharmacist->formValidate($pharmacistData, 2)) {
-               echo "validated";
-               // Debugging: Check submitted data
-               echo(print_r($pharmacistData, true));
                // Add doctor to the database
                if ($pharmacist->addPharmacist($pharmacistData)) {
                   echo "<script>
@@ -385,17 +381,136 @@ class Admin extends Controller
 
    public function labTechs()
    {
-      $this->view('Admin/labTechs', 'Lab Technicians');
+      $labTech = new Lab();
+      $data['labTechs'] = $labTech->getAllLabTechs(); 
+      $this->view('Admin/labTechs', 'Lab Technicians', $data);
    }
 
    public function labTechForm1()
    {
-      $this->view('Admin/labTechForm1', 'Lab Technicians');
+      $data = [];
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         $labTech = new Lab();
+         $labTechData = $_POST;
+
+         // Validate step 1 fields
+         if ($labTech->formValidate($labTechData, 1)) {
+            // Temporarily store validated data in session
+            $_SESSION['labTech_data'] = $labTechData;
+            header('Location: ' . ROOT . '/Admin/labTechForm2');
+            exit;
+         } 
+         else {
+            // Add validation errors to data array
+            $data['errors'] = $labTech->getErrors();
+            $data['formData'] = $labTechData; // Pass submitted data back to the view
+         }
+      }
+
+      $this->view('Admin/labTechForm1', 'Lab Technicians', $data ?? []);
    }
 
    public function labTechForm2()
    {
-      $this->view('Admin/labTechForm2', 'Lab Technicians');
+      $data = [];
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         $labTech = new Lab();
+
+         // Merge previously stored data with current data
+         $labTechData = array_merge($_SESSION['labTech_data'] ?? [], $_POST);
+
+         // Validate step 2 fields
+         if ($labTech->formValidate($labTechData, 2)) {
+               // Add doctor to the database
+               if ($labTech->addLabTech($labTechData)) {
+                  echo "<script>
+                        alert('Lab Technician Profile Created Successfully!');
+                        window.location.href = '" . ROOT . "/Admin/labTechs';
+                  </script>";
+                  unset($_SESSION['labTech_data']); 
+                  exit;
+               } else {
+                  echo "<script>alert('Database insertion failed.');</script>";
+               }
+         } else {
+               // Add validation errors to data array
+               $data['errors'] = $labTech->getErrors();
+               $data['formData'] = $labTechData; // Pass submitted data back to the view
+         }   
+      }
+
+      $this->view('Admin/labTechForm2', 'Lab Technicians', $data ?? []);
+   }
+
+   public function labTechProfile()
+   {
+      $nic = $_GET['nic'] ?? null; // Fetch NIC from query string
+
+      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+         $action = $_POST['action'] ?? null;
+
+         if ($action === 'delete') {
+            // Handle delete action
+            if ($nic) {
+               $labTech = new Lab();
+
+               if ($labTech->deleteLabTech($nic)) {
+                  echo "<script>
+                        alert('Lab Technician profile deleted successfully!');
+                        window.location.href = '" . ROOT . "/Admin/labTechs';
+                  </script>";
+               } else {
+                  echo "<script>
+                        alert('Failed to delete the lab technician profile.');
+                  </script>";
+               }
+            }
+               
+         } else if($action === 'update') {
+               // Handle update logic
+               $labTechData = $_POST;
+
+               // Instantiate the Doctor model
+               $labTech = new Lab();
+
+               // Debugging: Check submitted data
+               //echo(print_r($doctorData, true));
+
+               // Validate the input data
+               if ($labTech->validateLabTech($labTechData)) {
+                  if ($labTech->updateLabTech($labTechData, $nic)) {
+                     echo "<script>
+                           alert('Lab Technician Profile Updated Successfully!');
+                           window.location.href = '" . ROOT . "/Admin/labTechs';
+                     </script>";
+                  } else {
+                     echo "<script>
+                           alert('Failed to update lab technician profile.');
+                     </script>";
+                  }
+               } else {
+                  // Retrieve validation errors
+                  $data['errors'] = $labTech->getErrors();
+               }
+
+               // Reload doctor profile after submission
+               $data['labTechProfile'] = $labTech->getLabTechById($nic);
+         }
+      } elseif ($nic) {
+         // Fetch doctor profile for the given NIC
+         $labTech = new Lab();
+         $data['labTechProfile'] = $labTech->getLabTechById($nic);
+
+         if (empty($data['labTechProfile'])) {
+               $data['error'] = "Lab Technician with NIC $nic not found.";
+         }
+      } else {
+         $data['error'] = "No lab technician NIC provided.";
+      }
+
+      $this->view('Admin/labTechProfile', 'Lab Technicians', $data); // Pass data to the view
    }
 
    public function chat()

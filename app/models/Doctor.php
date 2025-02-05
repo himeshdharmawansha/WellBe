@@ -60,7 +60,7 @@ class Doctor extends Model
         ";
 
         // Debug the query
-        //echo "Generated Query: <pre>$query</pre>";
+        echo("Generated Query: <pre>$query</pre>");
 
         // Execute the query
         return $this->query($query);

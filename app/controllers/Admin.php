@@ -318,7 +318,9 @@ class Admin extends Controller
 
    public function pharmacists()
    {
-      $this->view('Admin/pharmacists', 'pharmacists');
+      $pharmacist = new Pharmacy(); // Instantiate the Doctor model
+      $data['pharmacists'] = $pharmacist->getAllPharmacists(); // Fetch all doctor data, including ID
+      $this->view('Admin/pharmacists', 'pharmacists', $data);
    }
 
    public function pharmacistForm1()
@@ -377,6 +379,75 @@ class Admin extends Controller
       }
 
       $this->view('Admin/pharmacistForm2', 'pharmacists', $data ?? []);
+   }
+
+   public function pharmacistProfile()
+   {
+      $nic = $_GET['nic'] ?? null; // Fetch NIC from query string
+
+      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+         $action = $_POST['action'] ?? null;
+
+         if ($action === 'delete') {
+            // Handle delete action
+            if ($nic) {
+               $pharmacist = new Pharmacy();
+
+               if ($pharmacist->deletePharmacist($nic)) {
+                  echo "<script>
+                        alert('Pharmacist profile deleted successfully!');
+                        window.location.href = '" . ROOT . "/Admin/pharmacists';
+                  </script>";
+               } else {
+                  echo "<script>
+                        alert('Failed to delete the pharmacist profile.');
+                  </script>";
+               }
+            }
+               
+         } else if($action === 'update') {
+               // Handle update logic
+               $pharmacistData = $_POST;
+
+               // Instantiate the Doctor model
+               $pharmacist = new Pharmacy();
+
+               // Debugging: Check submitted data
+               //echo(print_r($doctorData, true));
+
+               // Validate the input data
+               if ($pharmacist->validatePharmacist($pharmacistData)) {
+                  if ($pharmacist->updatePharmacist($pharmacistData, $nic)) {
+                     echo "<script>
+                           alert('Pharmacist Profile Updated Successfully!');
+                           window.location.href = '" . ROOT . "/Admin/pharmacists';
+                     </script>";
+                  } else {
+                     echo "<script>
+                           alert('Failed to update pharmacist profile.');
+                     </script>";
+                  }
+               } else {
+                  // Retrieve validation errors
+                  $data['errors'] = $pharmacist->getErrors();
+               }
+
+               // Reload doctor profile after submission
+               $data['pharmacistProfile'] = $pharmacist->getPharmacistById($nic);
+         }
+      } elseif ($nic) {
+         // Fetch doctor profile for the given NIC
+         $pharmacist = new Pharmacy();
+         $data['pharmacistProfile'] = $pharmacist->getPharmacistById($nic);
+
+         if (empty($data['pharmacistProfile'])) {
+               $data['error'] = "Pharmaicst with NIC $nic not found.";
+         }
+      } else {
+         $data['error'] = "No pharmacist NIC provided.";
+      }
+
+      $this->view('Admin/pharmacistProfile', 'pharmacists', $data); // Pass data to the view
    }
 
    public function labTechs()

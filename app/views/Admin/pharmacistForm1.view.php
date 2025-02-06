@@ -43,17 +43,17 @@
                         </div>
 
                         <div class="form-row">
-                            <label for="fullName">NIC:</label>
+                            <label for="nic">NIC:</label>
                             <input type="text" id="nic" name="nic" value="<?= htmlspecialchars($formData['nic'] ?? '') ?>" required>
                         </div>
 
                         <div class="form-row">
-                            <label for="fullName">First Name:</label>
+                            <label for="first_name">First Name:</label>
                             <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($formData['first_name'] ?? '') ?>" required>
                         </div>
 
                         <div class="form-row">
-                            <label for="fullName">Last Name:</label>
+                            <label for="last_name">Last Name:</label>
                             <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($formData['last_name'] ?? '') ?>" required>
                         </div>
                         

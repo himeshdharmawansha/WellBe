@@ -38,7 +38,7 @@ function paymentGateWay() {
           sandbox: true, // Set to false for live mode
           merchant_id: "1228628", // Replace with your PayHere Merchant ID
           return_url:
-            "http://localhost/WELLBE1/patient_dashboard.php?payment=success&nic=${nic}", // Your return URL
+            "http://localhost/WELLBE1/patient_dashboard.phpz", // Your return URL
           cancel_url: "http://localhost/WELLBE1/hello.php", // Your cancel URL
           notify_url: "http://sample.com/notify", // Your backend URL for payment notifications
           order_id: obj["order_id"],

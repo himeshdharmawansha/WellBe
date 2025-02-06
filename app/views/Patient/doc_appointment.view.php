@@ -36,28 +36,28 @@
                         <form id="appointment-form" method="POST" action="">
                             <!-- Doctor Selection -->
                             <div class="input-box">
-                                <label for="doctor">Select Doctor</label>
-                                <input list="doctors" id="doctor" name="doctor" placeholder="Type doctor name"
-                                    value="<?= isset($_POST['doctor']) ? htmlspecialchars($_POST['doctor']) : '' ?>">
-                                <datalist id="doctors">
-                                    <?php foreach ($doctors as $doctor): ?>
-                                        <option value="<?= htmlspecialchars($doctor->name) ?>"></option>
-                                    <?php endforeach; ?>
-                                </datalist>
-                            </div>
+    <label for="doctor">Select Doctor</label>
+    <input list="doctors" id="doctor" name="doctor" placeholder="Type doctor name"
+        value="<?= isset($_POST['doctor']) ? htmlspecialchars($_POST['doctor']) : '' ?>">
+    <datalist id="doctors">
+        <?php foreach ($doctors as $doctor): ?>
+            <option value="<?= htmlspecialchars($doctor->name) ?>"></option>
+        <?php endforeach; ?>
+    </datalist>
+</div>
 
                             <!-- Specialization Selection -->
                             <div class="input-box">
-                                <label for="specialization">Specialization</label>
-                                <input list="specializations" id="specialization" name="specialization"
-                                    placeholder="Type specialization"
-                                    value="<?= isset($_POST['specialization']) ? htmlspecialchars($_POST['specialization']) : '' ?>">
-                                <datalist id="specializations">
-                                    <?php foreach ($doctors as $doctor): ?>
-                                        <option value="<?= htmlspecialchars($doctor->specialization); ?>"></option>
-                                    <?php endforeach; ?>
-                                </datalist>
-                            </div>
+    <label for="specialization">Specialization</label>
+    <input list="specializations" id="specialization" name="specialization"
+        placeholder="Type specialization"
+        value="<?= isset($_POST['specialization']) ? htmlspecialchars($_POST['specialization']) : '' ?>">
+    <datalist id="specializations">
+        <?php foreach ($doctors as $doctor): ?>
+            <option value="<?= htmlspecialchars($doctor->specialization); ?>"></option>
+        <?php endforeach; ?>
+    </datalist>
+</div>
 
                             <button type="submit" class="find-doctor-btn">Search</button>
                             <button type="button" class="refresh-btn"
@@ -68,7 +68,7 @@
                     <!-- Date & Time Selection Section -->
                     <div class="selection-section">
                         <div class="input-box">
-                            <label for="dates">Available Dates</label>
+                            <label>Available Dates</label>
                             <div id="dates-container" class="dates-grid">
                                 <!-- <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?> -->
                                     <?php foreach ($data['dates'] as $day): ?>

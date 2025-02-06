@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="form-row">
-                            <label for="medical history">Medical License Number:</label>
+                            <label for="medical_license_no">Medical License Number:</label>
                             <input type="text" id="medical_license_no" name="medical_license_no" value="<?= htmlspecialchars($formData['medical_license_no'] ?? '') ?>" required>
                         </div>
                         
@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="form-row">
-                            <label for="university">Previous Employment History:</label>
+                            <label for="prev_employment_history">Previous Employment History:</label>
                             <input type="text" id="prev_employment_history" name="prev_employment_history" value="<?= htmlspecialchars($formData['prev_employment_history'] ?? '') ?>" required>
                         </div>
                         

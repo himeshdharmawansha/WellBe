@@ -15,7 +15,7 @@ $currentUserId = $_SESSION['userid'];
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>WELLBE</title>
-   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/patient/chat.css">
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/chat.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -36,7 +36,11 @@ $currentUserId = $_SESSION['userid'];
             <div class="container">
                <div class="chat-list">
                   <div class="search-bar">
-                     <input type="text" placeholder="Search">
+                     <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Search"
+                        oninput="searchUsers(this.value)" />
                   </div>
                   <ul id="chat-list">
                      <?php foreach ($user_profile as $user): ?>
@@ -276,10 +280,19 @@ $currentUserId = $_SESSION['userid'];
             return;
          }
 
-         fetch(`<?= ROOT ?>/ChatController/editMessage/${messageId}/${encodeURIComponent(newMessage)}`)
+         fetch(`<?= ROOT ?>/ChatController/editMessage`, {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+               body: JSON.stringify({
+                  messageId: messageId,
+                  newMessage: newMessage.trim(),
+               }),
+            })
             .then(response => {
                if (!response.ok) {
-                  throw new Error('Failed to edit message');
+                  throw new Error("Failed to edit message");
                }
                return response.json();
             })
@@ -288,17 +301,27 @@ $currentUserId = $_SESSION['userid'];
                   pollMessages(); // Refresh the messages list after editing
                   hidePopupMenu(); // Close any context menus or popups
                } else {
-                  alert('Error editing message');
+                  alert(data.message || "Error editing message.");
                }
             })
             .catch(error => {
-               console.error('An error occurred while editing the message:', error);
-               alert('An error occurred while editing the message.');
+               console.error("An error occurred while editing the message:", error);
+               alert("An error occurred while editing the message.");
             });
       }
 
+      document.getElementById('message-input').addEventListener('keypress', function(event) {
+         if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Prevent new line in input field
+            sendMessage(); // Call sendMessage function
+         }
+      });
+
       function sendMessage() {
-         const message = document.getElementById('message-input').value;
+         const messageInput = document.getElementById('message-input');
+         const message = messageInput.value.trim();
+
+         if (!message) return; // Don't send empty messages
          if (!selectedUserId) {
             alert("Please select a chat.");
             return;
@@ -320,7 +343,7 @@ $currentUserId = $_SESSION['userid'];
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  document.getElementById('message-input').value = ''; // Clear input field
+                  messageInput.value = ''; // Clear input field
                   pollMessages(); // Refresh chat
                } else {
                   alert('Error sending message');
@@ -366,7 +389,11 @@ $currentUserId = $_SESSION['userid'];
       // Call the update function every 3 seconds
       setInterval(updateChatTimestamps, 3000);
 
+      let isSearching = false; // Control variable
+
       function refreshUnseenCounts(roleArray) {
+         if (isSearching) return; // Stop refreshing if searching
+
          const roles = roleArray.join(','); // Serialize roles into a comma-separated string
 
          fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
@@ -383,7 +410,6 @@ $currentUserId = $_SESSION['userid'];
                user_profile.forEach(user => {
                   const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
 
-                  // Prepare last message date or time
                   let lastMessageDisplay = '';
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
@@ -399,29 +425,97 @@ $currentUserId = $_SESSION['userid'];
                   const chatItemHTML = `
                   <li>
                      <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, ${user.id})">
+                           data-receiver-id="${user.id}" 
+                           onclick="selectChat(this, ${user.id})">
                         <div class="avatar"></div>
                         <div class="chat-info">
-                           <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                              <h4>${user.username}</h4>
+                              <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
+                              <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                              <span class="circle"></span>
                         </div>
                      </div>
                   </li>
-               `;
+                  `;
 
-                  // Append each user item to the chat list
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
             .catch(error => console.error("Error fetching unseen counts:", error));
       }
 
-      // Utility function for formatting time to AM/PM
+      // Poll unseen counts every 3 seconds unless searching
+      setInterval(() => {
+         if (!isSearching) {
+            refreshUnseenCounts([3]); // Pass the appropriate roles array
+         }
+      }, 3000);
+
+      function searchUsers(query) {
+         const chatList = document.getElementById('chat-list');
+
+         if (!query.trim()) {
+            // If the search query is empty, reset the flag and refresh unseen counts
+            isSearching = false;
+            refreshUnseenCounts([3]); // Pass the appropriate roleArray or fetch all users
+            return;
+         }
+
+         isSearching = true; // Indicate that we are searching
+
+         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(user_profile => {
+               chatList.innerHTML = ''; // Clear chat list
+
+               if (user_profile.error || user_profile.length === 0) {
+                  console.error("Error:", user_profile.error || "No users found");
+                  chatList.innerHTML = `<li></li>`;
+                  return;
+               }
+
+               user_profile.forEach(user => {
+                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+                  let lastMessageDisplay = '';
+
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     const today = new Date();
+
+                     if (messageDate.toDateString() === today.toDateString()) {
+                        lastMessageDisplay = formatTimeToAmPm(messageDate);
+                     } else {
+                        lastMessageDisplay = messageDate.toLocaleDateString('en-GB');
+                     }
+                  }
+
+                  const chatItemHTML = `
+                     <li>
+                        <div class="chat-item ${unseenClass}" 
+                              data-receiver-id="${user.id}" 
+                              onclick="selectChat(this, ${user.id})">
+                           <div class="avatar"></div>
+                           <div class="chat-info">
+                                 <h4>${user.username}</h4>
+                                 <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                           </div>
+                           <div class="chat-side">
+                                 <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                                 <span class="circle"></span>
+                           </div>
+                        </div>
+                     </li>
+                     `;
+
+                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+               });
+            })
+            .catch(error => console.error("Error searching users:", error));
+      }
+
+      // Utility function to format time into AM/PM
       function formatTimeToAmPm(date) {
          return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
@@ -429,10 +523,6 @@ $currentUserId = $_SESSION['userid'];
             hour12: true
          });
       }
-
-      // Set interval to poll unseen message counts every 3 seconds
-      // Poll unseen counts every 3 seconds
-      setInterval(() => refreshUnseenCounts([3]), 3000);
 
       // Mark messages as seen when chat is opened
       function markMessagesAsSeen(receiverId) {
@@ -442,7 +532,7 @@ $currentUserId = $_SESSION['userid'];
                if (chatItem) chatItem.classList.remove('unseen'); // Remove unseen indicator
             });
       }
-
+      
       setInterval(refreshUnseenCounts, 3000);
 
       function updateReceivedState() {

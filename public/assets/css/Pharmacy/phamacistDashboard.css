@@ -141,6 +141,28 @@
     color: #172554;
 }
 
+.stock-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 2px solid #cce4f7; /* Light blue outline */
+    border-radius: 3px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.in-stock {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+    border-color: #c3e6cb; /* Green outline */
+    padding-right:40px;
+}
+
+.out-of-stock {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+    border-color: #f5c6cb; /* Red outline */
+}
+
 .table-container {
     max-height: 370px;
     /* Approx height for 6 rows */
@@ -234,6 +256,26 @@
     /* Align with the numbers */
     line-height: 2rem;
     /* Match the height of numbers */
+}
+
+/* Search bar styling */
+.search-bar {
+    flex-grow: 1;
+}
+
+.search-bar input {
+    border: none;
+    background-color: #EBF5FF;
+    padding: 10px;
+    border-radius: 25px;
+    width: 260px;
+    height: 45px;
+}
+
+.search-bar button {
+    border: none;
+    cursor: pointer;
+    margin-left: -40px;
 }
 
 .fa-solid.fa-magnifying-glass {
@@ -362,6 +404,7 @@
     text-align: center;
     width: 85px;
     display: inline-block;
+    border-radius: 3px;
 }
 
 .progress {

@@ -9,7 +9,7 @@ class Pharmacy extends Controller
          'requests' => ["fas fa-list", "Requests"],
          'chat' => ["fa-solid fa-comment-dots", "Chat"],
          'report' => ["fa-solid fa-chart-simple", "Report"],
-         'setting' => ["fa-solid fa-gear", "Setting"],
+         'medicines' => ["fa-solid fa-tablets", "Medicines"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
       'userType' => 'pharmacy'
@@ -28,8 +28,8 @@ class Pharmacy extends Controller
       $data = [
          'title' => 'Dashboard Page',
          'username' => 'John Doe',
-     ];
-      $this->view('Pharmacy/dashboard', 'dashboard',$data);
+      ];
+      $this->view('Pharmacy/dashboard', 'dashboard', $data);
    }
 
    public function requests()
@@ -42,8 +42,8 @@ class Pharmacy extends Controller
       $data = [
          'title' => 'Dashboard Page',
          'username' => 'John Doe',
-     ];
-      $this->view('Pharmacy/chat', 'chat',$data);
+      ];
+      $this->view('Pharmacy/chat', 'chat', $data);
    }
    public function report()
    {
@@ -54,11 +54,11 @@ class Pharmacy extends Controller
    {
       $this->view('Pharmacy/medicationDetails', 'requests');
    }
-
-   public function login()
+   public function Medicines()
    {
-      $this->view('Lab/login', 'login');
+      $this->view('Pharmacy/medicines', 'medicines');
    }
+
    public function logout()
    {
       $this->view('Lab/logout', 'logout');
@@ -138,61 +138,43 @@ class Pharmacy extends Controller
                   ORDER BY FIELD(state,'pending') 
                   LIMIT 20";
 
-      // Execute the query
       $requests = $db->query($query);
-
-      // Return the result as JSON for AJAX
       echo json_encode($requests);
    }
 
-   public function fetchNewMessages()
+   public function getStock()
    {
-       $db = new Database();
-       $sender = $_SESSION['userid']; // Current user ID
-   
-       // Step 1: Get IDs of users with role = 3
-       $receiverQuery = "SELECT id FROM user_profile WHERE role = 3";
-       $receivers = $db->query($receiverQuery);
-   
-       if (!$receivers) {
-           echo json_encode("No receivers found"); // No receivers found
-           return;
-       }
-   
-       // Extract receiver IDs
-       $receiverIds = array_map(fn($r) => $r->id, $receivers);
-   
-       // Prepare placeholders for the IN clause (for the receiver IDs)
-       $placeholders = implode(',', array_fill(0, count($receiverIds), '?'));
-   
-       // Step 2: Fetch unique receivers with their latest message date
-       $messageQuery = "
-           SELECT 
-               a.first_name,
-               MAX(m.date) AS last_message_date  
-           FROM message m
-           JOIN administrative_staff a ON m.sender = a.id
-           WHERE m.receiver = ?  
-             AND m.sender IN ($placeholders)  
-             AND m.seen = 0 
-             AND m.received = 1
-           GROUP BY m.sender, a.first_name  
-           ORDER BY last_message_date DESC
-           LIMIT 20";
-   
-       // Merge sender and receiver IDs into a single parameters array
-       $params = array_merge([$sender], $receiverIds);
-   
-       // Execute the query
-       $messages = $db->readn($messageQuery, $params);
-   
-       // Step 3: Return results as JSON
-       if ($messages === false) {
-           echo json_encode([]); // No messages found
-           return;
-       }
-   
-       echo json_encode($messages);
+      $db = new Database(); // Assuming Database class is available
+      $query = "SELECT generic_name, 
+                           (CASE 
+                               WHEN quantity_in_stock = 0 OR expiry_date < CURDATE() THEN 'Out of Stock' 
+                               ELSE 'In Stock' 
+                            END) AS state 
+                    FROM medicines LIMIT 20";
+
+      $requests = $db->query($query);
+      echo json_encode($requests);
    }
-   
+
+   public function searchMedicine()
+   {
+      $searchTerm = $_GET['query'] ?? ''; // Get the search term from the query string
+
+      try {
+         $db = new Database(); // Instantiate the Database class
+         $query = "SELECT generic_name, 
+                             (CASE 
+                                 WHEN quantity_in_stock = 0 OR expiry_date < CURDATE() THEN 'Out of Stock' 
+                                 ELSE 'In Stock' 
+                              END) AS state 
+                      FROM medicines 
+                      WHERE generic_name LIKE :searchTerm";
+
+         $results = [':searchTerm' => '%' . $searchTerm . '%'];
+         $requests = $db->read($query, $results);
+         echo json_encode($requests);
+      } catch (Exception $e) {
+         echo json_encode(['error' => $e->getMessage()]);
+      }
+   }
 }

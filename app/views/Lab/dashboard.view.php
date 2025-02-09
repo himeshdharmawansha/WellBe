@@ -31,23 +31,6 @@
                     <h4 class="date"><?php echo date('j M, Y'); ?></h4>
                 </div>
                 <div class="topbar">
-                    <div id="countdown">
-                        <div class="time-unit">
-                            <span id="hours">00</span>
-                            <p>HOURS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="minutes">00</span>
-                            <p>MINS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="seconds">00</span>
-                            <p>SEC</p>
-                        </div>
-                    </div>
-
                     <div class="cards-container">
                         <!-- Statistics Cards -->
                         <div class="card new-request" onclick="window.location.href='requests'">
@@ -156,34 +139,6 @@
                     .catch(error => console.error('Error fetching chart data:', error));
             }
         });
-
-        function startCountdown(duration) {
-            const countdown = {
-                hours: document.getElementById("hours"),
-                minutes: document.getElementById("minutes"),
-                seconds: document.getElementById("seconds"),
-            };
-
-            let timer = duration,
-                hours, minutes, seconds;
-
-            setInterval(function() {
-                hours = Math.floor(timer / 3600);
-                minutes = Math.floor((timer % 3600) / 60);
-                seconds = timer % 60;
-
-                countdown.hours.textContent = String(hours).padStart(2, '0');
-                countdown.minutes.textContent = String(minutes).padStart(2, '0');
-                countdown.seconds.textContent = String(seconds).padStart(2, '0');
-
-                if (--timer < 0) {
-                    timer = 0; // Reset timer if it reaches zero.
-                }
-            }, 1000);
-        }
-
-        // Initialize the countdown with a duration in seconds (e.g., 15 hours).
-        startCountdown(15 * 3600);
 
         document.addEventListener("DOMContentLoaded", function() {
             function updateRequestCounts() {

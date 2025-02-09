@@ -30,23 +30,12 @@
                     <h4 class="date"><?php echo date('j M, Y'); ?></h4>
                 </div>
                 <div class="topbar">
-                    <div id="countdown">
-                        <div class="time-unit">
-                            <span id="hours">00</span>
-                            <p>HOURS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="minutes">00</span>
-                            <p>MINS</p>
-                        </div>
-                        <span class="inline-separator">:</span>
-                        <div class="time-unit">
-                            <span id="seconds">00</span>
-                            <p>SEC</p>
-                        </div>
+                    <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Search by medicine" />
+                        <button type="button" id="search-button">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
-
                     <div class="cards-container">
                         <!-- Statistics Cards -->
                         <div class="card new-request" onclick="window.location.href='requests'">
@@ -54,12 +43,6 @@
                                 <i class="fa-solid icon fa-hourglass-start"></i>
                             </span>
                             <p>000 <br>New_Requests</p>
-                        </div>
-                        <div class="card ongoing" onclick="window.location.href='requests'">
-                            <span class="circle-background">
-                                <i class="fas icon fa-pills"></i>
-                            </span>
-                            <p>000 <br>In_progress</p>
                         </div>
                         <div class="card completed" onclick="window.location.href='requests'">
                             <span class="circle-background">
@@ -70,6 +53,25 @@
                     </div>
                 </div>
                 <div class="content-container">
+                    <div class="dashboard messages">
+                        <div class="header">
+                            <h3>Medicines</h3>
+                            <a href="medicines" class="see-all">See all</a>
+                        </div>
+                        <div class="table-container">
+                            <table class="message-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding-right: 155px;">Name</th>
+                                        <th>State</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <div class="dashboard messages">
                         <div class="header">
                             <h3>Medication Requests</h3>
@@ -89,28 +91,6 @@
                             </table>
                         </div>
                     </div>
-
-                    <div class="dashboard messages">
-                        <div class="header">
-                            <h3>New Messages</h3>
-                            <a href="chat" class="see-all">See all</a>
-                        </div>
-                        <div class="table-container">
-                            <table class="message-table">
-                                <thead>
-                                    <tr>
-                                        <th style="padding-right: 140px;">Name</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Rows will be dynamically injected here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
                     <div class="dashboard calendar-container">
                         <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
                     </div>
@@ -158,36 +138,6 @@
             }
         });
 
-
-
-        function startCountdown(duration) {
-            const countdown = {
-                hours: document.getElementById("hours"),
-                minutes: document.getElementById("minutes"),
-                seconds: document.getElementById("seconds"),
-            };
-
-            let timer = duration,
-                hours, minutes, seconds;
-
-            setInterval(function() {
-                hours = Math.floor(timer / 3600);
-                minutes = Math.floor((timer % 3600) / 60);
-                seconds = timer % 60;
-
-                countdown.hours.textContent = String(hours).padStart(2, '0');
-                countdown.minutes.textContent = String(minutes).padStart(2, '0');
-                countdown.seconds.textContent = String(seconds).padStart(2, '0');
-
-                if (--timer < 0) {
-                    timer = 0; // Reset timer if it reaches zero.
-                }
-            }, 1000);
-        }
-
-        // Initialize the countdown with a duration in seconds (e.g., 15 hours).
-        startCountdown(15 * 3600);
-
         document.addEventListener("DOMContentLoaded", function() {
             function updateRequestCounts() {
                 fetch('<?= ROOT ?>/Pharmacy/getRequestCounts')
@@ -195,7 +145,6 @@
                     .then(data => {
                         // Update the UI with fetched data
                         document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
-                        document.querySelector('.ongoing p').innerHTML = `${data.progress} <br> In_progress`;
                         document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
                     })
                     .catch(error => console.error('Error fetching request counts:', error));
@@ -243,45 +192,6 @@
                 hour12: true
             });
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableBody = document.querySelector('.message-table tbody');
-            const noMessagesRow = `
-        <tr>
-            <td colspan="2" style="text-align: center;">No new messages</td>
-        </tr>
-    `;
-
-            function fetchNewMessages() {
-                fetch('<?= ROOT ?>/Pharmacy/fetchNewMessages')
-                    .then(response => response.json())
-                    .then(data => {
-                        let html = '';
-                        if (data.length === 0) {
-                            // No new messages, show the "No new messages" row
-                            html = noMessagesRow;
-                        } else {
-                            data.forEach(message => {
-                                const time = new Date(message.last_message_date).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                                html += `
-                            <tr>
-                                <td>${message.first_name}</td>
-                                <td>${formatTimeToAmPm(time)}</td>
-                            </tr>
-                        `;
-                            });
-                        }
-                        tableBody.innerHTML = html;
-                    })
-                    .catch(error => console.error('Error fetching messages:', error));
-            }
-
-            fetchNewMessages(); // Initial load
-            setInterval(fetchNewMessages, 5000); // Refresh every 5 seconds
-        });
-
 
         function updateReceivedState() {
             fetch('<?= ROOT ?>/ChatController/loggedin')
@@ -290,6 +200,99 @@
 
         // Call the update function every 3 seconds
         setInterval(updateReceivedState, 3000);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let shouldRefresh = true; // Flag to control auto-refresh
+            const searchInput = document.getElementById('search-input');
+            const tableBody = document.querySelector('.message-table tbody');
+
+            // Fetch all medicines initially
+            fetchMedicines();
+
+            // Auto-refresh every 5 seconds if not searching
+            setInterval(() => {
+                if (shouldRefresh) {
+                    fetchMedicines();
+                }
+            }, 5000);
+
+            // Fetch medicines with optional query
+            function fetchMedicines(query = '') {
+                const url = query ?
+                    `<?= ROOT ?>/Pharmacy/searchMedicine?query=${encodeURIComponent(query)}` :
+                    `<?= ROOT ?>/Pharmacy/getStock`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = ''; // Clear existing rows
+
+                        if (data.length > 0) {
+                            data.forEach(med => {
+                                const row = document.createElement('tr');
+                                const stateClass = med.state === 'In Stock' ? 'in-stock' : 'out-of-stock';
+                                row.innerHTML = `
+                            <td>${med.generic_name}</td>
+                            <td><span class="stock-status ${stateClass}">${med.state}</span></td>
+                        `;
+                                tableBody.appendChild(row);
+                            });
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching medicines:', error));
+            }
+
+            // Handle search input and prevent auto-refresh
+            searchInput.addEventListener('keyup', function() {
+                const query = searchInput.value.trim();
+
+                if (query !== '') {
+                    shouldRefresh = false; // Stop auto-refresh during search
+                    fetchMedicines(query);
+                } else {
+                    shouldRefresh = true; // Resume auto-refresh when search is cleared
+                    fetchMedicines();
+                }
+            });
+        });
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById('search-input');
+            const tableBody = document.querySelector('.message-table tbody');
+
+            // Add a keyup event listener to trigger search dynamically
+            searchInput.addEventListener('keyup', function() {
+                fetchMedicines(searchInput.value);
+            });
+
+            function fetchMedicines(query = '') {
+                fetch(`<?= ROOT ?>/Pharmacy/searchMedicine?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = ''; // Clear existing rows
+
+                        if (data.length > 0) {
+                            data.forEach(med => {
+                                const row = document.createElement('tr');
+                                const stateClass = med.state === 'In Stock' ? 'in-stock' : 'out-of-stock';
+                                row.innerHTML = `
+                            <td>${med.generic_name}</td>
+                            <td><span class="stock-status ${stateClass}">${med.state}</span></td>
+                        `;
+                                tableBody.appendChild(row);
+                            });
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching medicines:', error));
+            }
+
+            // Initial fetch to show all medicines
+            fetchMedicines();
+        });
     </script>
 
 </body>

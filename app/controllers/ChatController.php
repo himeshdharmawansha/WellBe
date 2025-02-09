@@ -129,7 +129,18 @@ class ChatController extends Controller
          echo json_encode(["status" => "error", "message" => "Missing required parameters."]);
       }
    }
+   public function searchUser() {
+      $query = $_GET['query'] ?? '';
 
+      // Connect to the database (assuming you have a Database class)
+      $db = new Database();
+      $result = $db->read("SELECT * FROM user_profile WHERE username LIKE :query AND role = 3", [':query' => '%'.$query.'%'] );
+      if ($result) {
+          echo json_encode($result);
+      } else {
+          echo json_encode(["error" => "No users found"]);
+      }
+  }
 
    public function userDetails($currentUserId)
    {
@@ -141,13 +152,25 @@ class ChatController extends Controller
       return $this->chatModel->updateRecievedState($receiver, $sender);
    }
 
-   public function editMessage($messageId, $newMessage)
+   public function editMessage()
    {
-      $result = $this->chatModel->editMessage($messageId, $newMessage);
-      if ($result) {
-         echo json_encode(["status" => "success", "message" => "Message edited successfully."]);
+      // Parse JSON input
+      $data = json_decode(file_get_contents('php://input'), true);
+
+      if (isset($data['messageId'], $data['newMessage'])) {
+         $messageId = $data['messageId'];
+         $newMessage = $data['newMessage'];
+
+         // Update the message using your model
+         $result = $this->chatModel->editMessage($messageId, $newMessage);
+
+         if ($result) {
+            echo json_encode(["status" => "success", "message" => "Message edited successfully."]);
+         } else {
+            echo json_encode(["status" => "error", "message" => "Could not edit the message."]);
+         }
       } else {
-         echo json_encode(["status" => "error", "message" => "Could not edit the message."]);
+         echo json_encode(["status" => "error", "message" => "Invalid input."]);
       }
    }
 

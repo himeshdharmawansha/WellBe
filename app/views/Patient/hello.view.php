@@ -55,7 +55,7 @@
                         <p id="day-info">Appointment Date: </p>
                         <p id="start-time-info">Appointment Time: Loading...</p>
                         <p id="appointment-id-info">Appointment Number: Loading...</p>
-                        <p><strong>Appointment Fees:</strong></p>
+                        <p id="appointment-fee"><strong>Appointment Fees:</strong></p>
                     </div>
                     <div class="cha-container">
                         <p><strong>Patient Name: </strong><?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></p>
@@ -172,12 +172,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const appointment_id = sessionStorage.getItem('appointment_id');
     const start_time = sessionStorage.getItem('start_time');
     const day = sessionStorage.getItem('day');
+    const appointment_fee = sessionStorage.getItem('doctor_fee');
 
     document.getElementById('doctor-info').innerHTML = '<strong>Doctor: </strong>' + (doctor ? doctor : 'N/A');
     document.getElementById('specialization-info').innerHTML = '<strong>Specialization: </strong>' + (specialization ? specialization : 'N/A');
     document.getElementById('appointment-id-info').innerHTML = '<strong>Patient Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
     document.getElementById('start-time-info').innerHTML = '<strong>Start Time: </strong>' + (start_time ? start_time : 'N/A');
     document.getElementById('day-info').innerHTML = '<strong>Appointment Date: </strong>' + (day ? day : 'N/A');
+    document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
 });
         </script>
 

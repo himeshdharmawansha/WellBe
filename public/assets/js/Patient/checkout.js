@@ -6,6 +6,7 @@ function paymentGateWay() {
     },
     body: new URLSearchParams({
       order_id: "12345",
+      doc_id: sessionStorage.getItem("doc_id"),
     }),
   })
     .then((res) => {

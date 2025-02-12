@@ -6,7 +6,6 @@
     <title>Appointment Details</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/appointments.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
 </head>
 <body>
     <div class="dashboard-container">
@@ -14,7 +13,6 @@
         <?php
         $this->renderComponent('navbar', $active);
         ?>
-      
 
         <!-- Main Content -->
         <div class="main-content">
@@ -24,23 +22,20 @@
             include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
             ?>
 
-            
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="header">
-                    <p>Appointments
-                        <button class="btn" onclick="window.location.href='doc_appointment'">Schedule an Appointment</button>
-                        <span>
-                            <button class="btn1">Reschedule/ Cancellation Policy</button>
-                        </span>
-                    </p>
+                    <button class="btn" onclick="window.location.href='doc_appointment'">Schedule an Appointment</button>
+                    <span>
+                        <button class="btn1">Reschedule/ Cancellation Policy</button>
+                    </span>
                 </div>
                 <hr>  
                 <div class="container">
                     <div class="card">
                         <p>Hi K.S.Perera,</p>
                         <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)<br><p>on</p></p>
+                        <p class="doc_name">Dr. Narayanan (Cardiologist)</p>
                         <h1>25</h1>
                         <h2>Monday<br>September 2024</h2>
                         <div class="buttons">
@@ -52,7 +47,7 @@
                     <div class="card">
                         <p>Hi K.S.Perera,</p>
                         <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)<br><p>on</p></p>
+                        <p class="doc_name">Dr. Narayanan (Cardiologist)</p>
                         <h1>25</h1>
                         <h2>Monday<br>September 2024</h2>
                         <div class="buttons">
@@ -61,34 +56,8 @@
                             <button class="cancel" onclick="showModal()">Cancel</button>
                         </div>
                     </div>
-                    <div class="card">
-                        <p>Hi K.S.Perera,</p>
-                        <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)<br><p>on</p></p>
-                        <h1>25</h1>
-                        <h2>Monday<br>September 2024</h2>
-                        <div class="buttons">
-                            <button class="accept">Details</button>
-                            <button class="reschedule">Reschedule</button>
-                            <button class="cancel" onclick="showModal()">Cancel</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <p>Hi K.S.Perera,</p>
-                        <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)<br><p>on</p></p>
-                        <h1>25</h1>
-                        <h2>Monday<br>September 2024</h2>
-                        <div class="buttons">
-                            <button class="accept">Details</button>
-                            <button class="reschedule">Reschedule</button>
-                            <button class="cancel" onclick="showModal()">Cancel</button>
-                        </div>
-                    </div>
-                    
 
                     <!-- Additional appointment cards here -->
-
                 </div>
             </div>
         </div>

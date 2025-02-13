@@ -217,8 +217,8 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                     </tr>`;
 
                            // Append rows to the appropriate table body
-                           if (request.state === 'pending') pending.innerHTML += row;
-                           if (request.state === 'completed') completed.innerHTML += row;
+                           if (request.state == 'pending') pending.innerHTML += row;
+                           if (request.state == 'completed') completed.innerHTML += row;
                         });
                         setupPagination(currentTable);
                         displayPage(currentPage);
@@ -267,10 +267,13 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                        <td>${request.patient_id}</td>
                                        <td>${request.doctor_id}</td>
                                     </tr>`;
-
-                                    // Add rows to the appropriate table based on request state
-                                 const tableBody = document.querySelector(`#${request.state}-requests-body`);
-                                 tableBody.innerHTML += row;
+                                 if (request.state == "completed") {
+                                    const tableBody = document.querySelector("#completed-requests-body");
+                                    tableBody.innerHTML += row;
+                                 }else {
+                                    const tableBody = document.querySelector("#pending-requests-body");
+                                    tableBody.innerHTML += row;
+                                 }
 
                               });
                            } else {

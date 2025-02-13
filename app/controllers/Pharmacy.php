@@ -156,25 +156,64 @@ class Pharmacy extends Controller
       echo json_encode($requests);
    }
 
-   public function searchMedicine()
-   {
-      $searchTerm = $_GET['query'] ?? ''; // Get the search term from the query string
+   public function getMedicines()
+{
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $rowsPerPage = 9;
 
+    $medicineModel = new Medicine();
+    $medicines = $medicineModel->getAllMedicines($page, $rowsPerPage);
+
+    // Ensure medicines is an array
+    if (!is_array($medicines)) {
+        $medicines = [];
+    }
+
+    // Get the total number of records (assuming this is a count query)
+    $totalRecords = $medicineModel->getTotalMedicineCount();  // Implement this method to return the count of medicines
+    $totalPages = ceil($totalRecords / $rowsPerPage);
+
+    // Send a proper JSON response
+    echo json_encode([
+        "medicines" => $medicines,
+        "totalPages" => $totalPages
+    ]);
+}
+
+   
+  public function searchForMedicine() {
+      $searchTerm = $_GET['query'] ?? '';
+      $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+      $limit = 9;
+      
       try {
-         $db = new Database(); // Instantiate the Database class
-         $query = "SELECT generic_name, 
-                             (CASE 
-                                 WHEN quantity_in_stock = 0 OR expiry_date < CURDATE() THEN 'Out of Stock' 
-                                 ELSE 'In Stock' 
-                              END) AS state 
-                      FROM medicines 
-                      WHERE generic_name LIKE :searchTerm";
-
-         $results = [':searchTerm' => '%' . $searchTerm . '%'];
-         $requests = $db->read($query, $results);
-         echo json_encode($requests);
+          $medicineModel = new Medicine();
+          $data = $medicineModel->searchForMedicine($searchTerm, $page, $limit);
+          echo json_encode($data);
       } catch (Exception $e) {
-         echo json_encode(['error' => $e->getMessage()]);
+          echo json_encode(['error' => $e->getMessage()]);
       }
-   }
+  }
+
+  public function searchMedicine()
+  {
+     $searchTerm = $_GET['query'] ?? ''; // Get the search term from the query string
+
+     try {
+        $db = new Database(); // Instantiate the Database class
+        $query = "SELECT generic_name, 
+                            (CASE 
+                                WHEN quantity_in_stock = 0 OR expiry_date < CURDATE() THEN 'Out of Stock' 
+                                ELSE 'In Stock' 
+                             END) AS state 
+                     FROM medicines 
+                     WHERE generic_name LIKE :searchTerm";
+
+        $results = [':searchTerm' => '%' . $searchTerm . '%'];
+        $requests = $db->read($query, $results);
+        echo json_encode($requests);
+     } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+     }
+  }
 }

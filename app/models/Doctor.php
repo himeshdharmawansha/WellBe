@@ -231,6 +231,7 @@ class Doctor extends Model
             `gender` = ?, 
             `address` = ?, 
             `email` = ?, 
+            `fees` = ?,
             `contact` = ?, 
             `emergency_contact` = ?, 
             `emergency_contact_relationship` = ?, 
@@ -287,6 +288,19 @@ class Doctor extends Model
         $query = "SELECT CONCAT(first_name, ' ', last_name) AS name, specialization FROM doctor";
         return $this->query($query);
     }
+
+    public function getFeesByDoctorId($doctorId)
+    {
+        // SQL query to fetch fees based on doctor ID
+        $query = "SELECT fees FROM doctor WHERE id = :doctorId";
+        
+        // Parameters array
+        $data = ['doctorId' => $doctorId];
+    
+        // Execute the query with parameter binding
+        return $this->query($query, $data);
+    }
+    
 
     public function getDoctorId($firstName,$lastName)
     {

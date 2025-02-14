@@ -59,6 +59,8 @@ class Patient extends Controller
             $last_name = isset($name[1]) ? $name[1] : "";
 
             $docId = $doctor->getDoctorId($first_name,$last_name);
+            $data['docId'] = $docId[0]->id;
+            $data['doctorFee'] = $doctor->getFeesByDoctorId($docId[0]->id)[0]->fees;
             //echo $docId[0]->id;
 
             $timeslot = new Timeslot();
@@ -122,9 +124,52 @@ class Patient extends Controller
       $this->view('Patient/Lab_download', 'Lab_download');
    }
 
-   public function hello()
+public function hello()
+{
+    $this->view('Patient/hello', 'hello');
+}
+
+   public function generatehash()
    {
-      $this->view('Patient/hello', 'hello');
+      $doc_id = $_POST['doc_id'];
+      $doctorModel = new Doctor();
+      $amount = $doctorModel->getFeesByDoctorId($doc_id)[0]->fees;
+      $merchant_id = '1228628';
+      $order_id = $_POST['order_id'];
+      $currency = 'LKR';
+      $merchant_secret = 'MzkxMDUxMDYzNzIxMTExNDMyOTMyMDQ1NTQ0ODU3MzM1MTk3MDU4NA==';
+      $hash = strtoupper(
+         md5(
+             $merchant_id . 
+             $order_id . 
+             number_format($amount, 2, '.', '') . 
+             $currency .  
+             strtoupper(md5($merchant_secret)) 
+         ) 
+     );
+
+     $data = [
+         'hash' => $hash,
+         'order_id' => $order_id,
+         'items' => 'Appointment Fees',
+         'amount' => $amount,
+         'currency' => $currency,
+         'merchant_id' => $merchant_id,
+         'return_url' => 'http://localhost/medicare/patient/hello',
+         'cancel_url' => 'http://localhost/medicare/patient/hello',
+         'notify_url' => 'https://well-be.loca.lt/WellBe1/patient/getPaymentData',
+         'first_name' => 'John',
+         'last_name' => 'Doe',
+         'email' => 'ammu@gmail.com',
+         'phone' => '0771234567',
+         'address' => 'No.1, Galle Road',
+         'city' => 'Colombo',
+         'country' => 'Sri Lanka',
+
+     ];
+
+      header('Content-Type: application/json');
+      echo json_encode($data);
    }
 
    public function renderComponent($component, $active)

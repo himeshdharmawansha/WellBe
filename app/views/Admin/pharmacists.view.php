@@ -39,13 +39,27 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table class="patient-table">
+                    <table class="pharmacist-table">
                         <tr class="header-row">
                             <th>Pharmacist ID</th>
                             <th>Name</th>
                             <th>Age</th>
                             <th>Contact No</th>
                         </tr>    
+                        <?php if (!empty($pharmacists)): ?>
+                            <?php foreach ($pharmacists as $pharmacist): ?>
+                                <tr onclick="window.location.href='<?= ROOT ?>/Admin/pharmacistProfile?nic=<?= $pharmacist->nic ?>'">
+                                    <td><?= htmlspecialchars($pharmacist->nic) ?></td>
+                                    <td><?= htmlspecialchars($pharmacist->name) ?></td>
+                                    <td><?= htmlspecialchars($pharmacist->age) ?></td>
+                                    <td><?= htmlspecialchars($pharmacist->contact) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">No pharmacists found.</td>
+                            </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
             </div>     

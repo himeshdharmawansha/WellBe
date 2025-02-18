@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -31,158 +29,159 @@
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
-         <!-- Sidebar -->
-         <?php
+        <!-- Sidebar -->
+        <?php
         $this->renderComponent('navbar', $active);
         ?>
-      
+
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
             ?>
 
 
             <section class="container">
-                <!-- Channel Details Section -->
-
-                <script>
-                    // Retrieve data from localStorage
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const doctor = localStorage.getItem('doctor');
-                        const specialization = localStorage.getItem('specialization');
-                        const date = localStorage.getItem('date');
-
-                        // Display the data
-                        document.getElementById('doctor').innerText = doctor ? doctor : 'Not specified';
-                        document.getElementById('specialization').innerText = specialization ? specialization : 'Not specified';
-                        document.getElementById('date').innerText = date ? date : 'Not specified';
-
-                    });
-
-                </script>
-
                 <!-- Patient Details Section -->
                 <div class="patient-details">
                     <h2 class="title">Appointment Details</h2>
                     <div class="cha-container">
 
-                        <p><strong>Doctor:</strong></p>
-                        <p><strong>Specialization:</strong></p>
-                        <p><strong>Appointment Date & Time:</strong></p>
-                        <p><strong>Appointment Number:</strong></p>
-                        <p><strong>Appointment Fees:</strong></p>
+                        <p id="doctor-info">Doctor: Loading...</p>
+                        <p id="specialization-info">Specialization: Loading...</p>
+                        <p id="day-info">Appointment Date: </p>
+                        <p id="start-time-info">Appointment Time: Loading...</p>
+                        <p id="appointment-id-info">Appointment Number: Loading...</p>
+                        <p id="appointment-fee"><strong>Appointment Fees:</strong></p>
                     </div>
                     <div class="cha-container">
-                        <p><strong>Patient Name:</strong></p>
-                        <p><strong>Contact No.:</strong></p>
-                        <p><strong>Emergency Contact No.:</strong></p>
-                        
+                        <p><strong>Patient Name: </strong><?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></p>
+                        <p><strong>Contact Number: </strong><?= $_SESSION['USER']->contact; ?></p>
+                        <p><strong>Emergency Contact Number: </strong><?= $_SESSION['USER']->emergency_contact_no; ?></p>
+
 
                     </div>
                     <button id="confirmBtn" name="save_patient" class="submit-btn ">Confirm Appointment</button>
                     <div class="button-container">
-                    <button id="payHereBtn" onclick="paymentGateWay();" name="save_patient" class="submit-btn hidden">Pay
-                        Now</button>
-                        <button id="payLaterBtn"  name="save_patient" class="submit-btn hidden">Pay
-                        Over the Counter</button>
-                        </div>
+                        <button id="payHereBtn" onclick="paymentGateWay();" name="save_patient"
+                            class="submit-btn hidden">Pay
+                            Now</button>
+                        <button id="payLaterBtn" name="save_patient" class="submit-btn hidden">Pay
+                            Over the Counter</button>
+                    </div>
 
                 </div>
             </section>
-        </main>
-    </div>
-    <div id="popupModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Thank You!</h2>
-            </div>
-            <div class="modal-body">
-                <p>Your details have been successfully submitted. Thanks!</p>
-            </div>
-            <div class="modal-footer">
-                <button id="closeModal" class="submit-btn" onclick="window.location.href='patient_dashboard'">OK</button>
+            </main>
+        </div>
+        <div id="popupModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Thank You!</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Your details have been successfully submitted. Thanks!</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeModal" class="submit-btn"
+                        onclick="window.location.href='patient_dashboard'">OK</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="popupModal2" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Thank You!</h2>
-            </div>
-            <div class="modal-body">
-                <p>Your Payment has been made successfully. Thanks!</p>
-            </div>
-            <div class="modal-footer">
-            <button id="closeModal2" class="submit-btn">OK</button>
+        <div id="popupModal2" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Thank You!</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Your Payment has been made successfully. Thanks!</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeModal2" class="submit-btn">OK</button>
+                </div>
             </div>
         </div>
-    </div>
 
 
-    <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
-    <script src="checkout.js"></script>
-    <script>
+        <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
+        <script src="<?= ROOT ?>/assets/js/Patient/checkout.js"></script>
+        <script>
 
+            document.addEventListener('DOMContentLoaded', function () {
+                const confirmBtn = document.getElementById('confirmBtn');
+                const payHereBtn = document.getElementById('payHereBtn');
+                const payLaterBtn = document.getElementById('payLaterBtn');
+
+
+                confirmBtn.addEventListener('click', function () {
+
+                    confirmBtn.classList.add('hidden'); // Hide Pay Here button
+                    payHereBtn.classList.remove('hidden'); // Show Confirm Appointment button
+                    payLaterBtn.classList.remove('hidden');
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const confirmBtn = document.getElementById('confirmBtn');
+                const payHereBtn = document.getElementById('payHereBtn');
+                const payLaterBtn = document.getElementById('payLaterBtn');
+                const popupModal = document.getElementById('popupModal');
+                const closeModal = document.getElementById('closeModal');
+
+                const showModal = () => {
+                    popupModal.classList.remove('hidden');
+                };
+
+                const hideModal = () => {
+                    popupModal.classList.add('hidden');
+                };
+
+
+                payLaterBtn.addEventListener('click', showModal);
+                closeModal.addEventListener('click', hideModal);
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const confirmBtn = document.getElementById('confirmBtn');
+                const payHereBtn = document.getElementById('payHereBtn');
+                const payLaterBtn = document.getElementById('payLaterBtn');
+                const popupModal2 = document.getElementById('popupModal2');
+                const closeModal2 = document.getElementById('closeModal2');
+
+                const showModal = () => {
+                    popupModal2.classList.remove('hidden');
+                };
+
+                const hideModal = () => {
+                    popupModal2.classList.add('hidden');
+                };
+
+
+
+            });
+        </script>
+
+        <script>
 document.addEventListener('DOMContentLoaded', function () {
-            const confirmBtn = document.getElementById('confirmBtn');   
-            const payHereBtn = document.getElementById('payHereBtn');
-            const payLaterBtn = document.getElementById('payLaterBtn');
-    
+    const doctor = sessionStorage.getItem('doctor');
+    const specialization = sessionStorage.getItem('specialization');
+    const appointment_id = sessionStorage.getItem('appointment_id');
+    const start_time = sessionStorage.getItem('start_time');
+    const day = sessionStorage.getItem('day');
+    const appointment_fee = sessionStorage.getItem('doctor_fee');
 
-            confirmBtn.addEventListener('click', function () {
-       
-                confirmBtn.classList.add('hidden'); // Hide Pay Here button
-                payHereBtn.classList.remove('hidden'); // Show Confirm Appointment button
-                payLaterBtn.classList.remove('hidden');
-    });
+    document.getElementById('doctor-info').innerHTML = '<strong>Doctor: </strong>' + (doctor ? doctor : 'N/A');
+    document.getElementById('specialization-info').innerHTML = '<strong>Specialization: </strong>' + (specialization ? specialization : 'N/A');
+    document.getElementById('appointment-id-info').innerHTML = '<strong>Patient Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
+    document.getElementById('start-time-info').innerHTML = '<strong>Start Time: </strong>' + (start_time ? start_time : 'N/A');
+    document.getElementById('day-info').innerHTML = '<strong>Appointment Date: </strong>' + (day ? day : 'N/A');
+    document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
 });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const confirmBtn = document.getElementById('confirmBtn');   
-            const payHereBtn = document.getElementById('payHereBtn');
-            const payLaterBtn = document.getElementById('payLaterBtn');
-            const popupModal = document.getElementById('popupModal');
-            const closeModal = document.getElementById('closeModal');
-
-            const showModal = () => {
-                popupModal.classList.remove('hidden');
-            };
-
-            const hideModal = () => {
-                popupModal.classList.add('hidden');
-            };
-
-            
-            payLaterBtn.addEventListener('click', showModal);
-            closeModal.addEventListener('click', hideModal);
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const confirmBtn = document.getElementById('confirmBtn');   
-            const payHereBtn = document.getElementById('payHereBtn');
-            const payLaterBtn = document.getElementById('payLaterBtn');
-            const popupModal2 = document.getElementById('popupModal2');
-            const closeModal2 = document.getElementById('closeModal2');
-
-            const showModal = () => {
-                popupModal2.classList.remove('hidden');
-            };
-
-            const hideModal = () => {
-                popupModal2.classList.add('hidden');
-            };
-
-        
-            
-        });
-    </script>
-
-    
+        </script>
 
 </body>
 

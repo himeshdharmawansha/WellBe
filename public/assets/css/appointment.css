@@ -17,7 +17,9 @@
 }
 
 .container {
-    margin-top: 30px;
+    margin-top: 10px;
+    height: 65vh;
+    overflow-y: scroll;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -32,6 +34,7 @@
     padding: 20px;
     text-align: center;
     width: 28%;
+    max-height: 65%;
     box-sizing: border-box;
     min-height: 300px; /* Set a minimum height for consistency */
 }

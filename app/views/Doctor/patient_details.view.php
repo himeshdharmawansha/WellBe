@@ -21,11 +21,13 @@
         $this -> renderComponent('navbar',$active);
         ?>
     
-            <div class="relative" style="background-color: rgb(255, 255, 255);width: 100%; margin-top: 6%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;">
-            <div class="font-['Poppins'] text-2xl" style="margin-left: 15px;margin-top: 15px;font-weight: bold;">
-                <p>Doctor Portal</p>
-                <div class="w-52 border-blue-500" style="border-width: 1px;margin-top: 5px;"></div>
-            </div>
+        <div class="relative" style="background-color: rgb(255, 255, 255);width: 100%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;">
+
+            <?php
+            $pageTitle = "Patient Details"; // Set the text you want to display
+            //include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
+            require '../app/views/Components/Doctor/header.php';
+            ?>
 
             
                 <div class="container">

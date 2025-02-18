@@ -15,6 +15,60 @@ class MedicalRecord extends Model {
 
     }
 
+    public function getPastRecords($patient_id){
+
+        //echo $patient_id;
+        $doctor_id = $_SESSION['USER']->id;
+        //echo $doctor_id;
+
+        $query = "SELECT 
+                    mr.id AS request_id,
+                    mr.doctor_id,
+                    mr.patient_id,
+                    mr.date,
+                    mr.diagnosis,
+                    mrd.medication_name,
+                    mrd.dosage,
+                    mrd.taken_time,
+                    mrd.substitution
+                FROM medication_requests mr
+                JOIN medication_request_details mrd ON mr.id = mrd.req_id
+                WHERE mr.patient_id = ? AND mr.doctor_id = ?;";
+
+        $records = $this->query($query, [$patient_id, $doctor_id]);
+
+        $groupedData = [];
+
+        // Process the data to group by request_id
+        foreach ($records as $row) {
+            $request_id = $row->request_id;
+
+            // If this request_id is not in the grouped data, initialize it
+            if (!isset($groupedData[$request_id])) {
+                $groupedData[$request_id] = [
+                    'request_id' => $request_id,
+                    'doctor_id' => $row->doctor_id,
+                    'patient_id' => $row->patient_id,
+                    'date' => $row->date,
+                    'diagnosis' => $row->diagnosis,
+                    'medications' => []  // Store medications as an array
+                ];
+            }
+
+            // Add the medication details to the request
+            $groupedData[$request_id]['medications'][] = [
+                'medication_name' => $row->medication_name,
+                'dosage' => $row->dosage,
+                'taken_time' => $row->taken_time,
+                'substitution' => $row->substitution
+            ];
+        }
+
+        // Convert associative array to indexed array
+        return array_values($groupedData);
+        
+    }
+
     public function getLastInsertedId($id) {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;

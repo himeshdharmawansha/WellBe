@@ -70,16 +70,8 @@ function generateCalendar(month, year) {
                   const index = schedule.findIndex(
                      (entry) => entry.date === `${nextYear}-${formattedNextMonth}-${formattedDate}`
                   );
-               
-                  if (index === -1) {
-                     cell.classList.add('update');
-                     cell.onclick = function () {
-                        const updatingDate = `${nextYear}-${formattedNextMonth}-${formattedDate}`;
-                        const timeSlots = ""; // Replace with dynamic timeslots or other data
-                        console.log(updatingDate);
-                        openModal(updatingDate, timeSlots);
-                     };
-                  } else {
+
+                  if((index != -1) && (schedule[index].session == "SET")) {
                      const timeslotsAvailable = schedule[index].start && schedule[index].end;
                
                      if (!timeslotsAvailable) {
@@ -105,7 +97,15 @@ function generateCalendar(month, year) {
                            showAppointments(exampleAppointments,scheduledDate);
                          };
                      }
-                  }
+                  }else{
+                     cell.classList.add('update');
+                     cell.onclick = function () {
+                        const updatingDate = `${nextYear}-${formattedNextMonth}-${formattedDate}`;
+                        const timeSlots = ""; // Replace with dynamic timeslots or other data
+                        console.log(updatingDate);
+                        openModal(updatingDate, timeSlots);
+                     };
+                  } 
                }
                
 
@@ -119,7 +119,7 @@ function generateCalendar(month, year) {
                      entry.date === `${thisYear}-${String(thisMonth).padStart(2, '0')}-${String(date).padStart(2, '0')}`
                  );
 
-                  if(index === -1 ){
+                  if(index === -1 || (schedule[index].session === "CANCELED")){
                      
                      cell.classList.add('update');
 
@@ -147,18 +147,35 @@ function generateCalendar(month, year) {
                      } else {
                        cell.classList.add('scheduled');
                  
-                       cell.onclick = function() {
-                         const scheduledDate = `${thisYear}-${thisMonth}-${cell.textContent}`;
-                         console.log(scheduledDate);
+                       cell.onclick = async function() {
+                           // Extract the scheduled date
+                           const scheduledDate = `${thisYear}-${thisMonth}-${cell.textContent}`;
+                           console.log(scheduledDate);
+                  
+                           try {
+                              // Send the scheduled date to the PHP file
+                              const response = await fetch('http://localhost/newWellBe2/WellBe/public/doctor', {
+                                 method: 'POST',
+                                 headers: {
+                                       'Content-Type': 'application/json'
+                                 },
+                                 body: JSON.stringify({ date: scheduledDate }),// Send the date as JSON
+                              });
+                  
+                              const text = await response.text(); // First get raw response
+                              console.log("Raw Response:", text);
 
-                         const exampleAppointments = [
-                           { appointmentId: 1, firstName: "John", lastName: "Doe", date: "2024-11-25" },
-                           { appointmentId: 2, firstName: "Jane", lastName: "Smith", date: "2024-11-26" },
-                           { appointmentId: 3, firstName: "Emily", lastName: "Johnson", date: "2024-11-27" },
-                       ];
+                              const data = JSON.parse(text); // Try parsing manually
+                              console.log("Parsed JSON:", data);
 
-                         showAppointments(exampleAppointments,scheduledDate);
-                       };
+                              console.log(data.appointments);
+                  
+                              // Call your showAppointments function with the received data
+                              showAppointments(data.appointments,data.date);
+                           } catch (error) {
+                              console.error('Error:',error);
+                           }
+                        };
                      }
                   }
                }

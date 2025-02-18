@@ -1,6 +1,5 @@
 <?php
 
-// Check if session schedule is set
 if (isset($_SESSION['schedule'])) {
     $schedule = $_SESSION['schedule'];
     //print_r($schedule);
@@ -10,18 +9,16 @@ if (isset($_SESSION['schedule'])) {
     
 } else {
     $schedule = []; // Default to an empty array if not set
-    //echo "helooooo";
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Access the data sent from the form
     if(isset($_POST["date"])){
         $timeSlot = $_POST['timeSlot'];
         $date = $_POST['date'];
-   
-
-        $timeslot->updateSchedule($date,$timeSlot);
+        $formattedDate = (new DateTime($date))->format('Y-m-d');
+        $timeslot->updateSchedule($formattedDate,$timeSlot);
     }
     elseif(isset($_POST["scheduleDate"])){
         
@@ -55,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Schedule Details</h2>
-            <form id="scheduleForm" method="post">
+            <form id="scheduleForm">
                 <input type="hidden" name="date" id="date">
                 <label for="timeSlots">Enter Check-Up Start Time</label>
                 <div id="timeSlotContainer">
@@ -73,15 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div id="appointmentPopup" class="modal">
         <div class="modal-content">
             <span class="close" id="appointmentClose">&times;</span>
-            <h2 style="font-weight: bold;text-align:center;margin-bottom:20px">Appointments</h2>
+            <h2 id="showAppointmentHeader" style="font-weight: bold;text-align:center;margin-bottom:20px;font-size:larger"></h2>
             <div id="appointmentDetails">
                 <table id="appointmentTable" style="width: 100%; border-collapse: collapse;">
-                    <thead style="background-color: #f2f2f2;">
+                    <thead style="background-color:#4183d9">
                         <tr>
-                            <th style="border: 1px solid #ddd; padding: 8px;">Appointment ID</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">AppID</th>
                             <th style="border: 1px solid #ddd; padding: 8px;">First Name</th>
                             <th style="border: 1px solid #ddd; padding: 8px;">Last Name</th>
-                            <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Patient Type</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </p>
             <!-- Hidden input to submit the date -->
             <input type="hidden" id="scheduleDate" name="scheduleDate">
-            <button id="confirmYes" style="padding: 10px 20px; background-color: #2b85ec; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes</button>
+            <button id="confirmYes" type="submit" style="padding: 10px 20px; background-color: #2b85ec; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes</button>
             <button id="confirmNo" type="button" style="padding: 10px 20px; background-color: #fc2f39; color: white; border: none; border-radius: 5px; cursor: pointer;">No</button>
         </form>
     </div>

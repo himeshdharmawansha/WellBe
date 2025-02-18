@@ -87,7 +87,10 @@
                         value="<?= $_SESSION['form1_data']['contact'] ?? '' ?>">
                 </div>
 
-                <button type="submit" class="next-button">Next</button>
+                <div class="buttons-bar">
+                        <button type="button" class="prev-button" onclick="window.location.href='./'">Back</button>
+                        <button type="button" class="next-button">Next</button>
+                    </div>
             </form>
 
         </div>

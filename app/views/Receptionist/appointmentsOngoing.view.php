@@ -20,7 +20,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/mvc/app/views/Components/Admin/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/Receptionist/header.php';
             ?>
 
             <!--Content Container-->
@@ -53,6 +53,62 @@
                             <th>Doctor's Name</th>
                             <th>Booked Slots</th>
                             <th>Available Slots</th>
+                        </tr>
+                        <tr class="data-row" onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentQueue'">
+                            <td>29/11/2024</td>
+                            <td>11:00-13:00</td>
+                            <td>Dr. Nishantha Samarasekera</td>
+                            <td>10</td>
+                            <td>6</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>12:00-13:30</td>
+                            <td>Dr. Ravi Perera</td>
+                            <td>25</td>
+                            <td>10</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>13:00-15:00</td>
+                            <td>Dr. Sandaruwani Peiris</td>
+                            <td>18</td>
+                            <td>15</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>14:30-16:00</td>
+                            <td>Dr. Sonali Perera</td>
+                            <td>20</td>
+                            <td>8</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>15:00-17:00</td>
+                            <td>Dr. Mana Silva</td>
+                            <td>25</td>
+                            <td>10</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>17:00-18:30</td>
+                            <td>Dr. Thisuli Liyanarachchi</td>
+                            <td>13</td>
+                            <td>15</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>18:00-20:00</td>
+                            <td>Dr. Kasun Yapa</td>
+                            <td>30</td>
+                            <td>5</td>
+                        </tr>
+                        <tr class="data-row">
+                            <td>29/11/2024</td>
+                            <td>19:30-21:00</td>
+                            <td>Dr. Sonali Perera</td>
+                            <td>12</td>
+                            <td>8</td>
                         </tr>
                     </table>
                 </div>

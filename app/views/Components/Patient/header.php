@@ -72,14 +72,11 @@
          <h1><?php echo isset($pageTitle) ? $pageTitle : ''; ?></h1>
       </div>
       <div class="header-right">
-         <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge"></span>
-         </div>
+
          <div class="user-details">
             <div class="user-avatar"></div>
             <div class="user-info">
-               <p style="font-weight: bold;">K.S.Perera</p>
+               <p style="font-weight: bold;"><?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></p>
                <p style="padding-top:4px;color:#989898">Patient</p>
             </div>
          </div>

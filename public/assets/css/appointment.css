@@ -15,7 +15,9 @@
 }
 
 .container {
-    margin-top: 30px;
+    margin-top: 10px;
+    height: 65vh;
+    overflow-y: scroll;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -30,6 +32,7 @@
     padding: 30px;
     text-align: center;
     width: 28%;
+    max-height: 65%;
     box-sizing: border-box;
     min-height: 300px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;

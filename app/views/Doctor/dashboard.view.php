@@ -1,6 +1,4 @@
-<?php
-ob_start();
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,12 +46,12 @@ ob_start();
     
                         <div class="flex">
                             <div class="w-2 h-40 bg-blue-400" style="margin-right: 10px;"></div>
-                            <div class=" h-38 text-black font-['Poppins']" style="width: 200px;;font-size: 27px; font-weight: 500;"> Dr. <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?>, you have  8 appointments today</div>
+                            <div class=" h-38 text-black font-['Poppins']" style="width: 200px;font-size: 27px; font-weight: 500;"> Dr. <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?>, you have  8 appointments today</div>
                         </div>
 
-                        <div class="font-['Poppins']" style="display: block;margin-top: 50px;gap: 20px;">
-                           <p class="checkUp" style="font-size: 26px;">Start Patient Check-up</p>
-                            <button style="width: 100px;background-color: rgb(44, 34, 119);font-size: 28px;color: white;border-radius: 10px;margin-left: 100px"><a href="<?= ROOT?>/doctor/today_checkups">Start</a></button>
+                        <div class=" text-black font-['Poppins']" style="margin-top:30px;margin-left:20px;font-size: 27px; font-weight: 500;">
+                                <p>New Patients : 03</p>
+                                <p>Returning Patients : 05</p>
                         </div>
                     </div>
                 </div>
@@ -67,20 +65,11 @@ ob_start();
                             $this -> renderCalender('calender');
                         ?>
                     </div>
-                    <div class="stat">
-                        <div class="box" style="background-color: #00C38F;">
-                            <div class="box-item" >
-                                <img src="<?=ROOT ?>/assets/images/schedule.png">
-                                <p> 20 Apointments</p>
-                            </div>
+                    <div class="font-['Poppins']" style="display: flex;margin-left:100px;margin-top: 40px;gap: 20px;">
+                           <p class="checkUp" style="font-size: 36px;">Start Patient Check-up</p>
+                            <button style="width: 100px;background-color: rgb(44, 34, 119);font-size: 34px;color: white;border-radius: 10px;margin-left: 30px"><a href="<?= ROOT?>/doctor/today_checkups">Start</a></button>
                         </div>
-                        <div class="box" style="background-color: #8765FA;">
-                            <div class="box-item" >
-                                <img src="<?= ROOT ?>/assets/images/patient.png">
-                                <p> 12 New Patients</p>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -89,4 +78,7 @@ ob_start();
     
 </body>
 </html>
-<?php ob_end_flush(); ?>
+
+<?php
+ob_end_flush(); // Flush the buffer and send output
+?>

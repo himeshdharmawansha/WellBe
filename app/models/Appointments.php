@@ -1,11 +1,10 @@
 <?php
-
 class Appointments extends Model{
 
-    public function getTodayAppointments(){
+    public function getTodayAppointments($date = ''){
 
+    $day = empty($date) ? date('Y-m-d') : $date;
     $doctor = $_SESSION['USER']->id;
-    $date = date('Y-m-d');
 
     $query = "SELECT 
         appointment.appointment_id,
@@ -13,8 +12,9 @@ class Appointments extends Model{
         appointment.patient_id,
         appointment.date,
         appointment.state,
+        appointment.patient_type,
         patient.id,
-        patient.nic,
+        patient.gender,
         patient.first_name,
         patient.last_name
         FROM 
@@ -25,32 +25,40 @@ class Appointments extends Model{
             appointment.patient_id = patient.id
         WHERE 
             appointment.doctor_id = ? 
-            AND appointment.date = ?";
+            AND appointment.date = (
+                SELECT slot_id FROM timeslot WHERE date = ?
+            );";
 
-    $data =  $this->query($query,[$doctor, $date]);
+    $data =  $this->query($query,[$doctor, $day]);
     return $data;
 
     }
 
-    public function getPatientDetails($id){
 
+    public function getPatientDetails($id) {
         $appointment_id = $id;
-
-        $query=    "SELECT 
-                    patient.*
-                    FROM 
+        $doc_id = $_SESSION['USER']->id;
+        
+        $query = "SELECT 
+                    patient.* 
+                  FROM 
                     patient
-                    JOIN 
-                    appointment
-                    ON 
+                  JOIN 
+                    appointment 
+                  ON 
                     appointment.patient_id = patient.id
-                    WHERE 
-                    appointment.appointment_id = ?;";
-                    
-        $data = $this->query($query,[$appointment_id]);
-
+                  WHERE 
+                    appointment.appointment_id = ?
+                    AND appointment.doctor_id = ?
+                    AND appointment.date = (
+                        SELECT slot_id FROM timeslot WHERE date = ?
+                    );";
+        
+        $data = $this->query($query, [$appointment_id, $doc_id, date('Y-m-d')]);
+        
         return $data;
     }
+    
 
     public function endAppointment($id){
 

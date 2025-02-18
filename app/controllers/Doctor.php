@@ -37,18 +37,28 @@
         }
 
         public function appointments(){
-            $this->view('Doctor/appointments','appointments');
+            
+            if(isset($_GET['selected_date'])){
+                $date = $_GET['selected_date'];
+            }else{
+                $date = date('Y-m-d');
+            }
+
+            $appointment = new Appointments();
+            $appointmentsOnDate = $appointment->getTodayAppointments($date);
+            $data['appointmentsOnDate'] = $appointmentsOnDate;
+            $data['date'] = $date;
+            //print_r($data);
+            //echo $appointmentsOnDate[0]->appointment_id;
+
+            $this->view('Doctor/appointments','appointments',$data);
         }
 
         public function medication_Details($id, $app_id){
 
             //print_r($id);
-            $data['id'] = $id;
-            echo $id;
-            echo $app_id;
+            $data['patient_id'] = $id;
             $data['app_id'] = $app_id;
-            //echo $data[1];
-            //$first_name = urldecode($_GET['first_name']);
 
             $this->view('Doctor/medication_Details','today-checkups',$data);
         }
@@ -59,21 +69,31 @@
 
             $appointments = new Appointments;
 
-
             $patient_details = $appointments->getPatientDetails($appointment_id);
             $this->view('Doctor/patient_details','today-checkups',$patient_details);
-            echo $_SESSION['appointment_id'];
+            //echo $_SESSION['appointment_id'];
         }
 
         public function logout(){
             $this->view('Doctor/logout','logout' );
         }
 
-        public function display_record(){
+        public function display_record($patient_id){
+            //echo $patient_id;
+
+            $medicalRecord = new MedicalRecord();
+            $pastRecords = $medicalRecord->getPastRecords($patient_id);
+
+            print_r($pastRecords);
+
             $this->view('Doctor/display_record','today-checkups' );
         }
 
-        public function medical_record(){
+        public function medical_record($patient_id='', $app_id=''){
+
+            $medicalRecord = new MedicalRecord();
+            //$pastRecords = $medicalRecord->getPastRecords($patient_id);
+
             $this->view('Doctor/medical_record','today-checkups' );
         }
 
@@ -105,6 +125,8 @@
 
             $filename = "../app/views/Components/{$component}.php";
             require $filename;
+
+            
         }
 
         public function renderChart($component)
@@ -112,4 +134,42 @@
             $filename = "../app/views/Components/Doctor/{$component}.php";
             require $filename;
         }
+
+        public function handleFetchRequest($data) {
+
+                if (isset($data['date'])) {
+                    $scheduledDate = $data['date'];
+                    $formattedDate = (new DateTime($scheduledDate))->format('Y-m-d');
+
+                    $appointments = new Appointments();
+                    $appointmentsList = $appointments->getTodayAppointments($formattedDate);
+
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'status' => 'success',
+                        'date' => $formattedDate,
+                        'appointments' => $appointmentsList
+                    ]);
+                    exit;
+                } else {
+                    // Handle missing date error
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error', 'message' => 'Date not provided']);
+                    exit;
+                }
+        }
+        
     }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+        $input = file_get_contents("php://input");
+
+        $data = json_decode($input, true);
+    
+        if (isset($data['date'])) {
+            $doctor = new Doctor();
+            $doctor->handleFetchRequest($data);
+        }
+    }
+?>

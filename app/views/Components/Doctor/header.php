@@ -17,6 +17,7 @@
       .header-left h1 {
          font-size: 24px;
          color: #172554;
+         font-weight: bold;
       }
 
       .header-right {

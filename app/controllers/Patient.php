@@ -88,6 +88,7 @@ class Patient extends Controller
 
             $data['dates'] = $availableDates['matchedDates'];
          }
+         //$this->view('Patient/doc_appointment', 'doc_appointment', $data);
       }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name

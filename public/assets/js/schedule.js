@@ -20,11 +20,12 @@ window.onclick = function (event) {
 // Function to open the modal and populate it if necessary
 function openModal(date, timeSlots) {
     modal.style.display = "block";
-    console.log(date);
+    //console.log(date);
     const today = date;
   
     // Example: prefill the form based on `date` and `timeSlots`
     //console.log(document.getElementById("timeSlot"));
+    document.getElementById("date").value = date;
     document.getElementById("timeSlot").value = timeSlots || '';
     
     document.getElementById("scheduleForm").onsubmit = function (e) {
@@ -44,11 +45,11 @@ function openModal(date, timeSlots) {
   
       // Create an object to send as data
       const data = {
-        date: today,
+        date: document.getElementById("date").value,
         timeSlot: timeSlots
       };
 
-      console.log(data.date);
+      console.log(data);
 
       // Create a form dynamically to send the data
       var form = document.createElement('form');
@@ -100,12 +101,15 @@ function addTimeSlot(value = '') {
 
 
 // Function to open the Appointment Modal
-function showAppointments(appointments,Date) {
+function showAppointments(appointments,date) {
+    console.log("Type of Appointments:", typeof appointments);
+    const header = document.getElementById('showAppointmentHeader');
     const appointmentModal = document.getElementById("appointmentPopup");
     const appointmentTableBody = document.querySelector("#appointmentTable tbody");
 
     scheduledDate = Date;
     // Clear existing rows
+    header.innerHTML = `Appointments On ${date}`;
     appointmentTableBody.innerHTML = "";
 
     // Populate the table with appointment data
@@ -113,8 +117,9 @@ function showAppointments(appointments,Date) {
         const noDataRow = document.createElement("tr");
         const noDataCell = document.createElement("td");
         noDataCell.colSpan = 4;
-        noDataCell.textContent = "No appointments available.";
+        noDataCell.textContent = `No appointments available`;
         noDataCell.style.textAlign = "center";
+        noDataCell.style.color = "red";
         noDataCell.style.padding = "10px";
         noDataRow.appendChild(noDataCell);
         appointmentTableBody.appendChild(noDataRow);
@@ -125,26 +130,26 @@ function showAppointments(appointments,Date) {
 
             // Create cells for each column
             const appointmentIdCell = document.createElement("td");
-            appointmentIdCell.textContent = appointment.appointmentId;
+            appointmentIdCell.textContent = appointment.appointment_id;
             appointmentIdCell.style.padding = "8px";
             row.appendChild(appointmentIdCell);
 
             const firstNameCell = document.createElement("td");
-            firstNameCell.textContent = appointment.firstName;
+            firstNameCell.textContent = appointment.first_name;
             firstNameCell.style.padding = "8px";
             row.appendChild(firstNameCell);
 
             const lastNameCell = document.createElement("td");
-            lastNameCell.textContent = appointment.lastName;
+            lastNameCell.textContent = appointment.last_name;
             lastNameCell.style.padding = "8px";
             row.appendChild(lastNameCell);
 
-            const dateCell = document.createElement("td");
-            dateCell.textContent = appointment.date;
-            dateCell.style.padding = "8px";
-            row.appendChild(dateCell);
+            const patientType = document.createElement("td");
+            patientType.textContent = appointment.patient_type + " Patient";
+            patientType.style.padding = "8px";
+            row.appendChild(patientType);
 
-            // Append the row to the table body
+            // Append the row to the table bodys
             appointmentTableBody.appendChild(row);
         });
     }
@@ -163,23 +168,24 @@ function showAppointments(appointments,Date) {
             appointmentModal.style.display = "none";
         }
     };
+
+    document.getElementById("rescheduleButton").onclick = function () {
+      const confirmModal = document.getElementById("confirmModal");
+      const scheduleDateDisplay = document.getElementById("scheduleDateDisplay");
+      const scheduleDateInput = document.getElementById("scheduleDate");
+    
+      scheduleDateDisplay.textContent = date; // Update the visible span
+      scheduleDateInput.value = date;
+    
+      confirmModal.style.display = "block"; // Show the confirmation modal
+    
+    };
+    
+    const confirmNo = document.getElementById("confirmNo");
+    
+    confirmNo.addEventListener("click", function () {
+        const confirmModal = document.getElementById("confirmModal");
+        confirmModal.style.display = "none";
+    });
 }
 
-document.getElementById("rescheduleButton").onclick = function () {
-  const confirmModal = document.getElementById("confirmModal");
-  const scheduleDateDisplay = document.getElementById("scheduleDateDisplay");
-  const scheduleDateInput = document.getElementById("scheduleDate");
-
-  scheduleDateDisplay.textContent = scheduledDate; // Update the visible span
-  scheduleDateInput.value = scheduledDate;
-
-  confirmModal.style.display = "block"; // Show the confirmation modal
-
-};
-
-const confirmNo = document.getElementById("confirmNo");
-
-confirmNo.addEventListener("click", function () {
-    const confirmModal = document.getElementById("confirmModal");
-    confirmModal.style.display = "none";
-});

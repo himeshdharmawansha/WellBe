@@ -13,6 +13,7 @@
   <div class="dashboard-container">
     <!-- Sidebar -->
     <?php
+
     $this->renderComponent('navbar', $active);
     ?>
 

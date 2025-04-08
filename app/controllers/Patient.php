@@ -158,7 +158,7 @@ public function hello()
          'merchant_id' => $merchant_id,
          'return_url' => 'http://localhost/medicare/patient/hello',
          'cancel_url' => 'http://localhost/medicare/patient/hello',
-         'notify_url' => 'https://well-be.loca.lt/WellBe1/patient/getPaymentData',
+         'notify_url' => 'https://well-be.loca.lt/wellbe/patient/getPaymentData',
          'first_name' => 'John',
          'last_name' => 'Doe',
          'email' => 'ammu@gmail.com',

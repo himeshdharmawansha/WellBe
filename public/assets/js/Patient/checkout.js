@@ -1,5 +1,5 @@
 function paymentGateWay() {
-  fetch("/WELLBE1/public/patient/generatehash", {
+  fetch("/wellbe/public/patient/generatehash", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -39,8 +39,8 @@ function paymentGateWay() {
           sandbox: true, // Set to false for live mode
           merchant_id: "1228628", // Replace with your PayHere Merchant ID
           return_url:
-            "http://localhost/WELLBE1/patient_dashboard.phpz", // Your return URL
-          cancel_url: "http://localhost/WELLBE1/hello.php", // Your cancel URL
+            "http://localhost/wellbe/patient_dashboard.phpz", // Your return URL
+          cancel_url: "http://localhost/wellbe/hello.php", // Your cancel URL
           notify_url: "http://sample.com/notify", // Your backend URL for payment notifications
           order_id: obj["order_id"],
           items: obj["items"],

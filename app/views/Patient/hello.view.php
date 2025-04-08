@@ -198,7 +198,7 @@
 
                     try {
                         // Send data to the controller
-                        const response = await fetch('http://localhost/april/WellBe/public/patient/getAppointmentdata', {
+                        const response = await fetch('http://localhost/WellBe/public/patient/getAppointmentdata', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

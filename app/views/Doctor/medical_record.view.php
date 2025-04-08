@@ -126,8 +126,8 @@
                 <div class="remarks-section">
                     <h3>Remarks</h3>
                     <textarea id="additionalRemarks" readonly>
-    Please continue the medicine for 7 days, if you do not see a change please consult again
-  </textarea>
+                        Please continue the medicine for 7 days, if you do not see a change please consult again
+                    </textarea>
                 </div>
 
 

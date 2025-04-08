@@ -34,6 +34,59 @@ class Appointments extends Model{
 
     }
 
+    public function makeNewAppointment($data)
+    {
+        // Extract fields from $data safely
+        $doctorId = $data['docId'] ?? null;
+        $specialization = $data['specialization'] ?? null;
+        $patientId = $data['patientId'] ?? null;
+        $date = $data['dateId'] ?? null;
+        $appointment_time = $data['appointment_time'] ?? null;
+        $appointment_number = $data['appointment_number'] ?? null;
+        $appointment_fee = $data['appointment_fee'] ?? null;
+        $contact_number = $data['contact_number'] ?? null;
+        $patientType = $data['patient_type'] ?? null;
+
+        if (!$doctorId || !$date || !$patientId) {
+            return false; // Basic validation
+        }
+
+        $query = "INSERT INTO appointment (
+            appointment_id,
+            doctor_id,
+            patient_id,
+            date,
+            payment_fee,
+            state,
+            patient_type,
+            scheduled
+        ) VALUES (
+            :appointment_id,
+            :doctor_id,
+            :patient_id,
+            :date,
+            :appointment_fee,
+            :state,
+            :patient_type,
+            :scheduled
+        )";
+
+        $params = [
+            'appointment_id' => $appointment_number,
+            'doctor_id' => $doctorId,
+            'patient_id' => $patientId,
+            'date' => $date,
+            'appointment_fee' => $appointment_fee,
+            'state' => "NOT PRESENT",
+            'patient_type' => $patientType,
+            'scheduled' => "SCHEDULED"
+        ];
+
+        // Assuming you have a query method like in your `getAppointment` example
+        return $this->query($query, $params);
+    }
+
+
 
     public function getPatientDetails($id) {
         $appointment_id = $id;

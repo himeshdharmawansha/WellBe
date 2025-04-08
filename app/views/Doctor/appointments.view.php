@@ -18,11 +18,9 @@
         <div class="main-content" >
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            //include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
+            $pageTitle = "Appointments";
             require '../app/views/Components/Doctor/header.php';
             ?>
-
             
             <!-- Dashboard Content -->
             <div class="dashboard-content">
@@ -45,10 +43,10 @@
                                 <p>Appointment ID: <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
                                 <p>Gender: <span class="doc_name"><?php echo $appointment->gender; ?></span></p>
                                 <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
-                                <div class="new_patient" style="margin-top: 10px;"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</div>
+                                <button class="new_patient" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
                                 <?php if($appointment->patient_type == "Returning"): ?>
                                     <button class="returning_patient">
-                                        <a style="color: #f3f3f3;" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
+                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>
                             </div>

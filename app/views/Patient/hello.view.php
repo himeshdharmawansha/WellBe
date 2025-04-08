@@ -166,21 +166,65 @@
         </script>
 
         <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const doctor = sessionStorage.getItem('doctor');
-    const specialization = sessionStorage.getItem('specialization');
-    const appointment_id = sessionStorage.getItem('appointment_id');
-    const start_time = sessionStorage.getItem('start_time');
-    const day = sessionStorage.getItem('day');
-    const appointment_fee = sessionStorage.getItem('doctor_fee');
+                document.addEventListener('DOMContentLoaded', function () {
+                    const doctor = sessionStorage.getItem('doctor');
+                    const specialization = sessionStorage.getItem('specialization');
+                    const appointment_id = sessionStorage.getItem('appointment_id');
+                    const start_time = sessionStorage.getItem('start_time');
+                    const day = sessionStorage.getItem('day');
+                    const appointment_fee = sessionStorage.getItem('doctor_fee');
 
-    document.getElementById('doctor-info').innerHTML = '<strong>Doctor: </strong>' + (doctor ? doctor : 'N/A');
-    document.getElementById('specialization-info').innerHTML = '<strong>Specialization: </strong>' + (specialization ? specialization : 'N/A');
-    document.getElementById('appointment-id-info').innerHTML = '<strong>Patient Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
-    document.getElementById('start-time-info').innerHTML = '<strong>Start Time: </strong>' + (start_time ? start_time : 'N/A');
-    document.getElementById('day-info').innerHTML = '<strong>Appointment Date: </strong>' + (day ? day : 'N/A');
-    document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
-});
+                    document.getElementById('doctor-info').innerHTML = '<strong>Doctor: </strong>' + (doctor ? doctor : 'N/A');
+                    document.getElementById('specialization-info').innerHTML = '<strong>Specialization: </strong>' + (specialization ? specialization : 'N/A');
+                    document.getElementById('appointment-id-info').innerHTML = '<strong>Appointment Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
+                    document.getElementById('start-time-info').innerHTML = '<strong>Start Time: </strong>' + (start_time ? start_time : 'N/A');
+                    document.getElementById('day-info').innerHTML = '<strong>Appointment Date: </strong>' + (day ? day : 'N/A');
+                    document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
+                });
+
+
+                async function sendAppointmentData(paymentMethod) {
+                    const data = {
+                        doctor: document.getElementById('doctor-info').innerText.replace("Doctor: ", "").trim(),
+                        specialization: document.getElementById('specialization-info').innerText.replace("Specialization: ", "").trim(),
+                        appointment_date: document.getElementById('day-info').innerText.replace("Appointment Date: ", "").trim(),
+                        appointment_time: document.getElementById('start-time-info').innerText.replace("Appointment Time: ", "").trim(),
+                        appointment_number: document.getElementById('appointment-id-info').innerText.replace("Appointment Number: ", "").trim(),
+                        appointment_fee: document.getElementById('appointment-fee').innerText.replace("Appointment Fees: ", "").trim(),
+                        patient_name: "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>",
+                        contact_number: "<?= $_SESSION['USER']->contact; ?>",
+                        emergency_contact: "<?= $_SESSION['USER']->emergency_contact_no; ?>"
+                    };
+
+                    try {
+                        // Send data to the controller
+                        const response = await fetch('http://localhost/april/WellBe/public/patient/getAppointmentdata', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        const text = await response.text();
+                        console.log("Raw response:", text);
+                        const result = JSON.parse(text);
+                        console.log("result",result);
+                        if (result.success) {
+                            alert("Payment initiated successfully!");
+                            //window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                        } else {
+                            alert("Payment failed. Please try again.");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert("An error occurred while processing the payment.");
+                    }
+                };
+
+                document.getElementById('payHereBtn').addEventListener('click', () => sendAppointmentData("online"));
+                document.getElementById('payLaterBtn').addEventListener('click', () => sendAppointmentData("counter"));
+
         </script>
 
 </body>

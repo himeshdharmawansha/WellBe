@@ -70,34 +70,25 @@
                         <div class="input-box">
                             <label>Available Dates</label>
                             <div id="dates-container" class="dates-grid">
-                                <!-- <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?> -->
+                                <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?>
                                     <?php foreach ($data['dates'] as $day): ?>
                                         <?php if ($day['appointment_id'] <= 15): ?>
-                                            <button class="date-btn" onclick="storeSelection()">
+                                            <button class="date-btn"
+                                                data-doc-id="<?= isset($data['docId']) ? $data['docId'] : '' ?>"
+                                                data-doctor-fee="<?= isset($data['doctorFee']) ? $data['doctorFee'] : '' ?>"
+                                                data-doctor="<?= htmlspecialchars($_POST['doctor']) ?>"
+                                                data-specialization="<?= htmlspecialchars($_POST['specialization']) ?>"
+                                                data-appointment-id="<?= $day['appointment_id'] ?>"
+                                                data-start-time="<?= $day['start_time'] ?>"
+                                                data-day="<?= $day['day'] ?>"
+                                                onclick="storeSelection(this)">
                                                 <div class="dawasa">Date : <?= $day['day'] ?></div>
                                                 <div class="time">Starting Time : <?= $day['start_time'] ?></div>
-                                                <div class="appnmbr">Patient Number : <?= $day['appointment_id'] ?></div>
+                                                <div class="appnmbr">Appointment Number : <?= $day['appointment_id'] ?></div>
                                             </button>
-
-                                            <script>
-                                                function storeSelection() {
-                                                    // Store the selected doctor, specialization, and appointment ID in sessionStorage
-                                                    sessionStorage.setItem('doc_id', "<?= $data['docId'] ?>");
-                                                    sessionStorage.setItem('doctor_fee', "<?= $data['doctorFee'] ?>");
-                                                    sessionStorage.setItem('doctor', document.getElementById('doctor').value);
-                                                    sessionStorage.setItem('specialization', document.getElementById('specialization').value);
-                                                    sessionStorage.setItem('appointment_id', '<?= $day['appointment_id'] ?>');
-                                                    sessionStorage.setItem('start_time', '<?= $day['start_time'] ?>');
-                                                    sessionStorage.setItem('day', '<?= $day['day'] ?>');
-                                                    // Navigate to the hello page
-                                                    window.location.href = 'hello';
-                                                }
-                                            </script>
-
-
                                         <?php endif; ?>
                                     <?php endforeach; ?>
-                                    <!-- <?php else: ?> -->
+                                <?php else: ?>
                                     <p>Please select the doctor and specialization to show the available slots.</p>
                                 <?php endif; ?>
                             </div>
@@ -111,5 +102,19 @@
 
 
 </body>
+
+<script>
+    function storeSelection(button) {
+        sessionStorage.setItem('doc_id', button.dataset.docId);
+        sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);
+        sessionStorage.setItem('doctor', button.dataset.doctor);
+        sessionStorage.setItem('specialization', button.dataset.specialization);
+        sessionStorage.setItem('appointment_id', button.dataset.appointmentId);
+        sessionStorage.setItem('start_time', button.dataset.startTime);
+        sessionStorage.setItem('day', button.dataset.day);
+
+        window.location.href = 'hello';
+    }
+</script>
 
 </html>

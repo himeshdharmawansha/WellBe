@@ -92,6 +92,11 @@
 
         <!-- Main Content -->
         <div class="main-content">
+
+            <?php
+               $pageTitle = "Medical Records";
+               require '../app/views/Components/Doctor/header.php';
+            ?>
            
             <!-- Dashboard Content -->
             <div class="dashboard-content">

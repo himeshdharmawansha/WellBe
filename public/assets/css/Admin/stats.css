@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dashboard Content */
+.content-container {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-section {
+    margin-left: 30px;
+    margin-top: 30px;
+    /* border: 1px solid #434343; */
+    display: flex;
+    flex-direction: column; /* Ensures elements are stacked */
+    gap: 10px; /* Adds spacing between elements */
+}
+
+.section-title{
+    color: #172554;
+    font-weight: bold;
+}
+
+.filters{
+    font-size: 16px;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Spacing between text and dropdown */
+}
+
+.filter-label input[name="start-age"],
+.filter-label input[name="end-age"] {
+    width: 50px;  /* Adjust width for two-digit numbers */
+    padding: 3px;
+    text-align: center;
+    border: 1px solid #a4a4a4;
+    border-radius: 5px;
+}
+
+.filter-dropdown {
+    width: 150px;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #a4a4a4;
+}
+
+.generate-btn {
+    background-color: #172554;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 14px;
+}
+
+.generate-btn:hover{
+    background-color: #7180c0;
+}
+
+/* Modal background */
+.modal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark transparent overlay */
+    backdrop-filter: blur(5px); /* Blur the background */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content (popup box) */
+.modal-content {
+    background: #EFF4FF;
+    padding: 30px;
+    border-radius: 12px;
+    width: 80%; /* Increased width */
+    max-width: 800px; /* Increased max width */
+    height: 80%; /* Increased height */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Close button */
+.close-btn {
+    align-self: flex-end;
+    font-size: 28px; /* Bigger close button */
+    cursor: pointer;
+    color: black; /* Black font color */
+    font-weight: bold;
+}
+
+/* Make modal text bigger */
+.modal-content * {
+    font-size: 18px; /* Increase font size */
+    color: black; /* Ensure black font color */
+}

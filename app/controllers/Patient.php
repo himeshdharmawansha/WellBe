@@ -127,31 +127,59 @@ class Patient extends Controller
 
    public function hello()
    {
-         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            echo "sss";
-            // Read the JSON input
-            $data = json_decode(file_get_contents("php://input"), true);
-
-            if ($data) {
-               $response = [
-                     "success" => true,
-                     "message" => "Payment processed successfully"
-               ];
-            } else {
-               $response = [
-                     "success" => false,
-                     "message" => "Invalid data received"
-               ];
-            }
-
-            // Return JSON response
-            header('Content-Type: application/json');
-            echo json_encode($response);
-         }
-
-
       $this->view('Patient/hello', 'hello');
+   }
+
+   public function getAppointmentdata()
+   {
+
+      $input = file_get_contents("php://input");
+      $data = json_decode($input, true);
+
+      $name = explode(" ",$data['doctor']);
+
+      $first_name = $name[0];
+      $last_name = isset($name[1]) ? $name[1] : "";
+      $doctor = new Doctor();
+
+      //get doctor id from name
+      $docId = $doctor->getDoctorId($first_name,$last_name);
+      $data['docId'] = $docId[0]->id;
+      //patient id
+      $data['patientId'] = $_SESSION['USER']->id;
+
+      //get date id by date
+      $timeslot = new Timeslot();
+      $dateId = $timeslot -> getDateId($data['appointment_date']);
+      $data['dateId'] = $dateId[0]->slot_id;
+
+      //find patient type(returning or new)
+      $medicalRecord = new MedicalRecord();
+      $pastRecords = $medicalRecord -> getPatientType();
+      if (!empty($pastRecords) && count($pastRecords) > 0) {
+         $data['patient_type'] = "RETURNING";
+     } else {
+         $data['patient_type'] = "NEW";
+     }
+
+      $appointment = new Appointments();
+
+      if ($data && $appointment->makeNewAppointment($data)) {
+         $response = [
+             "success" => true,
+             "message" => "Appointment created successfully"
+         ];
+     } else {
+         $response = [
+             "success" => false,
+             "message" => "Invalid data or failed to create appointment"
+         ];
+     }
+
+      // Return JSON response
+      header('Content-Type: application/json');
+      echo json_encode($response);
+
    }
 
    public function generatehash()
@@ -205,4 +233,5 @@ class Patient extends Controller
       $filename = "../app/views/Components/{$component}.php";
       require $filename;
    }
+  
 }

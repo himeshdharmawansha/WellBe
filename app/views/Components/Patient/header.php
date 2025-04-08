@@ -83,5 +83,20 @@
       </div>
    </header>
 </body>
+<script>
+   const socket = new WebSocket('ws://localhost:8080');
 
+   socket.addEventListener('open', () => {
+      const userId = <?php echo json_encode($_SESSION['USER']->nic); ?>;
+      socket.send(JSON.stringify({ type: 'register', userId }));
+   });
+
+   socket.addEventListener('message', (event) => {
+      const message = event.data;
+
+      if (message.startsWith('Notification:')) {
+         alert(message); // Show notification popup or toast
+      }
+   });
+</script>
 </html>

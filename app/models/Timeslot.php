@@ -105,7 +105,33 @@ class Timeslot extends Model
 
         $this->query($query,[$date,$_SESSION['USER']->id]);
 
+        $data = [
+            "type" => "reschedule",
+            "patientId" => '200260500000p',
+        ];
+        
+        $options = [
+            'http' => [
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/json\r\n",
+                'content' => json_encode($data),
+            ],
+        ];
+    
+        $context = stream_context_create($options);
+        file_get_contents('http://localhost:3000/notify', false, $context);
+
         redirect("doctor");
+    }
+
+    //get slot id using date
+    public function getDateId($date){
+
+        $query = "SELECT slot_id FROM timeslot WHERE date = :date";
+        $data = ['date'=>$date];
+        $dateId = $this->query($query,$data);
+
+        return $dateId;
     }
 
     public function getAvailableDays($id){
@@ -123,7 +149,7 @@ class Timeslot extends Model
         }*/
 
         //get a doctors available dates
-        $query = "SELECT start_time, slot_id FROM timeslot_doctor WHERE slot_id >= :todayId AND doctor_id = :id";
+        $query = "SELECT start_time, slot_id FROM timeslot_doctor WHERE slot_id >= :todayId AND doctor_id = :id AND session = 'SET'";
         $data = ['todayId'=>$todayId, 'id'=>$id];
         $availableDays = $this ->query($query, $data);
         

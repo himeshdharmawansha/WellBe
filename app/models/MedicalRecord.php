@@ -40,6 +40,18 @@ class MedicalRecord extends Model {
         $records = $this->query($query, [$patient_id]);
         return $records;
     }
+
+    public function getPatientType(){
+
+        $patientId = $_SESSION['USER']->id;
+
+        $query = "SELECT * FROM medication_requests WHERE patient_id = :patient_id;";
+
+        $data = ['patient_id' => $patientId];
+
+        $pastRecords = $this->query($query, $data);
+        return $pastRecords;
+    }
     
 
     public function getPastRecords($patient_id){

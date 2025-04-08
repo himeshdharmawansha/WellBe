@@ -121,7 +121,7 @@
             });
 
             google.charts.setOnLoadCallback(() => {
-               fetch(`<?= ROOT ?>/PharmacyReport/generateReport?start_date=${startDate}&end_date=${endDate}`)
+               fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
                   .then((response) => response.json())
                   .then((data) => {
                      drawBarChart(data.medications);

@@ -6,16 +6,14 @@ class TestRequests extends Controller
 
    public function __construct()
    {
-      // Initialize the testRequest model
       $this->testRequestModel = new TestRequest();
    }
 
-   // Fetch all test requests and pass them to the view
    public function index()
    {
-      $pendingRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'pending'");
-      $ongoingRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'ongoing'");
-      $completedRequests = $this->testRequestModel->read("SELECT * FROM test_requests WHERE state = 'completed'");
+      $pendingRequests = $this->testRequestModel->getPendingRequests();
+      $ongoingRequests = $this->testRequestModel->getOngoingRequests();
+      $completedRequests = $this->testRequestModel->getCompletedRequests();
 
       $this->view('Lab/requests', 'requests', [
          'pendingRequests' => $pendingRequests,
@@ -24,7 +22,6 @@ class TestRequests extends Controller
       ]);
    }
 
-   // API endpoint to retrieve requests as JSON for AJAX
    public function getRequestsJson()
    {
       $requests = $this->testRequestModel->getAll();
@@ -33,20 +30,12 @@ class TestRequests extends Controller
       exit;
    }
 
-   // API endpoint to search test requests by Patient ID
    public function searchRequestsByPatientId()
    {
       $searchTerm = isset($_GET['patient_id']) ? htmlspecialchars($_GET['patient_id']) : '';
 
       if (!empty($searchTerm)) {
-         // Search for test requests based on the patient_id
-         $query = "SELECT * FROM test_requests WHERE patient_id LIKE :patient_id ORDER BY id DESC";
-         $params = [
-            ':patient_id' => '%' . $searchTerm . '%',
-         ];
-
-         $requests = $this->testRequestModel->read($query, $params);
-
+         $requests = $this->testRequestModel->searchByPatientId($searchTerm);
          header('Content-Type: application/json');
          echo json_encode($requests);
          exit;
@@ -64,12 +53,7 @@ class TestRequests extends Controller
          $requestID = htmlspecialchars($data['requestID']);
          $newState = htmlspecialchars($data['state']);
 
-         $query = "UPDATE test_requests SET state = :state WHERE id = :id";
-         $this->testRequestModel->write($query, [
-            'state' => $newState,
-            'id' => $requestID,
-         ]);
-
+         $this->testRequestModel->updateState($requestID, $newState);
          echo json_encode(['success' => true, 'message' => 'State updated successfully.']);
       } else {
          echo json_encode(['success' => false, 'error' => 'Invalid input.']);
@@ -78,15 +62,12 @@ class TestRequests extends Controller
 
    public function getTestDetails($requestID)
    {
-      $db = new Database();
-      $query = "SELECT test_name, state, priority, file FROM test_request_details WHERE req_id = :requestID";
-      $params = [':requestID' => $requestID];
-      return $db->read($query, $params);
+      return $this->testRequestModel->getTestDetails($requestID);
    }
+
    public function updateRequestDetails()
    {
       $response = ['success' => false];
-      $db = new Database();
 
       try {
          $data = $_POST;
@@ -97,46 +78,9 @@ class TestRequests extends Controller
          }
 
          $tests = json_decode($data['tests'], true);
+         $requestID = $data['requestID'];
 
-         foreach ($tests as $test) {
-            $testName = $test['testName'];
-            $state = $test['state'];
-            $fileName = null;
-
-            if (isset($files[$testName]) && $files[$testName]['error'] === UPLOAD_ERR_OK) {
-               $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/WellBe/public/assets/files/';
-               $fileName = basename($files[$testName]['name']);
-               $uploadPath = $uploadDir . $fileName;
-
-               if (!file_exists($uploadDir)) {
-                  mkdir($uploadDir, 0777, true);
-               }
-
-               if (!move_uploaded_file($files[$testName]['tmp_name'], $uploadPath)) {
-                  throw new Exception("Failed to upload file for test: $testName");
-               }
-            }
-
-            $updateRequestQuery = "UPDATE test_requests SET state = 'completed' WHERE id = :requestID";
-            $requestParams = [
-               ':requestID' => $data['requestID'],
-            ];
-            $db->query($updateRequestQuery, $requestParams);
-
-            $query = "UPDATE test_request_details 
-                      SET state = :state, file = COALESCE(:file, file)
-                      WHERE req_id = :requestID AND test_name = :testName";
-
-            $params = [
-               ':state' => $state,
-               ':file' => $fileName,
-               ':requestID' => $data['requestID'], // Ensure `requestID` is sent from the client
-               ':testName' => $testName,
-            ];
-
-            $db->query($query, $params);
-         }
-
+         $this->testRequestModel->updateRequestDetails($requestID, $tests, $files);
          $response['success'] = true;
       } catch (Exception $e) {
          $response['error'] = $e->getMessage();
@@ -155,27 +99,8 @@ class TestRequests extends Controller
          $requestID = $data['requestID'];
          $testName = $data['testName'];
 
-         $db = new Database();
-
-         // Get the file name
-         $query = "SELECT file FROM test_request_details WHERE req_id = :requestID AND test_name = :testName";
-         $params = [':requestID' => $requestID, ':testName' => $testName];
-         $result = $db->read($query, $params);
-
-         if (!empty($result[0]['file'])) {
-            $filePath = $_SERVER['DOCUMENT_ROOT'] . '/WellBe/public/assets/files/' . $result[0]['file'];
-
-            // Delete the file
-            if (file_exists($filePath)) {
-               unlink($filePath);
-            }
-
-            // Update database to set file to NULL
-            $updateQuery = "UPDATE test_request_details SET file = NULL WHERE req_id = :requestID AND test_name = :testName";
-            $db->read($updateQuery, $params);
-
-            $response['success'] = true;
-         }
+         $this->testRequestModel->deleteFile($requestID, $testName);
+         $response['success'] = true;
       }
 
       echo json_encode($response);
@@ -190,15 +115,9 @@ class TestRequests extends Controller
          $requestID = $data['requestID'];
          $testName = $data['testName'];
 
-         $db = new Database();
-
-         // Get the file name
-         $query = "SELECT file FROM test_request_details WHERE req_id = :requestID AND test_name = :testName";
-         $params = [':requestID' => $requestID, ':testName' => $testName];
-         $result = $db->read($query, $params);
-
-         if (!empty($result[0]['file'])) {
-            $response['fileUrl'] = ROOT . '/assets/files/' . $result[0]['file'];
+         $fileUrl = $this->testRequestModel->getFileUrl($requestID, $testName);
+         if ($fileUrl) {
+            $response['fileUrl'] = $fileUrl;
             $response['success'] = true;
          }
       }

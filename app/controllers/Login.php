@@ -20,10 +20,10 @@ class Login extends Controller
                     $user = new Patient;
                     $_SESSION['user_type'] = "patient";
                 } elseif (strpos($id, 'h') !== false) {
-                    $user = new Pharmacy;
+                    $user = new PharmacyModel;
                     $_SESSION['user_type'] = "pharmacy";
                 } elseif (strpos($id, 'l') !== false) {
-                    $user = new Lab;
+                    $user = new LabModel;
                     $_SESSION['user_type'] = "lab";
                 } elseif (strpos($id, 'a') !== false) {
                     $user = new Admin;

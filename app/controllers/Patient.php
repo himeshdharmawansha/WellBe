@@ -125,10 +125,34 @@ class Patient extends Controller
       $this->view('Patient/Lab_download', 'Lab_download');
    }
 
-public function hello()
-{
-    $this->view('Patient/hello', 'hello');
-}
+   public function hello()
+   {
+         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            echo "sss";
+            // Read the JSON input
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            if ($data) {
+               $response = [
+                     "success" => true,
+                     "message" => "Payment processed successfully"
+               ];
+            } else {
+               $response = [
+                     "success" => false,
+                     "message" => "Invalid data received"
+               ];
+            }
+
+            // Return JSON response
+            header('Content-Type: application/json');
+            echo json_encode($response);
+         }
+
+
+      $this->view('Patient/hello', 'hello');
+   }
 
    public function generatehash()
    {

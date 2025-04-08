@@ -1,5 +1,7 @@
 <?php
 
+use Random\Engine\Mt19937;
+
     class Doctor extends Controller{
 
         private $data = [
@@ -54,23 +56,27 @@
             $this->view('Doctor/appointments','appointments',$data);
         }
 
-        public function medication_Details($id, $app_id){
+        public function medication_Details($app_id, $patient_id){
 
             //print_r($id);
-            $data['patient_id'] = $id;
+            $data['patient_id'] = $patient_id;
             $data['app_id'] = $app_id;
 
             $this->view('Doctor/medication_Details','today-checkups',$data);
         }
 
-        public function patient_details($appointment_id){
+        public function patient_details($appointment_id, $patient_id){
 
             $_SESSION['appointment_id'] = $appointment_id;
+            $_SESSION['patient_id'] = $patient_id;
 
-            $appointments = new Appointments;
-
+            $appointments = new Appointments();
             $patient_details = $appointments->getPatientDetails($appointment_id);
-            $this->view('Doctor/patient_details','today-checkups',$patient_details);
+
+            $medicalRecord = new MedicalRecord();
+            $past_record_details = $medicalRecord->getPastRecordsDetials($patient_details[0]->id);
+
+            $this->view('Doctor/patient_details','today-checkups',$past_record_details);
             //echo $_SESSION['appointment_id'];
         }
 

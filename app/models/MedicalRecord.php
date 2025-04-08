@@ -15,6 +15,33 @@ class MedicalRecord extends Model {
 
     }
 
+    public function getPastRecordsDetials($patient_id) {
+        $query = "SELECT 
+                    mr.id AS request_id,
+                    CONCAT(d.first_name, ' ', d.last_name) AS doctor,
+                    t.date,
+                    mr.diagnosis,
+                    CONCAT('[', GROUP_CONCAT(
+                        JSON_OBJECT(
+                            'medication_name', IFNULL(mrd.medication_name, ''),
+                            'dosage', IFNULL(mrd.dosage, ''),
+                            'taken_time', IFNULL(mrd.taken_time, ''),
+                            'substitution', IFNULL(mrd.substitution, '')
+                        )
+                    ), ']') AS medications
+                FROM medication_requests mr
+                JOIN doctor d ON mr.doctor_id = d.id
+                JOIN timeslot t ON mr.date = t.slot_id
+                JOIN medication_request_details mrd ON mr.id = mrd.req_id
+                WHERE mr.patient_id = ?
+                GROUP BY mr.id, d.first_name, d.last_name, t.date, mr.diagnosis
+                ORDER BY mr.id ASC;";
+    
+        $records = $this->query($query, [$patient_id]);
+        return $records;
+    }
+    
+
     public function getPastRecords($patient_id){
 
         //echo $patient_id;

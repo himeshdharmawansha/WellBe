@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +47,7 @@
                     <div class="statQueue">
                     <?php if (!empty($data)): ?>
                         <?php foreach ($data as $appointment): ?>
-                            <a href="<?= ($appointment->state === 'PRESENT') ? ROOT . '/doctor/patient_details/' . $appointment->appointment_id : '#'; ?>" style="text-decoration: none;">
+                            <a href="<?= ($appointment->state === 'PRESENT') ? ROOT . '/doctor/patient_details/' . $appointment->appointment_id . '/' . $appointment->patient_id : '#'; ?>" style="text-decoration: none;">
                                 <div class="boxQueue" style="<?php echo ($appointment->state === 'PRESENT') ? 'background-color: #559bf6;' : ''; ?>">
                                     <div class="box-itemQueue">
                                         <div>

@@ -287,6 +287,72 @@
    margin-bottom: 0;
 }
 
+/* Header Container: Sticky with Flex Layout */
+.dashboard-header {
+    position: sticky;
+    top: 1px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    z-index: 20;
+ }
+ 
+ /* Navigation Buttons Centered */
+ .record-navigation {
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+ }
+ 
+ .nav-btn {
+    background-color: #95989b;
+    color: white;
+    border: none;
+    padding: 1px 12px;
+    border-radius: 6px;
+    font-size: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+ }
+
+ .nav-btn-inactive {
+    display: none;
+ }
+ 
+ .nav-btn:hover {
+    background-color: #0056b3;
+ }
+ 
+ /* Create New Record Button Right-Aligned */
+ .button-container {
+    display: flex;
+    margin-left: 75%;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+ } 
+ 
+ .btn-green {
+    background-color: #28a745;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+ }
+ 
+ .btn-green:hover {
+    background-color: #218838;
+ }
+ 
+
 .add-row-btn {
     margin-top: 10px;
     padding: 5px 15px;

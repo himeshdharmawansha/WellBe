@@ -14,6 +14,10 @@ class LabTest extends Model {
 
     }
 
+    public function getPastTestDetails(){
+
+    }
+
     public function getLastInsertedId($id) {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;

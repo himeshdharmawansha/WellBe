@@ -352,4 +352,36 @@ class Patient extends Model
         return $this->query($query, $data);
     }
 
+    public function filterPatients($startAge, $endAge, $gender, $location)
+    {
+        $query = "SELECT age, COUNT(*) as count FROM $this->table WHERE 1";
+
+        $params = [];
+
+        if (!empty($startAge)) {
+            $query .= " AND age >= :startAge";
+            $params['startAge'] = $startAge;
+        }
+
+        if (!empty($endAge)) {
+            $query .= " AND age <= :endAge";
+            $params['endAge'] = $endAge;
+        }
+
+        if (!empty($gender) && $gender !== "All") {
+            $query .= " AND gender = :gender";
+            $params['gender'] = $gender;
+        }
+
+        if (!empty($location) && $location !== "All") {
+            $query .= " AND address LIKE :location";
+            $params['location'] = "%$location%";
+        }
+
+        $query .= " GROUP BY age";
+
+        error_log("Generated query: " .$query);
+        return $this->query($query, $params);
+    }
+
 }

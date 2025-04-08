@@ -11,6 +11,7 @@ class Admin extends Controller
          'doctors' => ["fas fa-user-md", "Doctors"],
          'pharmacists' => ["fas fa-pills", "Pharmacists"],
          'labTechs' => ["fas fa-vials", "Lab Technicians"],
+         'stats' => ["fas fa-chart-bar", "Statistic Reports"],
          'chat' => ["fas fa-comment-dots", "Chat"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
@@ -582,6 +583,32 @@ class Admin extends Controller
       }
 
       $this->view('Admin/labTechProfile', 'Lab Technicians', $data); // Pass data to the view
+   }
+
+   public function stats()
+   {
+      $this->view('Admin/stats', 'Statistic Reports');
+   }
+
+   public function getPatientStats()
+   {
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         // Debugging: Log received POST parameters
+         error_log("Received POST data: " . print_r($_POST, true));
+         $startAge = $_POST['startAge'] ?? null;
+         $endAge = $_POST['endAge'] ?? null;
+         $gender = $_POST['gender'] ?? null;
+         $location = $_POST['location'] ?? null;
+
+         //error_log($_POST['startAge']);
+
+         $patient = new Patient();
+         $patients = $patient->filterPatients($startAge, $endAge, $gender, $location);
+
+         error_log("Filtered Patients: " . print_r($patients, true));
+         header('Content-Type: application/json');
+         echo json_encode($patients);
+      }
    }
 
    public function chat()

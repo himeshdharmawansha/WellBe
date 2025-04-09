@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . "/../../controllers/ChatController.php");
 $he = new ChatController();
-$unseenCounts = $he->UnseenCounts([3]);
+$unseenCounts = $he->UnseenCounts([3,5]);
 $user_profile = $unseenCounts;
 $currentUserId = $_SESSION['userid'];
 
@@ -461,7 +461,7 @@ $currentUserId = $_SESSION['userid'];
       // Poll unseen counts every 3 seconds unless searching
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([3]); // Pass the appropriate roles array
+            refreshUnseenCounts([3,5]); // Pass the appropriate roles array
          }
       }, 3000);
 
@@ -471,7 +471,7 @@ $currentUserId = $_SESSION['userid'];
          if (!query.trim()) {
             // If the search query is empty, reset the flag and refresh unseen counts
             isSearching = false;
-            refreshUnseenCounts([3]); // Pass the appropriate roleArray or fetch all users
+            refreshUnseenCounts([3,5]); // Pass the appropriate roleArray or fetch all users
             return;
          }
 

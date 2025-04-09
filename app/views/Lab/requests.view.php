@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +47,9 @@
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
-                     <tr><td colspan="4">Loading...</td></tr>
+                     <tr>
+                        <td colspan="4">Loading...</td>
+                     </tr>
                   </tbody>
                </table>
             </div>
@@ -64,7 +65,9 @@
                      </tr>
                   </thead>
                   <tbody id="ongoing-requests-body">
-                     <tr><td colspan="4">Loading...</td></tr>
+                     <tr>
+                        <td colspan="4">Loading...</td>
+                     </tr>
                   </tbody>
                </table>
             </div>
@@ -80,7 +83,9 @@
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
-                     <tr><td colspan="4">Loading...</td></tr>
+                     <tr>
+                        <td colspan="4">Loading...</td>
+                     </tr>
                   </tbody>
                </table>
             </div>
@@ -274,7 +279,7 @@
          document.querySelector('.search-input').addEventListener('input', function(e) {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
-               const searchTerm = e.target.value;
+               const searchTerm = e.target.value.trim();
                if (searchTerm) {
                   isSearching = true;
 
@@ -307,12 +312,34 @@
                               }
                            });
                         } else {
-                           alert('No results found.');
+                           // Show "No results found" in all table bodies when search yields no results
+                           requestBodies.forEach(body => {
+                              body.innerHTML = `
+                                 <tr>
+                                    <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                 </tr>`;
+                           });
                         }
+
+                        // Reset to the first page and reinitialize pagination
+                        currentPage = 1;
                         setupPagination(currentTable);
                         displayPage(currentPage);
                      })
-                     .catch(console.error);
+                     .catch(error => {
+                        console.error("Search error:", error);
+                        // Optionally handle fetch errors with a message
+                        const requestBodies = document.querySelectorAll('.requests-section tbody');
+                        requestBodies.forEach(body => {
+                           body.innerHTML = `
+                              <tr>
+                                 <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                              </tr>`;
+                        });
+                        currentPage = 1;
+                        setupPagination(currentTable);
+                        displayPage(currentPage);
+                     });
                } else {
                   isSearching = false;
                }
@@ -332,5 +359,4 @@
       });
    </script>
 </body>
-
 </html>

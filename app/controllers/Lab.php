@@ -7,7 +7,6 @@ class Lab extends Controller
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
          'requests' => ["fas fa-list", "Requests"],
          'chat' => ["fa-solid fa-comment-dots", "Chat"],
-         'setting' => ["fa-solid fa-gear", "Setting"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
       'userType' => 'lab'

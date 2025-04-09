@@ -169,7 +169,6 @@
             // Polling for new data
             let isSearching = false;
 
-            // Poll for new data every 1 second (adjusted from 2s for faster feedback)
             setInterval(() => {
                if (!isSearching) {
                   fetch('<?= ROOT ?>/MedicationRequests/getRequestsJson')
@@ -225,7 +224,7 @@
             document.querySelector('.search-input').addEventListener('input', function(e) {
                clearTimeout(debounceTimeout);
                debounceTimeout = setTimeout(() => {
-                  const searchTerm = e.target.value;
+                  const searchTerm = e.target.value.trim();
                   if (searchTerm) {
                      isSearching = true;
 
@@ -253,12 +252,34 @@
                                  }
                               });
                            } else {
-                              alert('No results found.');
+                              // Show "No results found" in all table bodies when search yields no results
+                              requestBodies.forEach(body => {
+                                 body.innerHTML = `
+                                    <tr>
+                                       <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                    </tr>`;
+                              });
                            }
+
+                           // Reset to the first page and reinitialize pagination
+                           currentPage = 1;
                            setupPagination(currentTable);
                            displayPage(currentPage);
                         })
-                        .catch(console.error);
+                        .catch(error => {
+                           console.error("Search error:", error);
+                           // Handle fetch errors with a message
+                           const requestBodies = document.querySelectorAll('.requests-section tbody');
+                           requestBodies.forEach(body => {
+                              body.innerHTML = `
+                                 <tr>
+                                    <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                                 </tr>`;
+                           });
+                           currentPage = 1;
+                           setupPagination(currentTable);
+                           displayPage(currentPage);
+                        });
                   } else {
                      isSearching = false;
                   }

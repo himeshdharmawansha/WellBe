@@ -8,9 +8,9 @@ class Pharmacy extends Controller
         'elements' => [
             'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
             'requests' => ["fas fa-list", "Requests"],
+            'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'chat' => ["fa-solid fa-comment-dots", "Chat"],
             'report' => ["fa-solid fa-chart-simple", "Report"],
-            'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'logout' => ["fas fa-sign-out-alt", "Logout"]
         ],
         'userType' => 'pharmacy'

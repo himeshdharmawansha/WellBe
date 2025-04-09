@@ -244,6 +244,11 @@
    background-color: #e5e7eb;
 }
 
+.no-results {
+   text-align: center;
+   color: #666; /* Optional: for better visibility */
+}
+
 a {
    text-decoration: none;
    color: inherit;

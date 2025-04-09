@@ -11,15 +11,7 @@ class TestRequests extends Controller
 
    public function index()
    {
-      $pendingRequests = $this->testRequestModel->getPendingRequests();
-      $ongoingRequests = $this->testRequestModel->getOngoingRequests();
-      $completedRequests = $this->testRequestModel->getCompletedRequests();
 
-      $this->view('Lab/requests', 'requests', [
-         'pendingRequests' => $pendingRequests,
-         'ongoingRequests' => $ongoingRequests,
-         'completedRequests' => $completedRequests,
-      ]);
    }
 
    public function getRequestsJson()

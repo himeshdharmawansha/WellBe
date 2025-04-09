@@ -57,14 +57,16 @@ $currentUserId = $_SESSION['userid'];
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
                                     <?php
                                     if (!empty($user['last_message_date'])) {
-                                       $lastMessageDate = strtotime($user['last_message_date']);
-                                       $currentDate = strtotime('today');
-                                       if ($lastMessageDate >= $currentDate) {
-                                          // If the last message is today, show the time
-                                          echo date('h:i A', $lastMessageDate);
+                                       $lastMessageDate = new DateTime($user['last_message_date']);
+                                       $today = new DateTime('today');
+                                       $yesterday = (clone $today)->modify('-1 day');
+                                       
+                                       if ($lastMessageDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                                          echo $lastMessageDate->format('h:i A');
+                                       } elseif ($lastMessageDate->format('Y-m-d') === $yesterday->format('Y-m-d')) {
+                                          echo 'Yesterday';
                                        } else {
-                                          // If the last message is from another day, show the date
-                                          echo date('d/m/Y', $lastMessageDate);
+                                          echo $lastMessageDate->format('d/m/Y');
                                        }
                                     }
                                     ?>
@@ -208,14 +210,16 @@ $currentUserId = $_SESSION['userid'];
                const chatMessages = document.getElementById("chat-messages");
                chatMessages.innerHTML = '';
                data.messages.forEach(message => {
+                  const messageDate = new Date(message.date);
+                  const formattedDate = formatTimeOrDate(messageDate);
+
                   const div = document.createElement('div');
-                  // window.alert(message.sender);
                   div.classList.add('message', message.sender == receiverId ? 'received' : 'sent');
                   div.setAttribute('data-message-id', message.id);
 
                   div.innerHTML = `
                            <p>${message.message}</p>
-                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${message.date}</span>
+                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
                            
                         `;
                   chatMessages.appendChild(div);
@@ -241,14 +245,16 @@ $currentUserId = $_SESSION['userid'];
                      const chatMessages = document.getElementById("chat-messages");
                      chatMessages.innerHTML = '';
                      data.messages.forEach(message => {
-                        // window.alert(selectedUserId);
+                        const messageDate = new Date(message.date);
+                        const formattedDate = formatTimeOrDate(messageDate);
+
                         const div = document.createElement('div');
                         div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
                         div.setAttribute('data-message-id', message.id);
 
                         div.innerHTML = `
                            <p>${message.message}</p>
-                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${message.date}</span>
+                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
                            
                         `;
 
@@ -372,22 +378,34 @@ $currentUserId = $_SESSION['userid'];
          xhr.send();
       }
 
-      function updateChatTimestamps() {
-         fetch('<?= ROOT ?>/ChatController/getLastMessageDates')
-            .then(response => response.json())
-            .then(dates => {
-               dates.forEach(item => {
-                  const timeElement = document.getElementById(`time-${item.id}`);
-                  if (timeElement) {
-                     timeElement.textContent = item.date;
-                  }
-               });
-            })
-            .catch(error => console.error("Error updating timestamps:", error));
-      }
+      // Utility function to format time or date
+      function formatTimeOrDate(messageDate) {
+         const today = new Date();
+         const yesterday = new Date(today);
+         yesterday.setDate(today.getDate() - 1);
+         
+         const isToday = messageDate.toDateString() === today.toDateString();
+         const isYesterday = messageDate.toDateString() === yesterday.toDateString();
 
-      // Call the update function every 3 seconds
-      setInterval(updateChatTimestamps, 3000);
+         if (isToday) {
+            // Show time for today's messages
+            return messageDate.toLocaleTimeString('en-US', {
+               hour: '2-digit',
+               minute: '2-digit',
+               hour12: true
+            });
+         } else if (isYesterday) {
+            // Show "Yesterday" for yesterday's messages
+            return "Yesterday";
+         } else {
+            // Show date for older messages
+            return messageDate.toLocaleDateString('en-GB', {
+               day: '2-digit',
+               month: '2-digit',
+               year: 'numeric'
+            });
+         }
+      }
 
       let isSearching = false; // Control variable
 
@@ -413,13 +431,7 @@ $currentUserId = $_SESSION['userid'];
                   let lastMessageDisplay = '';
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
-                     const today = new Date();
-
-                     if (messageDate.toDateString() === today.toDateString()) {
-                        lastMessageDisplay = formatTimeToAmPm(messageDate);
-                     } else {
-                        lastMessageDisplay = messageDate.toLocaleDateString('en-GB');
-                     }
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
                   const chatItemHTML = `
@@ -482,13 +494,7 @@ $currentUserId = $_SESSION['userid'];
 
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
-                     const today = new Date();
-
-                     if (messageDate.toDateString() === today.toDateString()) {
-                        lastMessageDisplay = formatTimeToAmPm(messageDate);
-                     } else {
-                        lastMessageDisplay = messageDate.toLocaleDateString('en-GB');
-                     }
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
                   const chatItemHTML = `
@@ -514,16 +520,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => console.error("Error searching users:", error));
       }
-
-      // Utility function to format time into AM/PM
-      function formatTimeToAmPm(date) {
-         return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-         });
-      }
-
 
       // Mark messages as seen when chat is opened
       function markMessagesAsSeen(receiverId) {

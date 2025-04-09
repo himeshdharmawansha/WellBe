@@ -1,12 +1,3 @@
-<?php
-require_once(__DIR__ . "/../../core/Database.php");
-$DB = new Database();
-
-$pendingRequests = $DB->read("SELECT * FROM medication_requests WHERE state in ('pending') ORDER BY id DESC");
-$completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 'completed' ORDER BY id DESC");
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,40 +36,37 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
             </div>
 
             <!-- Requests Sections -->
-            <?php
-            function renderTable($requests, $state)
-            {
-               echo "<div id='{$state}-requests' class='requests-section" . ($state === 'pending' ? " active" : "") . "'>
-                        <table class='requests-table'>
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Date</th>
-                                    <th>Patient ID</th>
-                                    <th>Doctor ID</th>
-                                </tr>
-                            </thead>
-                            <tbody id='{$state}-requests-body'>";
+            <div id="pending-requests" class="requests-section active">
+               <table class="requests-table">
+                  <thead>
+                     <tr>
+                        <th>Time</th>
+                        <th>Date</th>
+                        <th>Patient ID</th>
+                        <th>Doctor ID</th>
+                     </tr>
+                  </thead>
+                  <tbody id="pending-requests-body">
+                     <tr><td colspan="4">Loading...</td></tr>
+                  </tbody>
+               </table>
+            </div>
 
-               if (!empty($requests)) {
-                  foreach ($requests as $request) {
-                     echo "<tr data-id='" . htmlspecialchars($request['id']) . "' data-patient-id='" . htmlspecialchars($request['patient_id']) . "'>
-                                <td>" . date('h:i A', strtotime($request['time'])) . "</td>
-                                <td>" . htmlspecialchars($request['date']) . "</td>
-                                <td>" . htmlspecialchars($request['patient_id']) . "</td>
-                                <td>" . htmlspecialchars($request['doctor_id']) . "</td>
-                            </tr>";
-                  }
-               } else {
-                  echo "<tr><td colspan='4'>No $state requests found.</td></tr>";
-               }
-
-               echo "</tbody></table></div>";
-            }
-
-            renderTable($pendingRequests, 'pending');
-            renderTable($completedRequests, 'completed');
-            ?>
+            <div id="completed-requests" class="requests-section">
+               <table class="requests-table">
+                  <thead>
+                     <tr>
+                        <th>Time</th>
+                        <th>Date</th>
+                        <th>Patient ID</th>
+                        <th>Doctor ID</th>
+                     </tr>
+                  </thead>
+                  <tbody id="completed-requests-body">
+                     <tr><td colspan="4">Loading...</td></tr>
+                  </tbody>
+               </table>
+            </div>
 
             <!-- Pagination -->
             <div class="pagination" id="pagination-controls">
@@ -181,9 +169,8 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
             // Polling for new data
             let isSearching = false;
 
-            // Poll for new data every 2 seconds
+            // Poll for new data every 1 second (adjusted from 2s for faster feedback)
             setInterval(() => {
-               // Only poll if no search is active
                if (!isSearching) {
                   fetch('<?= ROOT ?>/MedicationRequests/getRequestsJson')
                      .then(response => response.json())
@@ -191,13 +178,10 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                         const pending = document.getElementById('pending-requests-body');
                         const completed = document.getElementById('completed-requests-body');
 
-                        // Clear existing table data
                         pending.innerHTML = '';
                         completed.innerHTML = '';
 
-                        // Iterate over the data
                         data.forEach(request => {
-                           // Parse time without assuming it is UTC
                            const [hours, minutes, seconds] = request.time.split(':');
                            const date = new Date();
                            date.setHours(hours, minutes, seconds || 0);
@@ -216,7 +200,6 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                        <td>${request.doctor_id}</td>
                                     </tr>`;
 
-                           // Append rows to the appropriate table body
                            if (request.state == 'pending') pending.innerHTML += row;
                            if (request.state == 'completed') completed.innerHTML += row;
                         });
@@ -225,9 +208,8 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                      })
                      .catch(console.error);
                }
-            }, 1000);
+            }, 500);
 
-            // Format time to hh:mm AM/PM
             function formatTimeToAmPm(time) {
                const [hours, minutes, seconds] = time.split(':');
                const date = new Date();
@@ -239,7 +221,6 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                });
             }
 
-            // Search functionality with debouncing
             let debounceTimeout;
             document.querySelector('.search-input').addEventListener('input', function(e) {
                clearTimeout(debounceTimeout);
@@ -251,14 +232,12 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                      fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
                         .then(response => response.json())
                         .then(data => {
-                           // Clear previous results
                            const requestBodies = document.querySelectorAll('.requests-section tbody');
                            requestBodies.forEach(body => body.innerHTML = '');
 
-                           // Handle search results
                            if (data.length) {
                               data.forEach(request => {
-                                 const formattedTime = formatTimeToAmPm(request.time); // Format the time
+                                 const formattedTime = formatTimeToAmPm(request.time);
 
                                  const row = `
                                     <tr data-id="${request.id}">
@@ -268,13 +247,10 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                                        <td>${request.doctor_id}</td>
                                     </tr>`;
                                  if (request.state == "completed") {
-                                    const tableBody = document.querySelector("#completed-requests-body");
-                                    tableBody.innerHTML += row;
-                                 }else {
-                                    const tableBody = document.querySelector("#pending-requests-body");
-                                    tableBody.innerHTML += row;
+                                    document.querySelector("#completed-requests-body").innerHTML += row;
+                                 } else {
+                                    document.querySelector("#pending-requests-body").innerHTML += row;
                                  }
-
                               });
                            } else {
                               alert('No results found.');
@@ -284,14 +260,11 @@ $completedRequests = $DB->read("SELECT * FROM medication_requests WHERE state = 
                         })
                         .catch(console.error);
                   } else {
-                     // Reset the flag when search input is cleared
                      isSearching = false;
                   }
-               });
+               }, 300); // Debounce delay
             });
 
-
-            // Redirect to details page on row click
             document.addEventListener('click', e => {
                const row = e.target.closest('tr[data-id]');
                if (row) {

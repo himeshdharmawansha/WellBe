@@ -11,15 +11,7 @@ class MedicationRequests extends Controller
 
    public function index()
    {
-      $pendingRequests = $this->medicationRequestModel->getPendingRequests();
-      $progressRequests = $this->medicationRequestModel->getProgressRequests();
-      $completedRequests = $this->medicationRequestModel->getCompletedRequests();
 
-      $this->view('Pharmacy/requests', 'requests', [
-         'pendingRequests' => $pendingRequests,
-         'progressRequests' => $progressRequests,
-         'completedRequests' => $completedRequests,
-      ]);
    }
 
    public function getRequestsJson()

@@ -91,7 +91,7 @@ class ProfileModel extends Model
     public function deleteImage($userId)
     {
         $db = new Database();
-        $query = "UPDATE {$this->table} SET image = NULL WHERE id = :id";
+        $query = "UPDATE {$this->table} SET image = 'Profile_default.png' WHERE id = :id";
         $result = $db->write($query, ['id' => $userId]);
         if (!$result) {
             throw new Exception("Failed to delete image from user_profile table for user ID: $userId");

@@ -2,7 +2,7 @@
 
 class ProfileModel extends Model
 {
-    protected $table = 'users';
+    protected $table = 'user_profile'; // Updated table name
 
     protected $allowedColumns = [
         'id',
@@ -42,25 +42,58 @@ class ProfileModel extends Model
 
     public function updateImage($userId, $image)
     {
+        // Validate inputs
+        if (empty($userId)) {
+            throw new Exception("User ID cannot be empty");
+        }
+        if (empty($image)) {
+            throw new Exception("Image filename cannot be empty");
+        }
+
+        // Log the inputs
+        error_log("updateImage called with userId: $userId, image: $image", 3, __DIR__ . '/../../logs/debug.log');
+
         $db = new Database();
+
+        // Check if the user ID exists
+        $exists = $db->read("SELECT 1 FROM {$this->table} WHERE id = :id LIMIT 1", ['id' => $userId]);
+        if (!$exists) {
+            throw new Exception("User ID $userId does not exist in user_profile table");
+        }
+
         // First, get the current image to delete it
         $current = $this->getImage($userId);
         if ($current && !empty($current['profile_image_url'])) {
             $oldImagePath = __DIR__ . '/../../public/assets/images/users/' . basename($current['profile_image_url']);
             if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
+                if (!unlink($oldImagePath)) {
+                    error_log("Failed to delete old image file: $oldImagePath", 3, __DIR__ . '/../../logs/error.log');
+                }
             }
         }
 
-        // Update with the new image
+        // Update with the new image (filename with extension)
         $query = "UPDATE {$this->table} SET image = :image WHERE id = :id";
-        $db->write($query, ['image' => $image, 'id' => $userId]);
+        $params = ['image' => $image, 'id' => $userId];
+        $result = $db->write($query, $params);
+
+        // Log the query result
+        // if ($result === false) {
+        //     $errorInfo = $db->getLastError(); // Assuming Database class has a method to get the last error
+        //     error_log("Failed to execute query: $query with params: " . json_encode($params) . " - Error: " . json_encode($errorInfo), 3, __DIR__ . '/../../logs/error.log');
+        //     throw new Exception("Failed to update image in user_profile table for user ID: $userId - Database error: " . json_encode($errorInfo));
+        // } else {
+        //     error_log("Successfully updated image for user ID: $userId with filename: $image", 3, __DIR__ . '/../../logs/debug.log');
+        // }
     }
 
     public function deleteImage($userId)
     {
         $db = new Database();
         $query = "UPDATE {$this->table} SET image = NULL WHERE id = :id";
-        $db->write($query, ['id' => $userId]);
+        $result = $db->write($query, ['id' => $userId]);
+        if (!$result) {
+            throw new Exception("Failed to delete image from user_profile table for user ID: $userId");
+        }
     }
 }

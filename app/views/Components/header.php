@@ -2,7 +2,7 @@
 require_once(__DIR__ . "/../../controllers/ProfileController.php");
 
 // Assume $_SESSION['USER'] has an 'id' property; adjust if it's different
-$userId = $_SESSION['USER']->id ?? $_SESSION['userid'] ?? null;
+$userId = $_SESSION['USER']->nic ?? $_SESSION['userid'] ?? null;
 $image = $_SESSION['USER']->image ?? null; // Check if image is in session
 
 // Construct a placeholder image URL; we'll update it via JavaScript
@@ -24,7 +24,7 @@ $profileImageUrl = $image
       .modal {
          display: none;
          position: fixed;
-         top: 0; /* Fixed typo */
+         top: 0;
          left: 0;
          width: 100%;
          height: 100%;
@@ -191,19 +191,27 @@ $profileImageUrl = $image
          })
          .then(response => {
             if (!response.ok) {
-               throw new Error('Network response was not ok: ' + response.statusText);
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
             }
-            return response.json();
+            return response.text(); // Get raw text first for debugging
          })
-         .then(data => {
-            if (data.status === 'success') {
-               const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
-               avatar.src = newImageUrl;
-               modalImage.src = newImageUrl;
-               closeModal();
-            } else {
-               console.error('Upload error:', data);
-               alert('Error uploading photo: ' + (data.error || 'Unknown error'));
+         .then(text => {
+            try {
+               const data = JSON.parse(text);
+               if (data.status === 'success') {
+                  const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
+                  avatar.src = newImageUrl;
+                  modalImage.src = newImageUrl;
+                  closeModal();
+               } else {
+                  console.error('Upload error:', data);
+                  alert('Error uploading photo: ' + (data.error || 'Unknown error'));
+               }
+            } catch (e) {
+               console.error('Failed to parse JSON response:', text);
+               throw new Error('Invalid JSON response: ' + e.message + ' - Raw response: ' + text);
             }
          })
          .catch(error => {
@@ -221,7 +229,9 @@ $profileImageUrl = $image
          })
          .then(response => {
             if (!response.ok) {
-               throw new Error('Network response was not ok: ' + response.statusText);
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
             }
             return response.json();
          })

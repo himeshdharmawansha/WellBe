@@ -1,14 +1,61 @@
 <?php
 require_once(__DIR__ . "/../../controllers/ProfileController.php");
+require_once(__DIR__ . "/../../models/ProfileModel.php");
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+
+// Initialize controllers and models
+$profileModel = new ProfileModel();
+$chatController = new ChatController();
 
 // Assume $_SESSION['USER'] has an 'id' property; adjust if it's different
 $userId = $_SESSION['USER']->nic ?? $_SESSION['userid'] ?? null;
-$image = $_SESSION['USER']->image ?? null; // Check if image is in session
 
-// Construct a placeholder image URL; we'll update it via JavaScript
-$profileImageUrl = $image
-   ? ROOT . '/assets/images/users/' . $image
-   : ROOT . '/assets/images/users/Profile_default.png'; // Using the ash-colored default
+// Fetch all profiles from ProfileModel
+$profiles = $profileModel->getAll(); // Array of objects
+$profileImageUrl = ROOT . '/assets/images/users/Profile_default.png'; // Default image
+
+if (!empty($profiles) && !isset($profiles['error'])) {
+    foreach ($profiles as $profile) {
+        if ($profile->id == $userId && isset($profile->image)) {
+            $profileImageUrl = ROOT . '/assets/images/users/' . $profile->image;
+            break; // Exit loop once the current user's profile is found
+        }
+    }
+}
+
+// Determine roles based on user type for notification counts
+$userType = strtolower($_SESSION['user_type'] ?? '');
+switch ($userType) {
+    case 'pharmacy':
+        $roles = [3, 5];
+        break;
+    case 'lab':
+        $roles = [3, 5];
+        break;
+    case 'admin':
+        $roles = [1, 2, 4, 5];
+        break;
+    case 'patient':
+        $roles = [3, 5];
+        break;
+    case 'doctor':
+        $roles = [3, 4, 1, 2];
+        break;
+    default:
+        $roles = [3];
+        break;
+}
+
+// Fetch unseen counts on page load
+$unseenCounts = $chatController->UnseenCounts($roles);
+$totalUnseen = 0;
+if (is_array($unseenCounts)) {
+    $totalUnseen = array_reduce($unseenCounts, function($sum, $user) {
+        return $sum + ($user['unseen_count'] ?? 0);
+    }, 0);
+}
+// Set initial badge visibility
+$badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
 ?>
 
 <!DOCTYPE html>
@@ -22,199 +69,6 @@ $profileImageUrl = $image
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
    <!-- Include Cropper.js CSS -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-   <style>
-      /* Modal Styling */
-      .modal {
-         display: none;
-         position: fixed;
-         top: 0;
-         left: 0;
-         width: 100%;
-         height: 100%;
-         background-color: rgba(0, 0, 0, 0.5);
-         z-index: 1000;
-         justify-content: center;
-         align-items: center;
-      }
-
-      .modal-content {
-         background-color: #1b1f23;
-         /* Black background to match screenshot */
-         padding: 0 30px;
-         /* No top/bottom padding, only side padding */
-         border-radius: 8px;
-         width: 650px;
-         text-align: center;
-         position: relative;
-         color: white;
-      }
-
-      .modal-header {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         padding: 20px 0;
-         /* Adjusted padding */
-      }
-
-      .modal-header h3 {
-         margin: 0;
-         font-size: 20px;
-         color: white;
-         text-align: left;
-      }
-
-      .modal-header .close-btn {
-         background: none;
-         border: none;
-         font-size: 24px;
-         color: white;
-         cursor: pointer;
-      }
-
-      .modal-image {
-         width: 280px;
-         height: 280px;
-         border-radius: 50%;
-         object-fit: cover;
-         margin: 0 auto 20px;
-         display: block;
-      }
-
-      .visibility-btn {
-         display: flex;
-         align-items: center;
-         gap: 5px;
-         background: none;
-         border: 1px solid #fff;
-         color: white;
-         padding: 5px 10px;
-         border-radius: 20px;
-         font-size: 14px;
-         margin-bottom: 20px;
-         cursor: default;
-         /* Placeholder, non-functional for now */
-      }
-
-      .modal-footer hr {
-         border: 0;
-         border-top: 1px solid #555;
-         /* Light gray HR to match screenshot */
-         margin: 0 0 20px 0;
-      }
-
-      .modal-footer {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         padding: 5px 0px 0px 0px;
-         /* Adjusted padding */
-         background: transparent;
-         /* Transparent background to blend with modal */
-      }
-
-      .modal-footer .left-buttons {
-         display: flex;
-         gap: 10px;
-      }
-
-      .modal-footer .right-buttons {
-         display: flex;
-      }
-
-      .modal-footer label,
-      .modal-footer button {
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-         gap: 5px;
-         padding: 10px 15px;
-         border: none;
-         background: #1b1f23;
-         /* Gray background to match screenshot */
-         color: white;
-         cursor: pointer;
-         font-size: 14px;
-         font-weight: 500;
-         border-radius: 4px;
-         transition: background 0.3s ease;
-         /* Smooth hover transition */
-      }
-
-      .modal-footer label:hover,
-      .modal-footer button:hover {
-         background: #888;
-         /* Lighter gray on hover to match screenshot */
-      }
-
-      .modal-footer i {
-         font-size: 18px;
-         color: white;
-      }
-
-      .modal-footer input[type="file"] {
-         display: none;
-      }
-
-      /* Edit Modal Styling (unchanged) */
-      #editModal .modal-content {
-         width: 700px;
-      }
-
-      .edit-container {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-      }
-
-      .edit-image-container {
-         width: 390px;
-         height: 390px;
-         position: relative;
-         overflow: hidden;
-         border-radius: 50%;
-      }
-
-      .edit-image {
-         max-width: 100%;
-         max-height: 100%;
-      }
-
-      .edit-controls {
-         width: 200px;
-         padding: 10px;
-      }
-
-      .edit-controls button,
-      .edit-controls input {
-         display: block;
-         width: 100%;
-         margin: 10px 0;
-         padding: 8px;
-         border-radius: 4px;
-         border: none;
-         cursor: pointer;
-      }
-
-      .edit-controls button {
-         background-color: #0073b1;
-         color: white;
-      }
-
-      .edit-controls input[type="range"] {
-         width: 100%;
-      }
-
-      .save-btn {
-         background-color: #28a745;
-         color: white;
-         padding: 10px 20px;
-         border: none;
-         border-radius: 4px;
-         cursor: pointer;
-         margin: 20px 0px 15px 0px;
-      }
-   </style>
 </head>
 
 <body>
@@ -226,7 +80,7 @@ $profileImageUrl = $image
          <a href="chat">
             <div class="notification-icon">
                <i class="fas fa-bell"></i>
-               <span class="notification-badge"></span>
+               <span class="notification-badge" style="display: <?= $badgeVisibility ?>;"></span>
             </div>
          </a>
          <div class="user-details">
@@ -542,6 +396,7 @@ $profileImageUrl = $image
             });
          }, 'image/jpeg');
       }
+
       // Handle photo deletion
       function deletePhoto() {
          if (!confirm('Are you sure you want to delete your profile photo?')) return;
@@ -583,31 +438,9 @@ $profileImageUrl = $image
          }
       });
 
-      // Existing notification badge script
+      // Notification badge script
       const userType = '<?php echo strtolower($_SESSION['user_type'] ?? ''); ?>';
-      let roles;
-
-      switch (userType) {
-         case 'pharmacy':
-            roles = '3,5';
-            break;
-         case 'lab':
-            roles = '3,5';
-            break;
-         case 'admin':
-            roles = '1,2,4,5';
-            break;
-         case 'patient':
-            roles = '3,5';
-            break;
-         case 'doctor':
-            roles = '3,4,1,2';
-            break;
-         default:
-            roles = '3';
-            console.warn('Unknown user type:', userType);
-            break;
-      }
+      let roles = '<?php echo implode(',', $roles); ?>'; // Pass PHP roles to JS
 
       function updateNotificationBadge() {
          fetch('<?= ROOT ?>/ChatController/getUnseenCounts?roles=' + roles)
@@ -632,7 +465,7 @@ $profileImageUrl = $image
             .catch(error => console.error("Fetch error:", error));
       }
 
-      updateNotificationBadge();
+      // Initial call is already handled by PHP, but we keep the JS update for real-time
       setInterval(updateNotificationBadge, 500);
    </script>
 </body>

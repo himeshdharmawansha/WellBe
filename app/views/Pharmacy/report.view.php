@@ -11,40 +11,38 @@
 </head>
 
 <body>
-   <div class="dashboard-container">
+   <div class="pharmacy-report-dashboard-container">
       <?php $this->renderComponent('navbar', $active); ?>
-      <div class="main-content">
+      <div class="pharmacy-report-main-content">
          <?php
          $pageTitle = "Generate Report";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
-         <div class="dashboard-content">
-            <div class="welcome-message">
-               <h4 class="welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
-               <h4 class="date"><?php echo date('j M, Y'); ?></h4>
+         <div class="pharmacy-report-dashboard-content">
+            <div class="pharmacy-report-welcome-message">
+               <h4 class="pharmacy-report-welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
+               <h4 class="pharmacy-report-date"><?php echo date('j M, Y'); ?></h4>
             </div>
-            <div class="generate">
-               <div class="inputs">
+            <div class="pharmacy-report-generate">
+               <div class="pharmacy-report-inputs">
                   <label for="start">Start:</label>
                   <input type="date" name="start" id="start">
                   <label for="end">End:</label>
                   <input type="date" name="end" id="end">
                </div>
-               <button class="report">Generate Report</button>
+               <button class="pharmacy-report-report">Generate Report</button>
             </div>
          </div>
-
       </div>
-   </div>
    </div>
 
    <script>
       document.addEventListener('DOMContentLoaded', () => {
-         const reportButton = document.querySelector('.report');
+         const reportButton = document.querySelector('.pharmacy-report-report');
          const startDateInput = document.getElementById('start');
          const endDateInput = document.getElementById('end');
          const popupOverlay = document.createElement('div');
-         popupOverlay.classList.add('popup-overlay');
+         popupOverlay.classList.add('pharmacy-report-popup-overlay');
 
          // Set default dates
          const today = new Date();
@@ -62,32 +60,32 @@
          endDateInput.value = formatDateInputValue(today);
 
          popupOverlay.innerHTML = `
-            <div class="popup-content">
-               <div class="header-container">
-                  <div class="header-title">
+            <div class="pharmacy-report-popup-content">
+               <div class="pharmacy-report-header-container">
+                  <div class="pharmacy-report-header-title">
                      <h1>Medication Report</h1>
                   </div>
-                  <div class="header-right">
-                     <img src="<?= ROOT ?>/assets/images/logo.png" alt="WellBe Logo" class="header-image">
+                  <div class="pharmacy-report-header-right">
+                     <img src="<?= ROOT ?>/assets/images/logo.png" alt="WellBe Logo" class="pharmacy-report-header-image">
                   </div>
                </div>
-               <div class="header-left">
+               <div class="pharmacy-report-header-left">
                   <h4>WELLBE</h4>
                   <p>By <strong><?= $_SESSION['USER']->first_name ?></strong></p>
                   <p id="date-range"></p>
                </div>
-               <div class="popup-body">
-                  <button class="popup-close">&times;</button>
+               <div class="pharmacy-report-popup-body">
+                  <button class="pharmacy-report-popup-close">×</button>
                   <div id="bar_chart" style="width: 100%; height: 300px;"></div>
                   <div id="line_chart" style="width: 100%; height: 300px;"></div>
                </div>
-               <button class="popup-print" onclick="window.print()">Print</button>
+               <button class="pharmacy-report-popup-print" onclick="window.print()">Print</button>
             </div>
          `;
 
          document.body.appendChild(popupOverlay);
 
-         const popupClose = popupOverlay.querySelector('.popup-close');
+         const popupClose = popupOverlay.querySelector('.pharmacy-report-popup-close');
          popupClose.addEventListener('click', () => {
             popupOverlay.style.display = 'none';
          });

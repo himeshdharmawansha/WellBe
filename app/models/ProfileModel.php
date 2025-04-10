@@ -2,60 +2,65 @@
 
 class ProfileModel extends Model
 {
-    protected $table = 'user_profile';
-    protected $allowedColumns = ['id', 'username', 'image', 'state']; // Adjust based on your actual columns
+    protected $table = 'users';
 
-    // Fetch a single user's profile by ID
+    protected $allowedColumns = [
+        'id',
+        'image',
+    ];
+
     public function getImage($userId)
     {
-        $query = "SELECT id, username, image, state FROM user_profile WHERE id = :userId";
-        $params = [':userId' => $userId];
-        $result = $this->read($query, $params);
+        $db = new Database();
+        $query = "SELECT image FROM {$this->table} WHERE id = :id LIMIT 1";
+        $result = $db->read($query, ['id' => $userId]);
 
-        if (!empty($result)) {
-            $user = $result[0];
-            $user['profile_image_url'] = !empty($user['image']) 
-                ? ROOT . '/assets/images/users/' . $user['image'] 
-                : ROOT . '/assets/images/users/Profile_default.png'; // Default image
-            return $user;
+        if ($result) {
+            $image = $result[0]['image'] ?? null;
+            return [
+                'profile_image_url' => $image ? ROOT . '/assets/images/users/' . $image : null
+            ];
         }
         return null;
     }
 
-    // Fetch all user profiles
     public function getImageAll()
     {
-        $query = "SELECT id, username, image, state FROM user_profile";
-        $result = $this->read($query);
+        $db = new Database();
+        $query = "SELECT id, image FROM {$this->table}";
+        $results = $db->read($query);
 
-        if (!empty($result)) {
-            foreach ($result as &$user) {
-                $user['profile_image_url'] = !empty($user['image']) 
-                    ? ROOT . '/assets/images/users/' . $user['image'] 
-                    : ROOT . '/assets/images/users/Profile_default.png'; // Default image
+        $users = [];
+        foreach ($results as $user) {
+            $users[] = [
+                'id' => $user['id'],
+                'profile_image_url' => $user['image'] ? ROOT . '/assets/images/users/' . $user['image'] : null
+            ];
+        }
+        return $users;
+    }
+
+    public function updateImage($userId, $image)
+    {
+        $db = new Database();
+        // First, get the current image to delete it
+        $current = $this->getImage($userId);
+        if ($current && !empty($current['profile_image_url'])) {
+            $oldImagePath = __DIR__ . '/../../public/assets/images/users/' . basename($current['profile_image_url']);
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
             }
         }
-        return $result;
+
+        // Update with the new image
+        $query = "UPDATE {$this->table} SET image = :image WHERE id = :id";
+        $db->write($query, ['image' => $image, 'id' => $userId]);
     }
 
-    // Placeholder for deleting a user's profile image
     public function deleteImage($userId)
     {
-        // To be implemented later
-        $query = "UPDATE user_profile SET image = NULL WHERE id = :userId";
-        $params = [':userId' => $userId];
-        $this->write($query, $params);
-    }
-
-    // Placeholder for updating a user's profile image
-    public function updateImage($userId, $newImage)
-    {
-        // To be implemented later
-        $query = "UPDATE user_profile SET image = :image WHERE id = :userId";
-        $params = [
-            ':image' => $newImage,
-            ':userId' => $userId
-        ];
-        $this->write($query, $params);
+        $db = new Database();
+        $query = "UPDATE {$this->table} SET image = NULL WHERE id = :id";
+        $db->write($query, ['id' => $userId]);
     }
 }

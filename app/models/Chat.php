@@ -167,7 +167,7 @@ class Chat extends Model
       return $this->read($querySql, [':query' => '%' . $query . '%']);
    }
 
-   // Moved from controller: Handle user login state and message updates
+   // Moved from controller: Handle user loginWS login state and message updates
    public function setLoggedIn($userId)
    {
       // Update user state to 1 (logged in)

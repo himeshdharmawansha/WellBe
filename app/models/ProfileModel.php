@@ -65,10 +65,19 @@ class ProfileModel extends Model
         $current = $this->getImage($userId);
         if ($current && !empty($current['profile_image_url'])) {
             $oldImagePath = __DIR__ . '/../../public/assets/images/users/' . basename($current['profile_image_url']);
-            if (file_exists($oldImagePath) && basename($oldImagePath) !== 'Profile_default.png') {
-            if (!unlink($oldImagePath)) {
-                error_log("Failed to delete old image file: $oldImagePath", 3, __DIR__ . '/../../logs/error.log');
+            $oldOriginalImagePath = __DIR__ . '/../../public/assets/images/users/' . pathinfo(basename($current['profile_image_url']), PATHINFO_FILENAME) . '_original.' . pathinfo(basename($current['profile_image_url']), PATHINFO_EXTENSION);
+            
+            // Delete the old edited file
+            if (file_exists($oldImagePath)) {
+                if (!unlink($oldImagePath)) {
+                    error_log("Failed to delete old image file: $oldImagePath", 3, __DIR__ . '/../../logs/error.log');
+                }
             }
+            // Delete the old original file
+            if (file_exists($oldOriginalImagePath)) {
+                if (!unlink($oldOriginalImagePath)) {
+                    error_log("Failed to delete old original image file: $oldOriginalImagePath", 3, __DIR__ . '/../../logs/error.log');
+                }
             }
         }
 

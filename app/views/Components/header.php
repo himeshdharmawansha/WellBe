@@ -292,10 +292,11 @@ $profileImageUrl = $image
       const userId = '<?php echo $userId; ?>';
       const avatar = document.getElementById('userAvatar');
       const modalImage = document.getElementById('modalProfileImage');
-      const defaultImageUrl = '<?= ROOT ?>/assets/images/users/fault.png';
+      const defaultImageUrl = '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
       let cropper = null;
       let uploadedFile = null;
+      let currentFilename = null; // Store the filename of the uploaded file
 
       if (userId) {
          fetch('<?= ROOT ?>/ProfileController/get/' + userId)
@@ -326,27 +327,43 @@ $profileImageUrl = $image
       // Close profile modal
       function closeModal() {
          modal.style.display = 'none';
+         uploadedFile = null; // Reset uploaded file
+         currentFilename = null; // Reset filename
       }
 
       // Show edit modal
       const editModal = document.getElementById('editModal');
-
       function openEditModal() {
-         if (!uploadedFile && !modalImage.src.includes('Profile_default.png')) {
-            // If no new file is uploaded, use the current profile image for editing
-            const imageUrl = modalImage.src;
-            const editImage = document.getElementById('editImage');
-            editImage.src = imageUrl;
-            initializeCropper();
-            editModal.style.display = 'flex';
-            modal.style.display = 'none';
-         } else if (uploadedFile) {
+         if (uploadedFile) {
             // If a new file is uploaded, use it for editing
             const editImage = document.getElementById('editImage');
             editImage.src = URL.createObjectURL(uploadedFile);
             initializeCropper();
             editModal.style.display = 'flex';
             modal.style.display = 'none';
+         } else if (!modalImage.src.includes('Profile_default.png')) {
+            // Fetch the original image for editing
+            fetch('<?= ROOT ?>/ProfileController/get/' + userId)
+               .then(response => response.json())
+               .then(data => {
+                  if (data && !data.error && data.profile_image_url) {
+                     const baseFilename = data.profile_image_url.split('/').pop();
+                     const originalFilename = baseFilename.replace(/(\.[^.]+)$/, '_original$1');
+                     const originalImageUrl = '<?= ROOT ?>/assets/images/users/' + originalFilename;
+                     const editImage = document.getElementById('editImage');
+                     editImage.src = originalImageUrl;
+                     currentFilename = baseFilename; // Store the current filename
+                     initializeCropper();
+                     editModal.style.display = 'flex';
+                     modal.style.display = 'none';
+                  } else {
+                     alert('Failed to load original image for editing.');
+                  }
+               })
+               .catch(error => {
+                  console.error('Error fetching profile:', error);
+                  alert('Failed to load image for editing.');
+               });
          } else {
             alert('Please upload a photo first.');
          }
@@ -365,16 +382,51 @@ $profileImageUrl = $image
          document.getElementById('straightenSlider').value = 0;
       }
 
-      // Handle photo upload and redirect to edit modal
+      // Handle photo upload and save the original file immediately
       function handlePhotoUpload(event) {
          uploadedFile = event.target.files[0];
          if (!uploadedFile) return;
 
-         const editImage = document.getElementById('editImage');
-         editImage.src = URL.createObjectURL(uploadedFile);
-         initializeCropper();
-         editModal.style.display = 'flex';
-         modal.style.display = 'none';
+         // Generate a random filename
+         const randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+         const extension = uploadedFile.name.split('.').pop();
+         const filename = `${randomString}.${extension}`;
+
+         // Save the original file immediately
+         const formData = new FormData();
+         formData.append('photo', uploadedFile);
+         formData.append('userId', userId);
+         formData.append('filename', filename); // Pass the random filename
+
+         fetch('<?= ROOT ?>/ProfileController/saveOriginalPhoto', {
+            method: 'POST',
+            body: formData
+         })
+         .then(response => {
+            if (!response.ok) {
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
+            }
+            return response.json();
+         })
+         .then(data => {
+            if (data.status === 'success') {
+               currentFilename = data.filename; // Store the filename for later use
+               const editImage = document.getElementById('editImage');
+               editImage.src = URL.createObjectURL(uploadedFile);
+               initializeCropper();
+               editModal.style.display = 'flex';
+               modal.style.display = 'none';
+            } else {
+               console.error('Upload error:', data);
+               alert('Error uploading original photo: ' + (data.error || 'Unknown error'));
+            }
+         })
+         .catch(error => {
+            console.error('Upload error:', error);
+            alert('Failed to upload original photo: ' + error.message);
+         });
       }
 
       // Initialize Cropper.js
@@ -435,8 +487,8 @@ $profileImageUrl = $image
 
          // Get the cropped canvas
          const canvas = cropper.getCroppedCanvas({
-            width: 200, // Same as modal image size
-            height: 200,
+            width: 280, // Match modal image size
+            height: 280,
          });
 
          // Convert canvas to blob
@@ -447,7 +499,7 @@ $profileImageUrl = $image
             }
 
             // Create a new file from the blob
-            const editedFile = new File([blob], uploadedFile ? uploadedFile.name : 'edited-image.jpg', {
+            const editedFile = new File([blob], currentFilename, {
                type: 'image/jpeg',
             });
 
@@ -455,51 +507,11 @@ $profileImageUrl = $image
             const formData = new FormData();
             formData.append('photo', editedFile);
             formData.append('userId', userId);
+            formData.append('filename', currentFilename); // Use the same filename
 
-            fetch('<?= ROOT ?>/ProfileController/uploadPhoto', {
-                  method: 'POST',
-                  body: formData
-               })
-               .then(response => {
-                  if (!response.ok) {
-                     return response.text().then(text => {
-                        throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
-                     });
-                  }
-                  return response.text();
-               })
-               .then(text => {
-                  try {
-                     const data = JSON.parse(text);
-                     if (data.status === 'success') {
-                        const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
-                        avatar.src = newImageUrl;
-                        modalImage.src = newImageUrl;
-                        closeEditModal();
-                        closeModal();
-                        uploadedFile = null; // Reset the uploaded file
-                     } else {
-                        console.error('Upload error:', data);
-                        alert('Error uploading photo: ' + (data.error || 'Unknown error'));
-                     }
-                  } catch (e) {
-                     console.error('Failed to parse JSON response:', text);
-                     throw new Error('Invalid JSON response: ' + e.message + ' - Raw response: ' + text);
-                  }
-               })
-               .catch(error => {
-                  console.error('Upload error:', error);
-                  alert('Failed to upload photo: ' + error.message);
-               });
-         }, 'image/jpeg');
-      }
-
-      // Handle photo deletion
-      function deletePhoto() {
-         if (!confirm('Are you sure you want to delete your profile photo?')) return;
-
-         fetch('<?= ROOT ?>/ProfileController/deletePhoto/' + userId, {
-               method: 'POST'
+            fetch('<?= ROOT ?>/ProfileController/saveEditedPhoto', {
+               method: 'POST',
+               body: formData
             })
             .then(response => {
                if (!response.ok) {
@@ -511,18 +523,54 @@ $profileImageUrl = $image
             })
             .then(data => {
                if (data.status === 'success') {
-                  avatar.src = defaultImageUrl;
-                  modalImage.src = defaultImageUrl;
+                  const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
+                  avatar.src = newImageUrl;
+                  modalImage.src = newImageUrl;
+                  closeEditModal();
                   closeModal();
+                  uploadedFile = null; // Reset the uploaded file
+                  currentFilename = null; // Reset the filename
+                  location.reload(); // Refresh the page to update the profile
                } else {
-                  console.error('Delete error:', data);
-                  alert('Error deleting photo: ' + (data.error || 'Unknown error'));
+                  console.error('Upload error:', data);
+                  alert('Error uploading edited photo: ' + (data.error || 'Unknown error'));
                }
             })
             .catch(error => {
-               console.error('Delete error:', error);
-               alert('Failed to delete photo: ' + error.message);
+               console.error('Upload error:', error);
+               alert('Failed to upload edited photo: ' + error.message);
             });
+         }, 'image/jpeg');
+      }
+      // Handle photo deletion
+      function deletePhoto() {
+         if (!confirm('Are you sure you want to delete your profile photo?')) return;
+
+         fetch('<?= ROOT ?>/ProfileController/deletePhoto/' + userId, {
+            method: 'POST'
+         })
+         .then(response => {
+            if (!response.ok) {
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
+            }
+            return response.json();
+         })
+         .then(data => {
+            if (data.status === 'success') {
+               avatar.src = defaultImageUrl;
+               modalImage.src = defaultImageUrl;
+               closeModal();
+            } else {
+               console.error('Delete error:', data);
+               alert('Error deleting photo: ' + (data.error || 'Unknown error'));
+            }
+         })
+         .catch(error => {
+            console.error('Delete error:', error);
+            alert('Failed to delete photo: ' + error.message);
+         });
       }
 
       // Close modal when clicking outside

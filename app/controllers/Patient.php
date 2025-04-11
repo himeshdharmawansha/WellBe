@@ -43,22 +43,22 @@ class Patient extends Controller
       $doctor = new Doctor(); // Instantiate the Doctor model
 
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-         
+
          $doctor_name = isset($_POST['doctor']) ? $_POST['doctor'] : '';
          $specialization = isset($_POST['specialization']) ? $_POST['specialization'] : '';
- 
+
          $data['doctor_name'] = $doctor_name;
 
          if (empty($doctor_name) || empty($specialization)) {
-             $data['error'] = "Please select a doctor.";
+            $data['error'] = "Please select a doctor.";
          } else {
 
-            $name = explode(" ",$doctor_name);
+            $name = explode(" ", $doctor_name);
 
             $first_name = $name[0];
             $last_name = isset($name[1]) ? $name[1] : "";
 
-            $docId = $doctor->getDoctorId($first_name,$last_name);
+            $docId = $doctor->getDoctorId($first_name, $last_name);
             $data['docId'] = $docId[0]->id;
             $data['doctorFee'] = $doctor->getFeesByDoctorId($docId[0]->id)[0]->fees;
             //echo $docId[0]->id;
@@ -71,16 +71,16 @@ class Patient extends Controller
             $appointment = new Appointments();
 
             //get current appointment num
-            $appointmentNums = $appointment->getAppointment($docId[0]->id,$availableDates['todayId']);
+            $appointmentNums = $appointment->getAppointment($docId[0]->id, $availableDates['todayId']);
 
-            foreach($availableDates['matchedDates'] as &$day){
+            foreach ($availableDates['matchedDates'] as &$day) {
                $isScheduled = NULL;
-               foreach($appointmentNums as $appointmentNum){
-                  if($day['slot_id'] === $appointmentNum->date){
-                     $isScheduled = $appointmentNum->appointment_id+1;
+               foreach ($appointmentNums as $appointmentNum) {
+                  if ($day['slot_id'] === $appointmentNum->date) {
+                     $isScheduled = $appointmentNum->appointment_id + 1;
                   }
                }
-               if(!$isScheduled){
+               if (!$isScheduled) {
                   $isScheduled = 1;
                }
                $day['appointment_id'] = $isScheduled;
@@ -92,10 +92,9 @@ class Patient extends Controller
       }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
-    
+
 
       $this->view('Patient/doc_appointment', 'doc_appointment', $data);
-
    }
 
    public function appointments()
@@ -136,50 +135,54 @@ class Patient extends Controller
       $input = file_get_contents("php://input");
       $data = json_decode($input, true);
 
-      $name = explode(" ",$data['doctor']);
+      $name = explode(" ", $data['doctor']);
 
       $first_name = $name[0];
       $last_name = isset($name[1]) ? $name[1] : "";
       $doctor = new Doctor();
 
       //get doctor id from name
-      $docId = $doctor->getDoctorId($first_name,$last_name);
+      $docId = $doctor->getDoctorId($first_name, $last_name);
       $data['docId'] = $docId[0]->id;
       //patient id
       $data['patientId'] = $_SESSION['USER']->id;
 
       //get date id by date
       $timeslot = new Timeslot();
-      $dateId = $timeslot -> getDateId($data['appointment_date']);
+      $dateId = $timeslot->getDateId($data['appointment_date']);
       $data['dateId'] = $dateId[0]->slot_id;
 
       //find patient type(returning or new)
       $medicalRecord = new MedicalRecord();
-      $pastRecords = $medicalRecord -> getPatientType();
+      $pastRecords = $medicalRecord->getPatientType();
       if (!empty($pastRecords) && count($pastRecords) > 0) {
          $data['patient_type'] = "RETURNING";
-     } else {
+      } else {
          $data['patient_type'] = "NEW";
-     }
+      }
 
       $appointment = new Appointments();
 
-      if ($data && $appointment->makeNewAppointment($data)) {
+      if ($data && $appointment->checkAppointmentExists($data)) {
          $response = [
-             "success" => true,
-             "message" => "Appointment created successfully"
+            "success" => true,
+            "message" => "Appointment already exists for this date and time"
          ];
-     } else {
+      } elseif ($data && $appointment->makeNewAppointment($data)) {
          $response = [
-             "success" => false,
-             "message" => "Invalid data or failed to create appointment"
+            "success" => true,
+            "message" => "Appointment created successfully"
          ];
-     }
+      } else {
+         $response = [
+            "success" => false,
+            "message" => "Invalid data or failed to create appointment"
+         ];
+      }
 
       // Return JSON response
       header('Content-Type: application/json');
       echo json_encode($response);
-
    }
 
    public function generatehash()
@@ -193,15 +196,15 @@ class Patient extends Controller
       $merchant_secret = 'MzkxMDUxMDYzNzIxMTExNDMyOTMyMDQ1NTQ0ODU3MzM1MTk3MDU4NA==';
       $hash = strtoupper(
          md5(
-             $merchant_id . 
-             $order_id . 
-             number_format($amount, 2, '.', '') . 
-             $currency .  
-             strtoupper(md5($merchant_secret)) 
-         ) 
-     );
+            $merchant_id .
+               $order_id .
+               number_format($amount, 2, '.', '') .
+               $currency .
+               strtoupper(md5($merchant_secret))
+         )
+      );
 
-     $data = [
+      $data = [
          'hash' => $hash,
          'order_id' => $order_id,
          'items' => 'Appointment Fees',
@@ -218,8 +221,8 @@ class Patient extends Controller
          'address' => 'No.1, Galle Road',
          'city' => 'Colombo',
          'country' => 'Sri Lanka',
-
-     ];
+         'patient_id' => $_SESSION['USER']->id,
+      ];
 
       header('Content-Type: application/json');
       echo json_encode($data);
@@ -233,5 +236,4 @@ class Patient extends Controller
       $filename = "../app/views/Components/{$component}.php";
       require $filename;
    }
-  
 }

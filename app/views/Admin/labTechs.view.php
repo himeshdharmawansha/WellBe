@@ -19,7 +19,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Lab Technicians"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/mvc/app/views/Components/Admin/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <!--Content Container-->
@@ -39,13 +39,27 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table class="patient-table">
+                    <table class="lab-tech-table">
                         <tr class="header-row">
                             <th>Lab Technician ID</th>
                             <th>Name</th>
                             <th>Age</th>
                             <th>Contact No</th>
                         </tr>    
+                        <?php if (!empty($labTechs)): ?>
+                            <?php foreach ($labTechs as $labTech): ?>
+                                <tr onclick="window.location.href='<?= ROOT ?>/Admin/labTechProfile?nic=<?= $labTech->nic ?>'">
+                                    <td><?= htmlspecialchars($labTech->nic) ?></td>
+                                    <td><?= htmlspecialchars($labTech->name) ?></td>
+                                    <td><?= htmlspecialchars($labTech->age) ?></td>
+                                    <td><?= htmlspecialchars($labTech->contact) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5">No lab technicians found.</td>
+                                </tr>
+                            <?php endif; ?>
                     </table>
                 </div>
             </div>     

@@ -19,7 +19,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Patients"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/mvc/app/views/Components/Admin/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <!--Content Container-->
@@ -29,42 +29,51 @@
                 </div>
                 <div class="form-container">
                     
-                    <form class="patient-form">
+                    <form class="patient-form" action="<?php echo ROOT; ?>/Admin/patientForm2" method="POST">
                         <span class="form-title">Health Information</span>
+
+                        <div class = "error-messages">
+                            <?php if (!empty($errors)): ?>
+                                <ul>
+                                    <?php foreach ($errors as $error): ?>
+                                        <li><?= htmlspecialchars($error) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+
                         <div class="form-row">
                             <label for="medical history">Medical History (Past illnesses, Surgeries):</label>
-                            <input type="text" id="medical history" name="medical history">
+                            <input type="text" id="medical_history" name="medical_history" value="<?= htmlspecialchars($formData['medical_history'] ?? '') ?>" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="allergies">Allergies:</label>
-                            <input type="text" id="allergies" name="allergies">
+                            <input type="text" id="allergies" name="allergies" value="<?= htmlspecialchars($formData['allergies'] ?? '') ?>" required>
                         </div>
 
                         <span class="form-title">Emergency Contact Information</span>
                         
                         <div class="form-row">
                             <label for="emergency name">Emergency Contact Name:</label>
-                            <input type="text" id="emergency name" name="emergency name">
+                            <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?= htmlspecialchars($formData['emergency_contact_name'] ?? '') ?>" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="emergency no">Emergency Contact No:</label>
-                            <input type="text" id="emergency no" name="emergency no">
+                            <input type="text" id="emergency_contact_no" name="emergency_contact_no" value="<?= htmlspecialchars($formData['emergency_contact_no'] ?? '') ?>" required>
                         </div>
 
                         <div class="form-row">
                             <label for="emergency relationship">Emergency Contact Relationship:</label>
-                            <input type="text" id="emergency relationship" name="emergency relationship">
+                            <input type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" value="<?= htmlspecialchars($formData['emergency_contact_relationship'] ?? '') ?>" required>
                         </div>
                         
                         <div class="buttons-bar">
                             <button type="submit" class="prev-button">
                                 <a href="<?= ROOT ?>/Admin/patientForm1">Previous</a>
                             </button>
-                            <button type="submit" class="submit-button">
-                                <a onclick="window.location.href='dashboard'">Submit</a>
-                            </button>
+                            <button type="submit" class="submit-button">Submit</button>
                         </div>
                         
                     </form>

@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,19 +21,19 @@
         $this -> renderComponent('navbar',$active);
         ?>
     
-        <div class="main-content" style="background-color: rgb(255, 255, 255);width: 100%; margin-top: 6%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;">
+        <div class="main-content" style="background-color: rgb(255, 255, 255);width: 100%;margin-bottom: 2%;overflow-y: auto;overflow-x: hidden;">
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
+            $pageTitle = "Today Check-Ups"; // Set the text you want to display
             //include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
             require '../app/views/Components/Doctor/header.php';
             ?>
 
-            <div class="items" style="justify-content: space-between;">
-                <div style="margin-top: 25px;">
+            <div class="items" style="display:flex;justify-content: space-between;">
+                <div style="margin-top: 25px;margin-right:50px">
                     <div class="guide">
                         <div class="status">
                             <p>Available for Check-Up      :  </p>
-                            <div style="width: 20px;height: 20px;background-color:#5D93FF;border-radius:20%;"></div>
+                            <div style="width: 20px;height: 20px;background-color:#559bf6;border-radius:20%;"></div>
                         </div>
                         <div class="status">
                             <p>Not Available for Check-Up  :  </p>
@@ -48,17 +47,17 @@
                     <div class="statQueue">
                     <?php if (!empty($data)): ?>
                         <?php foreach ($data as $appointment): ?>
-                            <a href="<?= ($appointment->state === 'PRESENT') ? ROOT . '/doctor/patient_details/' . $appointment->appointment_id : '#'; ?>" style="text-decoration: none;">
-                                <div class="boxQueue" style="<?php echo ($appointment->state === 'PRESENT') ? 'background-color: #5D93FF;' : ''; ?>">
+                            <a href="<?= ($appointment->state === 'PRESENT') ? ROOT . '/doctor/patient_details/' . $appointment->appointment_id . '/' . $appointment->patient_id : '#'; ?>" style="text-decoration: none;">
+                                <div class="boxQueue" style="<?php echo ($appointment->state === 'PRESENT') ? 'background-color: #559bf6;' : ''; ?>">
                                     <div class="box-itemQueue">
                                         <div>
-                                            <img src="http://localhost/newWellBe/WellBe/public/assets/images/patient.png">
+                                            <img src="<?= ROOT?>/assets/images/examination.png">
                                         </div>
                                         <div class="test">
                                             <p>
-                                                MR. <?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?>
+                                                <span style="color: black;">Name</span> : <?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?>
                                             </p>
-                                            <p>App.ID : <?php echo $appointment->appointment_id; ?></p>
+                                            <p><span style="color: black;">App.ID</span> : <?php echo $appointment->appointment_id; ?></p>
                                         </div>
                                     </div>
                                 </div>

@@ -330,10 +330,10 @@
         <p><i class="ri-phone-fill"></i> (+012) 3456 789</p>
       </div>
     </div>
-    <div class="footer__bar">
-      <div class="footer__bar__content">
+    <div class="footer_bar">
+      <div class="footer_bar_content">
         <p>Copyright © 2024 Well Be. All rights reserved.</p>
-        <div class="footer__socials">
+        <div class="footer_socials">
           <span><i class="ri-instagram-line"></i></span>
           <span><i class="ri-facebook-fill"></i></span>
           <span><i class="ri-heart-fill"></i></span>

@@ -19,7 +19,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Patients"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/mvc/app/views/Components/Admin/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <!--Content Container-->
@@ -46,6 +46,21 @@
                             <th>Age</th>
                             <th>Contact No</th>
                         </tr>
+                        <?php if (!empty($patients)): ?>
+                            <?php foreach ($patients as $patient): ?>
+                                <tr onclick="window.location.href='<?= ROOT ?>/Admin/patientProfile?nic=<?= $patient->nic ?>'">
+                                    <td><?= htmlspecialchars($patient->nic) ?></td>
+                                    <td><?= htmlspecialchars($patient->name) ?></td>
+                                    <td><?= htmlspecialchars($patient->age) ?></td>
+                                    <td><?= htmlspecialchars($patient->contact) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">No Patients found.</td>
+                            </tr>
+                        <?php endif; ?>
+
                     </table>
                 </div>
             </div>        

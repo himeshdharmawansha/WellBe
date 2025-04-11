@@ -1,3 +1,5 @@
+
+
 .items{
 
     margin-top: 50px;
@@ -76,10 +78,10 @@
 }
 
 .box-itemQueue img{
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%; /* Circular image */
-    background-color: #2F3C85; /* Ensure image background color matches design */
+    background-color: #1c4172; /* Ensure image background color matches design */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle image shadow */
     border: 2px solid #fff; /* White border for better contrast */
     flex-shrink: 0; /* Prevent the image from resizing */

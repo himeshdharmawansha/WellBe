@@ -194,7 +194,7 @@
 .top-buttons {
     display: flex;
     align-items: center;
-    gap: 700px;
+    gap: 500px;
 }
 
 .add-appointment {
@@ -250,21 +250,64 @@
     box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
 }
 
-.appointment-table {
+.appointment-table,
+.queue-table {
     width:100%;
+    padding: 20px;
     border-collapse: collapse;
+    margin-top: 20px;
     margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
 }
 
-.appointment-table th{
+.header-row {
     background-color: #EFF4FF;
-    color: #393939;
+}
+
+.appointment-table th,
+.queue-table th {
+    font-weight: bold;
+}
+
+.appointment-table th, td{
+    color: #212121;
     padding: 10px;
     text-align: left;
     font-size: 14px;
-    font-weight: normal;
 }
 
+.queue-table th, td{
+    color: #212121;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.appointment-table tr:not(.header-row):hover {
+    background-color: #c4c4c4f1; 
+    cursor: pointer;
+}
+
+.session-title {
+    font-size: 18px;
+    color: #091c5b;
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden;    /* Hide overflow if the text is too long */
+    /* text-overflow: ellipsis; /* Add ellipsis (...) if the text overflows */
+} 
+
+.patient-status-dropdown {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #EFF4FF;
+    color: #FF4747;
+}
+
+.patient-status-dropdown:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
 

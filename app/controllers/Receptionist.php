@@ -10,7 +10,7 @@ class Receptionist extends Controller
          'chat' => ["fas fa-comment-dots", "Chat"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
-      'userType' => 'admin'
+      'userType' => 'receptionist'
    ];
 
    public function index()
@@ -20,7 +20,12 @@ class Receptionist extends Controller
 
    public function appointmentsOngoing()
    {
-      $this->view('Receptionist/appointmentsOngoing', 'appointmentsOngoing');
+      $this->view('Receptionist/appointmentsOngoing', 'Appointments');
+   }
+
+   public function appointmentQueue()
+   {
+      $this->view('Receptionist/appointmentQueue', 'Appointments');
    }
 
    public function appointmentsUpcoming()

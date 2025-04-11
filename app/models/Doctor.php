@@ -60,7 +60,7 @@ class Doctor extends Model
         ";
 
         // Debug the query
-        //echo "Generated Query: <pre>$query</pre>";
+        echo("Generated Query: <pre>$query</pre>");
 
         // Execute the query
         return $this->query($query);
@@ -231,6 +231,7 @@ class Doctor extends Model
             `gender` = ?, 
             `address` = ?, 
             `email` = ?, 
+            `fees` = ?,
             `contact` = ?, 
             `emergency_contact` = ?, 
             `emergency_contact_relationship` = ?, 
@@ -275,7 +276,43 @@ class Doctor extends Model
         return $this->query($query, $data);
     }
 
+
+    public function getDocname()
+    {
+        $query = "SELECT  CONCAT(first_name, ' ', last_name) AS name FROM doctor";
+        return $this->query($query);
+    }
+
+    public function getDoctorsWithSpecializations()
+    {
+        $query = "SELECT CONCAT(first_name, ' ', last_name) AS name, specialization FROM doctor";
+        return $this->query($query);
+    }
+
+    public function getFeesByDoctorId($doctorId)
+    {
+        // SQL query to fetch fees based on doctor ID
+        $query = "SELECT fees FROM doctor WHERE id = :doctorId";
+        
+        // Parameters array
+        $data = ['doctorId' => $doctorId];
+    
+        // Execute the query with parameter binding
+        return $this->query($query, $data);
+    }
+    
+
+    public function getDoctorId($firstName,$lastName)
+    {
+        $query = "SELECT id FROM doctor WHERE first_name = :firstName AND last_name = :lastName";
+        $data = ['firstName'=>$firstName,'lastName'=>$lastName];
+        return $this->query($query,$data);
+    }
+    
+
 }
+
+
 
 
 

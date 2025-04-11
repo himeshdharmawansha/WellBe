@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +17,7 @@
       .header-left h1 {
          font-size: 24px;
          color: #172554;
+         font-weight: bold;
       }
 
       .header-right {
@@ -86,5 +86,4 @@
       </div>
    </header>
 </body>
-
 </html>

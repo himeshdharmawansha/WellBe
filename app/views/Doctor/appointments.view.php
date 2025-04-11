@@ -1,5 +1,3 @@
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,18 +15,16 @@
         ?>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content" >
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            //include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
+            $pageTitle = "Appointments";
             require '../app/views/Components/Doctor/header.php';
             ?>
-
             
             <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-botton: 10px">
+                <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-bottom: 10px">
                 <form action="" method="GET" style="display: flex; align-items: center;">
                     <label for="date-select" style="margin-right: 10px; font-weight: bold;">Select Date:</label>
                     <input type="date" id="date-select" name="selected_date" 
@@ -40,44 +36,24 @@
                 </div>
                 <hr>  
                 <div class="container">
-                    <div class="card">
-                        <p >Name :<span class="doc_name"> Mr Kasun Perera</span></p>
-                        <p >Appointment id :<span class="doc_name"> 01</span></p>
-                        <p >Gender:<span class="doc_name"> Male</span></p>
-                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
-                        <div class="new_patient" style="margin-top: 10px;">New Patient</div>
-                        
-                    </div>
-                    <div class="card">
-                        <p >Name :<span class="doc_name"> Mr Tiran Perera</span></p>
-                        <p >Appointment id :<span class="doc_name"> 02</span></p>
-                        <p >Gender:<span class="doc_name"> Male</span></p>
-                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
-                        <div class="new_patient" style="margin-top: 10px;">Returning Patient</div>
-                        <button class="returning_patient"><a style="color: #f3f3f3;" href="<?= ROOT ?>/doctor/display_record">Patient Records</a></button>
-                        
-                    </div>
-                    <div class="card">
-                        <p >Name :<span class="doc_name"> Mr Samitha Jayasooriya</span></p>
-                        <p >Appointment id :<span class="doc_name"> 03</span></p>
-                        <p >Gender:<span class="doc_name"> Male</span></p>
-                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
-                        <div class="new_patient" style="margin-top: 10px;">New Patient</div>
-                        
-                    </div>
-                    <div class="card">
-                        <p >Name :<span class="doc_name"> Mrs Nimali Silva</span></p>
-                        <p >Appointment id :<span class="doc_name"> 04</span></p>
-                        <p >Gender:<span class="doc_name"> Female</span></p>
-                        <p >Date :<span class="doc_name"> 2024-11-28</span></p>
-                        <div class="new_patient" style="margin-top: 10px;">Returning Patient</div>
-                        <button class="returning_patient"><a style="color: #f3f3f3;" href="<?= ROOT ?>/doctor/display_record">Patient Records</button>
-                        
-                    </div>
-                    
-
-                    <!-- Additional appointment cards here -->
-
+                    <?php if (!empty($data['appointmentsOnDate'])): ?>
+                        <?php foreach ($data['appointmentsOnDate'] as $appointment): ?>
+                            <div class="card">
+                                <p>Name: <span class="doc_name"><?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?></span></p>
+                                <p>Appointment ID: <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
+                                <p>Gender: <span class="doc_name"><?php echo $appointment->gender; ?></span></p>
+                                <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
+                                <button class="new_patient" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
+                                <?php if($appointment->patient_type == "Returning"): ?>
+                                    <button class="returning_patient">
+                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
+                                    </button>
+                                <?php endif ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p style="color:red;font-size:larger;margin-top:5%">No appointments yet for <?php echo htmlspecialchars($data['date']); ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

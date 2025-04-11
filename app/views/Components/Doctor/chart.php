@@ -8,11 +8,14 @@
 
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          ['Year', 'Sales', 'Expenses'],
-          ['2004',  1000,      400],
-          ['2005',  1170,      460],
-          ['2006',  660,       1120],
-          ['2007',  1030,      540]
+          ['Year', 'Appointments'],
+          ['1/30',  13],
+          ['1/31',  11],
+          ['2/1',  9],
+          ['2/2',  15],
+          ['2/3',  11],
+          ['2/4',  12],
+          ['2/5',  10]
         ]);
 
         var options = {

@@ -86,7 +86,7 @@ $testDetails = $he->getTestDetails($requestID);
                </div>
 
                <div class="button-container">
-                  <button class="completed-btn" id="doneButton" data-request-id="<?= $requestID ?>">Done</button>
+                  <button class="completed-btn" id="doneButton" data-request-id="<?= $requestID ?>">Completed</button>
                </div>
 
             <?php else: ?>

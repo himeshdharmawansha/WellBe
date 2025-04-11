@@ -160,22 +160,35 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
                   const imageUrl = data.profile_image_url || defaultImageUrl;
                   avatar.src = imageUrl;
                   modalImage.src = imageUrl;
+                  updateButtonStates(imageUrl); // Update button states after fetching
                } else {
                   avatar.src = defaultImageUrl;
                   modalImage.src = defaultImageUrl;
+                  updateButtonStates(defaultImageUrl); // Update button states for default
                }
             })
             .catch(error => {
                console.error('Error fetching profile:', error);
                avatar.src = defaultImageUrl;
                modalImage.src = defaultImageUrl;
+               updateButtonStates(defaultImageUrl); // Update button states on error
             });
+      }
+
+      // Function to update edit and delete button states
+      function updateButtonStates(imageUrl) {
+         const editButton = document.querySelector('.edit-btn');
+         const deleteButton = document.querySelector('.delete-btn');
+         const isDefault = imageUrl.includes('Profile_default.png');
+         editButton.disabled = isDefault;
+         deleteButton.disabled = isDefault;
       }
 
       // Show profile modal on double-click
       const modal = document.getElementById('profileModal');
       avatar.addEventListener('dblclick', function() {
          modal.style.display = 'flex';
+         updateButtonStates(modalImage.src); // Ensure buttons are updated when modal opens
       });
 
       // Close profile modal
@@ -380,6 +393,7 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
                   const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
                   avatar.src = newImageUrl;
                   modalImage.src = newImageUrl;
+                  updateButtonStates(newImageUrl); // Update button states after saving
                   closeEditModal();
                   closeModal();
                   uploadedFile = null; // Reset the uploaded file
@@ -416,6 +430,7 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
             if (data.status === 'success') {
                avatar.src = defaultImageUrl;
                modalImage.src = defaultImageUrl;
+               updateButtonStates(defaultImageUrl); // Update button states after deletion
                closeModal();
             } else {
                console.error('Delete error:', data);

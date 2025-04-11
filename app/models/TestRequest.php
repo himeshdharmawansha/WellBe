@@ -38,13 +38,15 @@ class TestRequest extends Model
    }
 
    // Update the state of a test request
-   public function updateState($requestID, $newState)
+   public function updateState($requestID, $newState, $testName)
    {
-      $query = "UPDATE test_requests SET state = :state WHERE id = :id";
+      $query = "UPDATE test_request_details SET state = :state WHERE req_id = :id AND test_name = :testName";
       $params = [
          'state' => $newState,
          'id' => $requestID,
+         'testName' => $testName,
       ];
+
       $this->write($query, $params);
    }
 

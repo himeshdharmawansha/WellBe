@@ -43,7 +43,7 @@ $testDetails = $he->getTestDetails($requestID);
                      <tbody>
                         <?php if (!empty($testDetails)): ?>
                            <?php foreach ($testDetails as $detail): ?>
-                              <tr>
+                              <tr data-request-id="<?= htmlspecialchars($requestID) ?>">
                                  <td><?= htmlspecialchars($detail['test_name']) ?></td>
                                  <td><?= htmlspecialchars($detail['priority']) ?></td>
                                  <td>
@@ -262,8 +262,35 @@ $testDetails = $he->getTestDetails($requestID);
             });
          });
       });
-   </script>
 
+      // Newly added function to handle the "Stage" button click
+      document.addEventListener('DOMContentLoaded', function() {
+         const stateSelectors = document.querySelectorAll('.state-selector');
+
+         stateSelectors.forEach(selector => {
+            selector.addEventListener('change', function() {
+               const requestID = this.closest('tr').dataset.requestId; // Assuming `data-request-id` is set on the row
+               const newState = this.value; // Get the selected state
+               const testName = this.dataset.testName; // Get the test name from the data attribute
+               console.log(requestID, newState, testName); // Debugging log
+               // Send the updated state to the server
+               fetch('<?= ROOT ?>/testRequests/updateState', {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                        requestID: requestID,
+                        state: newState,
+                        testName: testName, 
+                     }),
+                  })
+                  .then(response => response.json())
+                  .catch(error => console.error('Error:', error));
+            });
+         });
+      });
+   </script>
 </body>
 
 </html>

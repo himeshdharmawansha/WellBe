@@ -44,8 +44,8 @@ class TestRequests extends Controller
       if (!empty($data['requestID']) && isset($data['state'])) {
          $requestID = htmlspecialchars($data['requestID']);
          $newState = htmlspecialchars($data['state']);
-
-         $this->testRequestModel->updateState($requestID, $newState);
+         $testName = htmlspecialchars($data['testName']);
+         $this->testRequestModel->updateState($requestID, $newState, $testName);
          echo json_encode(['success' => true, 'message' => 'State updated successfully.']);
       } else {
          echo json_encode(['success' => false, 'error' => 'Invalid input.']);

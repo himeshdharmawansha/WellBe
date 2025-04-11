@@ -12,19 +12,14 @@
 
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
         <?php
         $this->renderComponent('navbar', $active);
         ?>
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Top Header -->
             <?php
-            $pageTitle = "Dashboard"; // Set the text you want to display
+            $pageTitle = "Dashboard";
             include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
-
-            <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="welcome-message">
                     <h4 class="welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
@@ -32,7 +27,6 @@
                 </div>
                 <div class="topbar">
                     <div class="cards-container">
-                        <!-- Statistics Cards -->
                         <div class="card new-request" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
@@ -55,7 +49,6 @@
                 </div>
                 <div class="content-container">
                     <div class="dashboard messages">
-
                         <div class="header">
                             <h3>Ongoing Tests</h3>
                             <a href="requests" class="see-all">See all</a>
@@ -69,7 +62,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Rows will be dynamically injected here -->
                                 </tbody>
                             </table>
                         </div>
@@ -88,7 +80,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Rows will be dynamically injected here -->
                                 </tbody>
                             </table>
                         </div>
@@ -96,7 +87,6 @@
                     <div class="dashboard calendar-container">
                         <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -113,7 +103,6 @@
                 fetch('<?= ROOT ?>/Lab/getRequestsByDay')
                     .then(response => response.json())
                     .then(data => {
-                        // Prepare data for the chart
                         const chartData = [
                             ['Day', 'Tested'],
                             ['M', data[0]],
@@ -145,7 +134,6 @@
                 fetch('<?= ROOT ?>/Lab/getRequestCounts')
                     .then(response => response.json())
                     .then(data => {
-                        // Update the UI with fetched data
                         document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
                         document.querySelector('.ongoing p').innerHTML = `${data.ongoing} <br> In_progress`;
                         document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
@@ -153,10 +141,7 @@
                     .catch(error => console.error('Error fetching request counts:', error));
             }
 
-            // Call the function on page load
             updateRequestCounts();
-
-            // Optionally, refresh every 5 seconds
             setInterval(updateRequestCounts, 1000);
         });
 
@@ -209,7 +194,6 @@
                     .then(data => {
                         let html = '';
                         if (data.length === 0) {
-                            // No new messages, show the "No new messages" row
                             html = noMessagesRow;
                         } else {
                             data.forEach(message => {
@@ -230,8 +214,8 @@
                     .catch(error => console.error('Error fetching messages:', error));
             }
 
-            fetchNewMessages(); // Initial load
-            setInterval(fetchNewMessages, 5000); // Refresh every 5 seconds
+            fetchNewMessages();
+            setInterval(fetchNewMessages, 5000);
         });
 
         function updateReceivedState() {
@@ -239,7 +223,6 @@
                 .catch(error => console.error("Error in loggedin :", error));
         }
 
-        // Call the update function every 3 seconds
         setInterval(updateReceivedState, 3000);
     </script>
 </body>

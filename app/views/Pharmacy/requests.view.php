@@ -11,31 +11,20 @@
 
 <body>
    <div class="dashboard-container">
-      <!-- Sidebar -->
       <?php $this->renderComponent('navbar', $active); ?>
-
-      <!-- Main Content -->
       <div class="main-content">
-         <!-- Top Header -->
          <?php
          $pageTitle = "Medication Requests";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
-
-         <!-- Dashboard Content -->
          <div class="dashboard-content">
-            <!-- Tabs for Requests States -->
             <div class="tabs">
                <button class="tab active" onclick="showTab('pending-requests')">Pending Requests</button>
                <button class="tab" onclick="showTab('completed-requests')">Completed Requests</button>
             </div>
-
-            <!-- Search Bar -->
             <div class="search-container">
                <input type="text" class="search-input" placeholder="Search PatientID" id="searchPatientId" oninput="filterResults()">
             </div>
-
-            <!-- Requests Sections -->
             <div id="pending-requests" class="requests-section active">
                <table class="requests-table">
                   <thead>
@@ -51,7 +40,6 @@
                   </tbody>
                </table>
             </div>
-
             <div id="completed-requests" class="requests-section">
                <table class="requests-table">
                   <thead>
@@ -67,8 +55,6 @@
                   </tbody>
                </table>
             </div>
-
-            <!-- Pagination -->
             <div class="pagination" id="pagination-controls">
                <button class="pagination-btn" onclick="changePage(-1)">Previous</button>
                <span id="pagination-pages"></span>
@@ -76,8 +62,6 @@
             </div>
          </div>
       </div>
-
-      <!-- Scripts -->
       <script src="<?= ROOT ?>/assets/js/Pharmacy/medicationRequestList.js"></script>
       <script>
          document.addEventListener('DOMContentLoaded', function() {
@@ -86,7 +70,6 @@
             let totalPages = 0;
             let currentTable = null;
 
-            // Setup pagination
             function setupPagination(table) {
                if (!table) return;
 
@@ -149,7 +132,6 @@
                });
             }
 
-            // Tab navigation
             window.showTab = function(tabId) {
                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
                document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
@@ -166,7 +148,6 @@
 
             window.showTab('pending-requests');
 
-            // Polling for new data
             let isSearching = false;
 
             setInterval(() => {
@@ -252,7 +233,6 @@
                                  }
                               });
                            } else {
-                              // Show "No results found" in all table bodies when search yields no results
                               requestBodies.forEach(body => {
                                  body.innerHTML = `
                                     <tr>
@@ -261,14 +241,12 @@
                               });
                            }
 
-                           // Reset to the first page and reinitialize pagination
                            currentPage = 1;
                            setupPagination(currentTable);
                            displayPage(currentPage);
                         })
                         .catch(error => {
                            console.error("Search error:", error);
-                           // Handle fetch errors with a message
                            const requestBodies = document.querySelectorAll('.requests-section tbody');
                            requestBodies.forEach(body => {
                               body.innerHTML = `
@@ -283,7 +261,7 @@
                   } else {
                      isSearching = false;
                   }
-               }, 300); // Debounce delay
+               }, 300);
             });
 
             document.addEventListener('click', e => {

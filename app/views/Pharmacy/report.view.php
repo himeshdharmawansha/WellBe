@@ -44,7 +44,6 @@
          const popupOverlay = document.createElement('div');
          popupOverlay.classList.add('pharmacy-report-popup-overlay');
 
-         // Set default dates
          const today = new Date();
          const thirtyDaysAgo = new Date();
          thirtyDaysAgo.setDate(today.getDate() - 30);

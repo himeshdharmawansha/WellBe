@@ -20,7 +20,7 @@ class Lab extends Controller
          redirect('login');
          exit;
       }
-      $this->labModel = new LabModel(); // Initialize the Lab model
+      $this->labModel = new LabModel(); 
    }
 
    public function index()

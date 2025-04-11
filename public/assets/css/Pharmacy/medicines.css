@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 
-/* General Reset */
 * {
    margin: 0;
    padding: 0;
@@ -8,30 +7,23 @@
    font-family: Arial, sans-serif;
 }
 
-/* Dashboard Container */
 .dashboard-container {
    display: flex;
    height: 100vh;
 }
 
-/* Main Content */
 .main-content {
    flex-grow: 1;
    background-color: #f0f8ff;
-   /* Light blue background */
    display: flex;
    flex-direction: column;
 }
 
-
-/* Dashboard Content */
 .dashboard-content {
    flex-grow: 1;
    padding: 20px;
    background-color: white;
-   /* Main content area white background */
    border-radius: 15px;
-   margin: 20px;
 }
 
 .welcome-message {
@@ -52,7 +44,6 @@
    justify-content: space-between;
    display: flex;
    background-color: #f0f8ff;
-   /* Light blue background */
    padding: 20px;
    margin-right: 10px;
    text-align: center;
@@ -60,12 +51,9 @@
    font-size: 22px;
    font-weight: bold;
    flex-wrap: wrap;
-
    height: 109px;
    gap: 10px;
-   /* Space between the circle and the text */
    flex-wrap: nowrap;
-   /* Prevents text from wrapping */
 }
 
 .card p {
@@ -97,10 +85,8 @@
    transform: translate(-50%, -50%);
    font-size: 24px;
    color: rgb(16, 16, 16);
-   /* Adjust the color as needed */
 }
 
-/* Container Styles */
 .requests-container {
    width: 100%;
    max-width: 1200px;
@@ -111,7 +97,6 @@
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Tabs Styles */
 .tabs {
    display: flex;
    justify-content: flex-start;
@@ -134,17 +119,14 @@
    border-bottom-color: #2563eb;
 }
 
-/* Hide inactive sections */
 .requests-section {
    display: none;
 }
 
-/* Show the active section */
 .requests-section.active {
    display: block;
 }
 
-/* Search Styles */
 .search-container {
    display: flex;
    justify-content: flex-start;
@@ -162,7 +144,6 @@
    color: #6b7280;
 }
 
-/* Table Styles */
 .requests-table {
    width: 70%;
    border-collapse: collapse;
@@ -194,7 +175,6 @@
    font-weight: bold;
 }
 
-/* Pagination Styles */
 .pagination {
    position: fixed;
    bottom: 40px;
@@ -233,7 +213,6 @@
    color: #6b7280;
 }
 
-
 .pagination-page.active {
    background-color: #2563eb;
    color: #ffffff;
@@ -268,5 +247,4 @@
 a {
    text-decoration: none;
    color: inherit;
-   /* Inherits the color from the parent element */
 }

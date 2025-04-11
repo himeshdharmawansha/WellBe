@@ -1,5 +1,4 @@
 <?php
-// app/models/Chat.php
 
 require_once __DIR__ . '/../core/model.php';
 
@@ -7,7 +6,6 @@ class Chat extends Model
 {
    protected $table = 'message';
 
-   // Delete message (sender or receiver)
    public function deleteMessage($messageId, $isSender)
    {
       $currentUserId = $_SESSION['userid'];
@@ -18,7 +16,6 @@ class Chat extends Model
       return $this->write($query, ['messageId' => $messageId, 'currentUserId' => $currentUserId]);
    }
 
-   // Get the last message date between the current user and other user_profile
    public function getLastMessageDates()
    {
       $currentUserId = $_SESSION['userid'];
@@ -32,7 +29,6 @@ class Chat extends Model
       return $this->query($query, ['currentUserId' => $currentUserId]);
    }
 
-   // Get messages between two user_profile
    public function getMessages($receiver)
    {
       $sender = $_SESSION['userid'];
@@ -46,7 +42,6 @@ class Chat extends Model
       return $this->readn($query, ['sender' => $sender, 'receiver' => $receiver]);
    }
 
-   // Get the username of the receiver
    public function getReceiverUsername($receiver)
    {
       $query = "SELECT username FROM user_profile WHERE id = :receiver";
@@ -91,7 +86,6 @@ class Chat extends Model
       return $this->read($query, $params);
    }
 
-   // Get the status of all user_profile
    public function getuser_profiletatuses()
    {
       $currentUserId = $_SESSION['userid'];
@@ -99,7 +93,6 @@ class Chat extends Model
       return $this->query($query, ['currentUserId' => $currentUserId]);
    }
 
-   // Mark messages as seen
    public function markMessagesSeen($receiver)
    {
       $sender = $_SESSION['userid'];
@@ -107,14 +100,12 @@ class Chat extends Model
       return $this->query($query, ['receiver' => $receiver, 'sender' => $sender]);
    }
 
-   // Update Received State
    public function updateRecievedState($receiver, $sender)
    {
       $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
       return $this->query($updateQuery, ['receiver' => $_SESSION['userid']]);
    }
 
-   // Send a new message
    public function sendMessage($receiver, $message)
    {
       $sender = $_SESSION['userid'];
@@ -160,24 +151,20 @@ class Chat extends Model
       ]);
    }
 
-   // Moved from controller: Search for users
    public function searchUser($query)
    {
       $querySql = "SELECT * FROM user_profile WHERE username LIKE :query AND role = 3";
       return $this->read($querySql, [':query' => '%' . $query . '%']);
    }
 
-   // Moved from controller: Handle user loginWS login state and message updates
    public function setLoggedIn($userId)
    {
-      // Update user state to 1 (logged in)
       $updateStateQuery = "UPDATE user_profile SET state = 1 WHERE id = :userid";
       $this->write($updateStateQuery, ['userid' => $userId]);
    
-      // Update messages as received
       $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
       $this->write($updateQuery, ['receiver' => $userId]);
    
-      return true; // Return a success indicator
+      return true;
    }
 }

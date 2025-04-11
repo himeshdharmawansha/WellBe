@@ -17,14 +17,10 @@
          $pageTitle = "Medicine Inventory";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
-
          <div class="dashboard-content">
-            <!-- Search Bar -->
             <div class="search-container">
                <input type="text" class="search-input" placeholder="Search Medicine" id="searchMedicine">
             </div>
-
-            <!-- Medicine Table -->
             <table class="medicine-table">
                <thead>
                   <tr>
@@ -45,7 +41,6 @@
             <div class="pagination" id="pagination-controls"></div>
          </div>
       </div>
-
       <script>
          document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.getElementById('medicine-table-body');
@@ -61,7 +56,6 @@
                fetch(`<?= ROOT ?>/Pharmacy/getMedicines?page=${page}`)
                   .then(response => response.json())
                   .then(data => {
-                     console.log("Received Data:", data); // Debugging
                      updateTable(data.medicines);
                      setupPagination(data.totalPages, page);
                   })
@@ -72,7 +66,6 @@
                fetch(`<?= ROOT ?>/Pharmacy/searchForMedicine?query=${encodeURIComponent(query)}&page=${page}`)
                   .then(response => response.json())
                   .then(data => {
-                     console.log("Search Results:", data); // Debugging
                      updateTable(data.medicines);
                      setupPagination(data.totalPages, page);
                   })

@@ -12,18 +12,14 @@
 
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
         <?php
         $this->renderComponent('navbar', $active);
         ?>
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Top Header -->
             <?php
-            $pageTitle = "Dashboard"; // Set the text you want to display
+            $pageTitle = "Dashboard";
             include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
-            <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="welcome-message">
                     <h4 class="welcome">Welcome <?= $_SESSION['USER']->first_name ?></h4>
@@ -37,7 +33,6 @@
                         </button>
                     </div>
                     <div class="cards-container">
-                        <!-- Statistics Cards -->
                         <div class="card new-request" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
@@ -67,7 +62,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Rows will be dynamically injected here -->
                                 </tbody>
                             </table>
                         </div>
@@ -86,7 +80,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Rows will be dynamically injected here -->
                                 </tbody>
                             </table>
                         </div>
@@ -94,7 +87,6 @@
                     <div class="dashboard calendar-container">
                         <div id="curve_chart" style="width: 400px; height: 400px; padding:0%;margin:0%"></div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -111,7 +103,6 @@
                 fetch('<?= ROOT ?>/Pharmacy/getRequestsByDay')
                     .then(response => response.json())
                     .then(data => {
-                        // Prepare data for the chart
                         const chartData = [
                             ['Day', 'Given'],
                             ['M', data[0]],
@@ -143,17 +134,13 @@
                 fetch('<?= ROOT ?>/Pharmacy/getRequestCounts')
                     .then(response => response.json())
                     .then(data => {
-                        // Update the UI with fetched data
                         document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
                         document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
                     })
                     .catch(error => console.error('Error fetching request counts:', error));
             }
 
-            // Call the function on page load
             updateRequestCounts();
-
-            // Optionally, refresh every 5 seconds
             setInterval(updateRequestCounts, 1000);
         });
 
@@ -198,25 +185,21 @@
                 .catch(error => console.error("Error in loggedin :", error));
         }
 
-        // Call the update function every 3 seconds
         setInterval(updateReceivedState, 3000);
 
         document.addEventListener("DOMContentLoaded", function() {
-            let shouldRefresh = true; // Flag to control auto-refresh
+            let shouldRefresh = true;
             const searchInput = document.getElementById('search-input');
             const tableBody = document.querySelector('.message-table tbody');
 
-            // Fetch all medicines initially
             fetchMedicines();
 
-            // Auto-refresh every 5 seconds if not searching
             setInterval(() => {
                 if (shouldRefresh) {
                     fetchMedicines();
                 }
             }, 5000);
 
-            // Fetch medicines with optional query
             function fetchMedicines(query = '') {
                 const url = query ?
                     `<?= ROOT ?>/Pharmacy/searchMedicine?query=${encodeURIComponent(query)}` :
@@ -225,7 +208,7 @@
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        tableBody.innerHTML = ''; // Clear existing rows
+                        tableBody.innerHTML = '';
 
                         if (data.length > 0) {
                             data.forEach(med => {
@@ -244,25 +227,22 @@
                     .catch(error => console.error('Error fetching medicines:', error));
             }
 
-            // Handle search input and prevent auto-refresh
             searchInput.addEventListener('keyup', function() {
                 const query = searchInput.value.trim();
 
                 if (query !== '') {
-                    shouldRefresh = false; // Stop auto-refresh during search
+                    shouldRefresh = false;
                     fetchMedicines(query);
                 } else {
-                    shouldRefresh = true; // Resume auto-refresh when search is cleared
+                    shouldRefresh = true;
                     fetchMedicines();
                 }
             });
         });
-        
         document.addEventListener("DOMContentLoaded", function() {
             const searchInput = document.getElementById('search-input');
             const tableBody = document.querySelector('.message-table tbody');
 
-            // Add a keyup event listener to trigger search dynamically
             searchInput.addEventListener('keyup', function() {
                 fetchMedicines(searchInput.value);
             });
@@ -271,7 +251,7 @@
                 fetch(`<?= ROOT ?>/Pharmacy/searchMedicine?query=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
-                        tableBody.innerHTML = ''; // Clear existing rows
+                        tableBody.innerHTML = ''; 
 
                         if (data.length > 0) {
                             data.forEach(med => {
@@ -290,11 +270,9 @@
                     .catch(error => console.error('Error fetching medicines:', error));
             }
 
-            // Initial fetch to show all medicines
             fetchMedicines();
         });
     </script>
-
 </body>
 
 </html>

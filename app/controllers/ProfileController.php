@@ -8,12 +8,10 @@ class ProfileController
 
     public function __construct()
     {
-        // Suppress any warnings or notices that might interfere with JSON output
         error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         $this->profileModel = new ProfileModel();
     }
 
-    // Fetch a single user's profile image
     public function get($userId)
     {
         $user = $this->profileModel->getImage($userId);
@@ -21,7 +19,6 @@ class ProfileController
         exit();
     }
 
-    // Fetch all user profiles
     public function getAll()
     {
         $users = $this->profileModel->getImageAll();
@@ -29,7 +26,6 @@ class ProfileController
         exit();
     }
 
-    // Save the original photo immediately upon upload
     public function saveOriginalPhoto()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -61,7 +57,6 @@ class ProfileController
             exit();
         }
 
-        // Use the provided random filename
         $filename = $_POST['filename'] ?? null;
         if (!$filename) {
             echo json_encode(['error' => 'Filename is required']);
@@ -80,14 +75,12 @@ class ProfileController
             }
         }
 
-        // Save the original file
         if (!move_uploaded_file($file['tmp_name'], $originalPath)) {
             error_log("Failed to move original file to $originalPath", 3, __DIR__ . '/../../logs/error.log');
             echo json_encode(['error' => 'Failed to move original file']);
             exit();
         }
 
-        // Update the database with the base filename
         try {
             error_log("Updating image for user ID: $userId with filename: $filename", 3, __DIR__ . '/../../logs/debug.log');
             $this->profileModel->updateImage($userId, $filename);
@@ -99,7 +92,6 @@ class ProfileController
         exit();
     }
 
-    // Save the edited (cropped) photo
     public function saveEditedPhoto()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -131,7 +123,6 @@ class ProfileController
             exit();
         }
 
-        // Use the provided filename (same as the original)
         $filename = $_POST['filename'] ?? null;
         if (!$filename) {
             echo json_encode(['error' => 'Filename is required']);
@@ -149,19 +140,16 @@ class ProfileController
             }
         }
 
-        // Save the edited file
         if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
             error_log("Failed to move edited file to $uploadPath", 3, __DIR__ . '/../../logs/error.log');
             echo json_encode(['error' => 'Failed to move edited file']);
             exit();
         }
 
-        // Database is already updated with the filename, so just return success
         echo json_encode(['status' => 'success', 'filename' => $filename]);
         exit();
     }
 
-    // Handle photo deletion
     public function deletePhoto($userId)
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -174,19 +162,16 @@ class ProfileController
             exit();
         }
 
-        // Get the current image to delete the file
         $user = $this->profileModel->getImage($userId);
         if ($user && !empty($user['profile_image_url'])) {
             $imagePath = __DIR__ . '/../../public/assets/images/users/' . basename($user['profile_image_url']);
             $originalImagePath = __DIR__ . '/../../public/assets/images/users/' . pathinfo(basename($user['profile_image_url']), PATHINFO_FILENAME) . '_original.' . pathinfo(basename($user['profile_image_url']), PATHINFO_EXTENSION);
             
-            // Delete the edited file
             if (file_exists($imagePath)) {
                 if (!unlink($imagePath)) {
                     error_log("Failed to delete image file: $imagePath", 3, __DIR__ . '/../../logs/error.log');
                 }
             }
-            // Delete the original file
             if (file_exists($originalImagePath)) {
                 if (!unlink($originalImagePath)) {
                     error_log("Failed to delete original image file: $originalImagePath", 3, __DIR__ . '/../../logs/error.log');
@@ -194,7 +179,6 @@ class ProfileController
             }
         }
 
-        // Update the database to remove the image reference
         try {
             $this->profileModel->deleteImage($userId);
             echo json_encode(['status' => 'success', 'message' => 'Profile image deleted']);

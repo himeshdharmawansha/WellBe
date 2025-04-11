@@ -1,5 +1,4 @@
 <?php
-// app/controllers/ChatController.php
 
 require_once __DIR__ . '/../models/Chat.php';
 
@@ -30,7 +29,7 @@ class ChatController extends Controller
    public function getLastMessageDates()
    {
       $result = $this->chatModel->getLastMessageDates();
-      echo json_encode($result); // Fixed: Added echo to output the result
+      echo json_encode($result);
    }
 
    public function getMessages($receiver)
@@ -156,6 +155,5 @@ class ChatController extends Controller
    public function loggedin()
    {
       $this->chatModel->setLoggedIn($_SESSION['userid']);
-      // Optionally handle the result if needed, e.g., return a response
    }
 }

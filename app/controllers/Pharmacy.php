@@ -18,7 +18,7 @@ class Pharmacy extends Controller
 
     public function __construct()
     {
-        $this->pharmacyModel = new PharmacyModel(); // Use the renamed model class
+        $this->pharmacyModel = new PharmacyModel();
 
         if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
             redirect('login');

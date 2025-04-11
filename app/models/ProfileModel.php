@@ -2,7 +2,7 @@
 
 class ProfileModel extends Model
 {
-    protected $table = 'user_profile'; // Updated table name
+    protected $table = 'user_profile';
 
     protected $allowedColumns = [
         'id',
@@ -42,7 +42,6 @@ class ProfileModel extends Model
 
     public function updateImage($userId, $image)
     {
-        // Validate inputs
         if (empty($userId)) {
             throw new Exception("User ID cannot be empty");
         }
@@ -50,30 +49,23 @@ class ProfileModel extends Model
             throw new Exception("Image filename cannot be empty");
         }
 
-        // Log the inputs
-        error_log("updateImage called with userId: $userId, image: $image", 3, __DIR__ . '/../../logs/debug.log');
-
         $db = new Database();
 
-        // Check if the user ID exists
         $exists = $db->read("SELECT 1 FROM {$this->table} WHERE id = :id LIMIT 1", ['id' => $userId]);
         if (!$exists) {
             throw new Exception("User ID $userId does not exist in user_profile table");
         }
 
-        // First, get the current image to delete it
         $current = $this->getImage($userId);
         if ($current && !empty($current['profile_image_url'])) {
             $oldImagePath = __DIR__ . '/../../public/assets/images/users/' . basename($current['profile_image_url']);
             $oldOriginalImagePath = __DIR__ . '/../../public/assets/images/users/' . pathinfo(basename($current['profile_image_url']), PATHINFO_FILENAME) . '_original.' . pathinfo(basename($current['profile_image_url']), PATHINFO_EXTENSION);
             
-            // Delete the old edited file
             if (file_exists($oldImagePath) && basename($oldImagePath) !== 'Profile_default.png') {
                 if (!unlink($oldImagePath)) {
                     error_log("Failed to delete old image file: $oldImagePath", 3, __DIR__ . '/../../logs/error.log');
                 }
             }
-            // Delete the old original file
             if (file_exists($oldOriginalImagePath) && basename($oldOriginalImagePath) !== 'Profile_default.png') {
                 if (!unlink($oldOriginalImagePath)) {
                     error_log("Failed to delete old original image file: $oldOriginalImagePath", 3, __DIR__ . '/../../logs/error.log');
@@ -81,23 +73,19 @@ class ProfileModel extends Model
             }
         }
 
-        // Update with the new image (filename with extension)
         $query = "UPDATE {$this->table} SET image = :image WHERE id = :id";
         $params = ['image' => $image, 'id' => $userId];
         $db->write($query, $params);
-
     }
 
     public function deleteImage($userId)
     {
         $db = new Database();
 
-        // Get the current image
         $current = $this->getImage($userId);
         if ($current && !empty($current['profile_image_url'])) {
             $currentImagePath = __DIR__ . '/../../public/assets/images/users/' . basename($current['profile_image_url']);
 
-            // Ensure we do not delete the default profile image
             if (file_exists($currentImagePath) && basename($currentImagePath) !== 'Profile_default.png') {
                 if (!unlink($currentImagePath)) {
                     error_log("Failed to delete image file: $currentImagePath", 3, __DIR__ . '/../../logs/error.log');
@@ -105,7 +93,6 @@ class ProfileModel extends Model
             }
         }
 
-        // Update the database to set the image to the default
         $query = "UPDATE {$this->table} SET image = 'Profile_default.png' WHERE id = :id";
         $result = $db->write($query, ['id' => $userId]);
         if (!$result) {

@@ -10,20 +10,14 @@
 
 <body>
    <div class="dashboard-container">
-      <!-- Sidebar -->
-      <?php
-      $this->renderComponent('navbar', $active);
-      ?>
+      <?php $this->renderComponent('navbar', $active); ?>
 
-      <!-- Main Content -->
       <div class="main-content">
-         <!-- Top Header -->
          <?php
          $pageTitle = "Test Requests";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
 
-         <!-- Dashboard Content -->
          <div class="dashboard-content">
             <div class="tabs">
                <button class="tab active" onclick="showTab('pending-requests')">New Requests</button>
@@ -35,7 +29,6 @@
                <input type="text" class="search-input" placeholder="Search">
             </div>
 
-            <!-- Requests Sections with Loading Placeholder -->
             <div id="pending-requests" class="requests-section active">
                <table class="requests-table">
                   <thead>
@@ -107,7 +100,6 @@
          let totalPages = 0;
          let currentTable = null;
 
-         // Update request state on row click
          document.addEventListener('click', e => {
             const pendingRequestsSection = document.getElementById('pending-requests');
             const row = e.target.closest('tr[data-id]');
@@ -117,13 +109,8 @@
 
                fetch('<?= ROOT ?>/TestRequests/updateState', {
                      method: 'POST',
-                     headers: {
-                        'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({
-                        requestID: requestID,
-                        state: 'ongoing',
-                     }),
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ requestID, state: 'ongoing' }),
                   })
                   .then(response => response.json())
                   .then(data => {
@@ -138,7 +125,6 @@
             }
          });
 
-         // Setup pagination
          function setupPagination(table) {
             if (!table) return;
 
@@ -201,7 +187,6 @@
             });
          }
 
-         // Tab navigation
          window.showTab = function(tabId) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
@@ -218,7 +203,6 @@
 
          window.showTab('pending-requests');
 
-         // Polling for new data
          let isSearching = false;
 
          setInterval(() => {
@@ -235,23 +219,19 @@
                      completed.innerHTML = '';
 
                      data.forEach(request => {
-                        const [hours, minutes, seconds] = request.time.split(':');
-                        const date = new Date();
-                        date.setHours(hours, minutes, seconds || 0);
-
-                        const formattedTime = date.toLocaleTimeString('en-US', {
+                        const formattedTime = new Date(`1970-01-01T${request.time}Z`).toLocaleTimeString('en-US', {
                            hour: '2-digit',
                            minute: '2-digit',
                            hour12: true
                         });
 
                         const row = `
-                                 <tr data-id="${request.id}">
-                                    <td>${formattedTime}</td>
-                                    <td>${request.date}</td>
-                                    <td>${request.patient_id}</td>
-                                    <td>${request.doctor_id}</td>
-                                 </tr>`;
+                           <tr data-id="${request.id}">
+                              <td>${formattedTime}</td>
+                              <td>${request.date}</td>
+                              <td>${request.patient_id}</td>
+                              <td>${request.doctor_id}</td>
+                           </tr>`;
 
                         if (request.state === 'pending' || request.state === 'ongoing') pending.innerHTML += row;
                         if (request.state === 'ongoing') ongoing.innerHTML += row;
@@ -263,17 +243,6 @@
                   .catch(console.error);
             }
          }, 500);
-
-         function formatTimeToAmPm(time) {
-            const [hours, minutes, seconds] = time.split(':');
-            const date = new Date();
-            date.setHours(hours, minutes, seconds || 0);
-            return date.toLocaleTimeString('en-US', {
-               hour: '2-digit',
-               minute: '2-digit',
-               hour12: true
-            });
-         }
 
          let debounceTimeout;
          document.querySelector('.search-input').addEventListener('input', function(e) {
@@ -291,7 +260,11 @@
 
                         if (data.length) {
                            data.forEach(request => {
-                              const formattedTime = formatTimeToAmPm(request.time);
+                              const formattedTime = new Date(`1970-01-01T${request.time}Z`).toLocaleTimeString('en-US', {
+                                 hour: '2-digit',
+                                 minute: '2-digit',
+                                 hour12: true
+                              });
 
                               const row = `
                                  <tr data-id="${request.id}">
@@ -312,7 +285,6 @@
                               }
                            });
                         } else {
-                           // Show "No results found" in all table bodies when search yields no results
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
@@ -321,14 +293,12 @@
                            });
                         }
 
-                        // Reset to the first page and reinitialize pagination
                         currentPage = 1;
                         setupPagination(currentTable);
                         displayPage(currentPage);
                      })
                      .catch(error => {
                         console.error("Search error:", error);
-                        // Optionally handle fetch errors with a message
                         const requestBodies = document.querySelectorAll('.requests-section tbody');
                         requestBodies.forEach(body => {
                            body.innerHTML = `

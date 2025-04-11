@@ -5,7 +5,6 @@ $requestID = isset($_GET['ID']) ? htmlspecialchars($_GET['ID']) : null;
 $testDetails = $he->getTestDetails($requestID);
 ?>
 
-<!-- HTML Part -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,12 +63,10 @@ $testDetails = $he->getTestDetails($requestID);
                                  </td>
 
                                  <td>
-                                    <!-- Eye Button to Open the File -->
                                     <button class="eye-btn" id="eye-btn-<?= $detail['test_name'] ?>" style="margin-right: 2px;" data-request-id="<?= $requestID ?>" data-test-name="<?= $detail['test_name'] ?>">
                                        <i id="eye-icon-<?= $detail['test_name'] ?>" class="fa-solid fa-eye" style="color: green; padding: 5px;"></i>
                                     </button>
 
-                                    <!-- Trash Button to Delete the File -->
                                     <button class="delete-btn" id="delete-btn-<?= $detail['test_name'] ?>" data-request-id="<?= $requestID ?>" data-test-name="<?= $detail['test_name'] ?>">
                                        <i id="trash-icon-<?= $detail['test_name'] ?>" class="fa-solid fa-trash" style="color: red; padding: 5px;"></i>
                                     </button>
@@ -104,23 +101,19 @@ $testDetails = $he->getTestDetails($requestID);
          rows.forEach(row => {
             const testName = row.querySelector('.state-selector').dataset.testName;
             const uploadedIcon = document.getElementById(`icon-${testName}`);
-            const eyeIcon = row.querySelector(`#eye-icon-${testName}`);
-            const deleteIcon = row.querySelector(`#trash-icon-${testName}`);
             const eyeBtn = row.querySelector(`#eye-btn-${testName}`);
             const deleteBtn = row.querySelector(`#delete-btn-${testName}`);
 
-            // If file exists, show the uploaded icon and enable delete and eye buttons
             if (uploadedIcon && uploadedIcon.dataset.fileExists === "true") {
-               uploadedIcon.style.display = 'inline'; // Show the uploaded icon (circle check)
-               eyeBtn.style.display = 'inline'; // Show the eye button
-               deleteBtn.style.display = 'inline'; // Show the delete button
+               uploadedIcon.style.display = 'inline';
+               eyeBtn.style.display = 'inline';
+               deleteBtn.style.display = 'inline';
             }
 
-            // Handle delete button click
             if (deleteBtn) {
                deleteBtn.addEventListener('click', function() {
-                  const requestID = deleteBtn.dataset.requestId; // Get the request ID from the data attribute
-                  const testName = deleteBtn.dataset.testName; // Get the test name from the data attribute
+                  const requestID = deleteBtn.dataset.requestId;
+                  const testName = deleteBtn.dataset.testName;
 
                   fetch('<?= ROOT ?>/testRequests/deleteFile', {
                         method: 'POST',
@@ -136,7 +129,7 @@ $testDetails = $he->getTestDetails($requestID);
                      .then(data => {
                         if (data.success) {
                            alert('File deleted successfully!');
-                           uploadedIcon.style.display = 'none'; // Hide uploaded icon
+                           uploadedIcon.style.display = 'none';
                         } else {
                            alert('No file to delete.');
                         }
@@ -145,11 +138,10 @@ $testDetails = $he->getTestDetails($requestID);
                });
             }
 
-            // Handle eye button click (open file)
             if (eyeBtn) {
                eyeBtn.addEventListener('click', function() {
-                  const requestID = eyeBtn.dataset.requestId; // Get the request ID from the data attribute
-                  const testName = eyeBtn.dataset.testName; // Get the test name from the data attribute
+                  const requestID = eyeBtn.dataset.requestId;
+                  const testName = eyeBtn.dataset.testName;
 
                   fetch('<?= ROOT ?>/testRequests/getFileUrl', {
                         method: 'POST',
@@ -225,55 +217,50 @@ $testDetails = $he->getTestDetails($requestID);
          const fileInputs = document.querySelectorAll('.file-input');
          const stateSelectors = document.querySelectorAll('.state-selector');
 
-         // Disable or enable the file input based on the selected state
          stateSelectors.forEach(select => {
             select.addEventListener('change', function() {
                const testName = this.dataset.testName;
                const fileInput = document.getElementById(`file-input-${testName}`);
 
                if (this.value === 'completed') {
-                  fileInput.disabled = false; // Enable the upload input if "Completed" is selected
+                  fileInput.disabled = false;
                } else {
-                  fileInput.disabled = true; // Disable the upload input if not completed
+                  fileInput.disabled = true;
                }
             });
 
-            // Check the initial state on page load and update file input disabled state
             const testName = select.dataset.testName;
             const fileInput = document.getElementById(`file-input-${testName}`);
             if (select.value === 'completed') {
-               fileInput.disabled = false; // Enable if already completed
+               fileInput.disabled = false;
             } else {
-               fileInput.disabled = true; // Disable if not completed
+               fileInput.disabled = true;
             }
          });
 
-         // Show/hide checkmark icon when file input changes
          fileInputs.forEach(input => {
             input.addEventListener('change', function() {
-               const icon = document.getElementById(`icon-${this.dataset.testName}`); // Get the associated icon
+               const icon = document.getElementById(`icon-${this.dataset.testName}`);
                if (icon) {
                   if (this.files.length > 0) {
-                     icon.style.display = 'inline'; // Show the checkmark icon
+                     icon.style.display = 'inline';
                   } else {
-                     icon.style.display = 'none'; // Hide the icon if no file is selected
+                     icon.style.display = 'none';
                   }
                }
             });
          });
       });
 
-      // Newly added function to handle the "Stage" button click
       document.addEventListener('DOMContentLoaded', function() {
          const stateSelectors = document.querySelectorAll('.state-selector');
 
          stateSelectors.forEach(selector => {
             selector.addEventListener('change', function() {
-               const requestID = this.closest('tr').dataset.requestId; // Assuming `data-request-id` is set on the row
-               const newState = this.value; // Get the selected state
-               const testName = this.dataset.testName; // Get the test name from the data attribute
-               console.log(requestID, newState, testName); // Debugging log
-               // Send the updated state to the server
+               const requestID = this.closest('tr').dataset.requestId;
+               const newState = this.value;
+               const testName = this.dataset.testName;
+
                fetch('<?= ROOT ?>/testRequests/updateState', {
                      method: 'POST',
                      headers: {

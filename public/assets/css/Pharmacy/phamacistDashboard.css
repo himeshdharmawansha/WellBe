@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 
-/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -8,13 +7,11 @@
     font-family: Arial, sans-serif;
 }
 
-/* Dashboard Container */
 .dashboard-container {
     display: flex;
     height: 100vh;
 }
 
-/* Main Content */
 .main-content {
     flex-grow: 1;
     background-color: #f0f8ff;
@@ -22,29 +19,22 @@
     flex-direction: column;
 }
 
-/* Dashboard Content */
 .dashboard-content {
     flex-grow: 1;
     position: relative;
     padding: 20px;
     background-color: white;
     border-radius: 15px;
-    margin: 20px;
 }
 
 .welcome-message {
     display: flex;
-    margin-bottom: 20px;
 }
 
-
-
-/* Cards-container aligned to the right */
 .cards-container {
     display: inline-flex;
     gap: 10px;
     margin-left: auto;
-    /* Aligns the cards-container to the right */
 }
 
 .card {
@@ -52,7 +42,6 @@
     justify-content: space-between;
     display: flex;
     background-color: #f0f8ff;
-    /* Light blue background */
     padding: 20px;
     margin-right: 10px;
     text-align: center;
@@ -63,15 +52,12 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     height: 109px;
     gap: 10px;
-    /* Space between the circle and the text */
     flex-wrap: nowrap;
-    /* Prevents text from wrapping */
 }
 
 .card:hover {
     cursor: pointer;
     transform: translateY(-5px);
-
 }
 
 .card p {
@@ -84,7 +70,6 @@
     margin-right: 0;
 }
 
-/* Circle background for icons */
 .circle-background {
     position: relative;
     display: inline-block;
@@ -97,7 +82,6 @@
     flex-shrink: 0;
 }
 
-/* Icon positioning inside circle */
 .icon {
     position: absolute;
     top: 50%;
@@ -107,7 +91,6 @@
     color: rgb(16, 16, 16);
 }
 
-/* Other styling */
 .content-container {
     display: flex;
     gap: 20px;
@@ -122,7 +105,6 @@
     background-color: #f0f8ff;
     padding: 20px;
     border-radius: 10px;
-    margin-bottom: 20px;
     min-width: 350px;
 }
 
@@ -144,28 +126,27 @@
 .stock-status {
     display: inline-block;
     padding: 4px 8px;
-    border: 2px solid #cce4f7; /* Light blue outline */
+    border: 2px solid #cce4f7;
     border-radius: 3px;
     text-align: center;
     font-weight: bold;
 }
 
 .in-stock {
-    background-color: #d4edda; /* Light green background */
-    color: #155724; /* Dark green text */
-    border-color: #c3e6cb; /* Green outline */
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
     padding-right:40px;
 }
 
 .out-of-stock {
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24; /* Dark red text */
-    border-color: #f5c6cb; /* Red outline */
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
 }
 
 .table-container {
     max-height: 370px;
-    /* Approx height for 6 rows */
     overflow-y: auto;
     border: 0px solid #ccc;
     border-radius: 5px;
@@ -189,7 +170,6 @@
     font-weight: bold;
 }
 
-/* Card color backgrounds */
 .new-request {
     background-color: #00C38F;
 }
@@ -206,12 +186,12 @@
     margin-top: 200px;
 }
 
-/* Topbar with aligned elements */
 .topbar {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 #countdown {
@@ -246,19 +226,14 @@
 }
 
 .inline-separator {
-
     font-size: 2rem;
     font-weight: bold;
     margin: 1 5px;
     margin-top: 23px;
-    /* Adjust spacing if needed */
     align-self: flex-start;
-    /* Align with the numbers */
     line-height: 2rem;
-    /* Match the height of numbers */
 }
 
-/* Search bar styling */
 .search-bar {
     flex-grow: 1;
 }
@@ -284,14 +259,11 @@
     padding: 2px;
 }
 
-
-
 .calendar-container {
     background-color: #f0f8ff;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    margin-bottom: 20px;
 }
 
 .calendar-header {
@@ -343,14 +315,12 @@
 }
 
 .calendar-table td {
-
     border-radius: 50%;
     cursor: pointer;
 }
 
 .calendar-table td.inactive {
     color: #b0b0b0;
-    /* Dim color for other month's dates */
 }
 
 .date {
@@ -358,7 +328,6 @@
     text-align: right;
 }
 
-/*Request table*/
 .medication-requests {
     background-color: #FFFFFF;
     border-radius: 8px;
@@ -409,48 +378,36 @@
 
 .progress {
     background-color: #FFE351;
-    /* Yellow box */
 }
 
 .pending {
     background-color: #CBE2FF;
-    /* Blue box */
 }
 
-/*message part*/
-/* Contact list table styling */
 .contact-list {
     width: 100%;
     border-collapse: collapse;
     background-color: #E6EFFF;
-    /* Light blue background */
     border-radius: 10px;
     padding: 20px;
 }
 
-/* Table header styling */
 .contact-list th {
     background-color: #FFFFFF;
-    /* White background for table header */
     font-weight: bold;
     padding: 10px;
     text-align: left;
 }
 
-/* Table data (contact details) styling */
 .contact-list td {
     background-color: #FFFFFF;
-    /* White background for table data */
     padding: 10px;
     text-align: left;
 }
 
-/* Unread messages badge styling */
 .unread-messages {
     background-color: #CBE2FF;
-    /* Blue background for notification badge */
     color: #683CFC;
-    /* White text for notification number */
     border-radius: 50%;
     padding: 5px;
     display: flex;
@@ -464,5 +421,4 @@
 a {
     text-decoration: none;
     color: inherit;
-    /* Inherits the color from the parent element */
 }

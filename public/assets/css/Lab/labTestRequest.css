@@ -71,7 +71,7 @@
    display: inline-block;
    background-color: #f0f8ff;
    border-radius: 50%;
-   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1);
+   box-shadow: 5px 5px 20px rgba(7, 7, 7, 0.1);
    margin-bottom: 10px;
    width: 65px;
    height: 65px;
@@ -106,6 +106,7 @@
 .tab {
    padding: 10px 20px;
    cursor: pointer;
+   background-color: transparent;
    border: none;
    border-bottom: 3px solid transparent;
    color: #6b7280;

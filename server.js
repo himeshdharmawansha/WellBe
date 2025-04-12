@@ -121,12 +121,14 @@ const httpServer = http.createServer((req, res) => {
         req.on('end', () => {
             try {
                 const data = JSON.parse(body);
-                const { patientId } = data;
+                const { patientId, date, docName, specialization } = data;
+
 
                 const socket = registeredSockets.get(patientId);
                 if (socket) {
-                    sendWebSocketMessage(socket, 'Notification: Your appointment has been rescheduled');
-                    console.log(`Sent notification to patient ${patientId}`);
+                    const message = `Your appointment with ${docName} (${specialization}) on ${date} has been rescheduled.`;
+                    sendWebSocketMessage(socket, message);
+                    console.log(`Sent notification to patient ${patientId}: ${message}`);
                 } else {
                     console.log(`Patient ${patientId} not connected`);
                 }

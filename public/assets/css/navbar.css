@@ -154,10 +154,10 @@
 /* Dashboard Content */
 .dashboard-content {
     flex-grow: 1;
-    padding: 20px;
+    padding: 20px 30px 20px 30px;
     background-color: white; /* Main content area white background */
     border-radius: 15px;
-    margin-bottom: 25px;
+    /* margin-bottom: 25px; */
 }
 
 .welcome-message p {

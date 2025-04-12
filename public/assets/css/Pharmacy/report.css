@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 
-/* General Reset */
 * {
    margin: 0;
    padding: 0;
@@ -9,28 +8,24 @@
    text-decoration: none;
 }
 
-/* Dashboard Container */
-.dashboard-container {
+.pharmacy-report-dashboard-container {
    display: flex;
    height: 100vh;
 }
 
-/* Main Content */
-.main-content {
+.pharmacy-report-main-content {
    flex-grow: 1;
    background-color: #f0f8ff;
    display: flex;
    flex-direction: column;
 }
 
-/* Dashboard Content */
-.dashboard-content {
+.pharmacy-report-dashboard-content {
    flex-grow: 1;
    position: relative;
    padding: 20px;
    background-color: white;
    border-radius: 15px;
-   margin: 20px;
    background-image: url(../../images/medi.png);
    background-repeat: no-repeat;
    background-position: center;
@@ -38,28 +33,27 @@
    animation: fadeIn 1s ease-in;
 }
 
-.welcome-message {
+.pharmacy-report-welcome-message {
    display: flex;
    margin-bottom: 20px;
 }
 
-.welcome-message h4 {
+.pharmacy-report-welcome-message h4 {
    font-size: 18px;
    color: #333;
 }
 
-/* Other styling */
-.content-container {
+.pharmacy-report-content-container {
    display: flex;
    gap: 20px;
    justify-content: space-between;
 }
 
-.dashboard {
+.pharmacy-report-dashboard {
    flex: 1;
 }
 
-.calendar-container {
+.pharmacy-report-calendar-container {
    background-color: #f0f8ff;
    padding: 20px;
    border-radius: 10px;
@@ -67,23 +61,22 @@
    margin-bottom: 20px;
 }
 
-.date {
+.pharmacy-report-date {
    flex: 1;
    text-align: right;
 }
 
-.header {
+.pharmacy-report-header {
    display: flex;
    justify-content: space-between;
    align-items: center;
 }
 
-.header .see-all {
+.pharmacy-report-header .see-all {
    color: #683CFC;
 }
 
-
-.generate {
+.pharmacy-report-generate {
    margin: 100px auto;
    height: 250px;
    display: flex;
@@ -98,15 +91,16 @@
    opacity: 0.8;
 }
 
-.generate .inputs {
+.pharmacy-report-generate .pharmacy-report-inputs {
    display: flex;
    justify-content: space-between;
    gap: 10px;
    margin-top: 400px;
    width: 100%;
 }
-.generate .inputs label {
-   margin-top:10px ;
+
+.pharmacy-report-generate .pharmacy-report-inputs label {
+   margin-top: 10px;
    font-size: 14px;
    color: #333;
 }
@@ -120,7 +114,7 @@ input[type="date"] {
    text-align: center;
 }
 
-.report {
+.pharmacy-report-report {
    display: inline-block;
    margin: 100px auto;
    margin-bottom: 400px;
@@ -134,13 +128,12 @@ input[type="date"] {
    transition: all 0.3s ease-in-out;
 }
 
-.report:hover {
+.pharmacy-report-report:hover {
    transform: translateY(-5px);
    background-color: #0056b3;
 }
 
-/* Popup Overlay */
-.popup-overlay {
+.pharmacy-report-popup-overlay {
    position: fixed;
    top: 0;
    left: 0;
@@ -153,124 +146,98 @@ input[type="date"] {
    z-index: 1000;
 }
 
-/* Popup Content */
-.popup-content {
+.pharmacy-report-popup-content {
    width: 90%;
    max-width: 800px;
    background-color: white;
    padding: 15px;
-   /* Reduced padding */
    border-radius: 10px;
    text-align: center;
    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
    position: relative;
    max-height: 95vh;
-   /* Adjusted max-height to fit content better */
    overflow-y: auto;
-   /* Allows scrolling if content exceeds the height */
 }
 
-/* Popup Body */
-.popup-body {
+.pharmacy-report-popup-body {
    margin-bottom: 60px;
-   /* Create space for the print button */
 }
 
-/* Header Container */
-.header-container {
+.pharmacy-report-header-container {
    display: flex;
    justify-content: space-between;
    align-items: center;
    margin-bottom: 15px;
-   /* Reduced margin */
 }
 
-/* Header Title */
-.header-title {
+.pharmacy-report-header-title {
    flex: 1;
    text-align: center;
 }
 
-.header-title h1 {
+.pharmacy-report-header-title h1 {
    font-size: 22px;
-   /* Slightly smaller font size */
    margin: 0;
    color: #333;
 }
 
-/* Header Right (Logo) */
-.header-right img {
+.pharmacy-report-header-right img {
    position: absolute;
    top: 15px;
    right: 15px;
-   /* Adjusted position */
    width: 50px;
-   /* Reduced size */
    height: 50px;
    object-fit: contain;
    opacity: 0.5;
 }
 
-/* Header Left Details */
-.header-left {
+.pharmacy-report-header-left {
    text-align: left;
    margin-top: 5px;
-   /* Reduced margin */
 }
 
-.header-left h4 {
+.pharmacy-report-header-left h4 {
    font-size: 16px;
-   /* Smaller font size */
    margin-bottom: 5px;
    color: #444;
 }
 
-.header-left p {
+.pharmacy-report-header-left p {
    font-size: 13px;
-   /* Slightly smaller font size */
    color: #555;
    margin: 2px 0;
 }
 
-/* Popup Close Button */
-.popup-close {
+.pharmacy-report-popup-close {
    position: absolute;
    top: 1px;
-   /* Adjusted position */
    right: 5px;
    font-size: 26px;
-   /* Slightly larger close icon */
    color: rgb(10, 24, 63);
    cursor: pointer;
    background: none;
    border: none;
 }
 
-/* Charts */
 #bar_chart,
 #line_chart {
    margin: 15px 0;
-   /* Reduced margin */
    width: 100%;
    height: 250px;
-   /* Reduced height */
 }
 
-/* Print Button */
-.popup-print {
+.pharmacy-report-popup-print {
    padding: 8px 30px;
-   /* Reduced padding */
    background-color: #007bff;
    color: white;
    border: none;
    border-radius: 5px;
    cursor: pointer;
    font-size: 16px;
-   /* Reduced font size */
    transition: background-color 0.3s ease-in-out;
 }
 
-.popup-print:hover {
+.pharmacy-report-popup-print:hover {
    background-color: #218838;
 }
 
@@ -278,7 +245,6 @@ input[type="date"] {
    from {
       opacity: 0;
    }
-
    to {
       opacity: 1;
    }

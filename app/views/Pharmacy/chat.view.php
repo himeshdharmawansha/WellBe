@@ -1,11 +1,32 @@
 <?php
-
 require_once(__DIR__ . "/../../controllers/ChatController.php");
+require_once(__DIR__ . "/../../models/ProfileModel.php");
+
 $he = new ChatController();
-$unseenCounts = $he->UnseenCounts([3]);
+$profileModel = new ProfileModel();
+
+$unseenCounts = $he->UnseenCounts([3,5]);
 $user_profile = $unseenCounts;
+if (!is_array($user_profile)) {
+   $user_profile = [];
+}
 $currentUserId = $_SESSION['userid'];
 
+$profiles = $profileModel->getAll();
+if (!empty($profiles) && !isset($profiles['error'])) {
+   $profileMap = [];
+   foreach ($profiles as $profile) {
+      $profileMap[$profile->id] = $profile;
+   }
+   foreach ($user_profile as &$user) {
+      if (isset($user['id']) && isset($profileMap[$user['id']])) {
+         $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
+      } else {
+         $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
+      }
+   }
+   unset($user);
+}
 ?>
 
 <!DOCTYPE html>
@@ -29,22 +50,26 @@ $currentUserId = $_SESSION['userid'];
       <div class="main-content">
          <!-- Top Header -->
          <?php
-         $pageTitle = "Chat"; // Set the text you want to display
+         $pageTitle = "Chat";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
          <div class="dashboard-content">
             <div class="container">
                <div class="chat-list">
                   <div class="search-bar">
-                     <input type="text" placeholder="Search">
+                     <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Search"
+                        oninput="searchUsers(this.value)" />
                   </div>
                   <ul id="chat-list">
                      <?php foreach ($user_profile as $user): ?>
                         <li>
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
-                              onclick="selectChat(this, <?php echo $user['id']; ?>)">
-                              <div class="avatar"></div>
+                              onclick="selectChat(this, '<?php echo $user['id']; ?>')">
+                              <img src="<?php echo htmlspecialchars($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
                                  <h4><?php echo htmlspecialchars($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
@@ -53,14 +78,16 @@ $currentUserId = $_SESSION['userid'];
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
                                     <?php
                                     if (!empty($user['last_message_date'])) {
-                                       $lastMessageDate = strtotime($user['last_message_date']);
-                                       $currentDate = strtotime('today');
-                                       if ($lastMessageDate >= $currentDate) {
-                                          // If the last message is today, show the time
-                                          echo date('h:i A', $lastMessageDate);
+                                       $lastMessageDate = new DateTime($user['last_message_date']);
+                                       $today = new DateTime('today');
+                                       $yesterday = (clone $today)->modify('-1 day');
+                                       
+                                       if ($lastMessageDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                                          echo $lastMessageDate->format('h:i A');
+                                       } elseif ($lastMessageDate->format('Y-m-d') === $yesterday->format('Y-m-d')) {
+                                          echo 'Yesterday';
                                        } else {
-                                          // If the last message is from another day, show the date
-                                          echo date('d/m/Y', $lastMessageDate);
+                                          echo $lastMessageDate->format('d/m/Y');
                                        }
                                     }
                                     ?>
@@ -75,7 +102,7 @@ $currentUserId = $_SESSION['userid'];
 
                <div class="chat-window" id="chat-window">
                   <div class="chat-header">
-                     <div class="avatar"></div>
+                     <img id="chat-avatar" src="<?= ROOT ?>/assets/images/users/Profile_default.png" alt="Avatar" class="avatar">
                      <div class="header-info">
                         <h4 id="chat-username">Select a user</h4>
                         <p id="chat-status">Offline</p>
@@ -94,7 +121,6 @@ $currentUserId = $_SESSION['userid'];
       </div>
    </div>
 
-   <!-- Popup Menu for Message Options -->
    <div id="popup-menu" style="display: none; position: absolute; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
       <ul style="list-style: none; padding: 0; margin: 0;">
          <li onclick="deleteMessage()" style="padding: 8px; cursor: pointer;">
@@ -127,9 +153,8 @@ $currentUserId = $_SESSION['userid'];
          if (selectedMessage) {
             const senderId = selectedMessage.classList.contains('received') ?
                selectedUserId :
-               <?php echo json_encode($currentUserId); ?>; // Assume current user is the sender for 'sent' messages
+               <?php echo json_encode($currentUserId); ?>;
 
-            // Hide edit option if the sender is not the current user
             if (senderId !== <?php echo json_encode($currentUserId); ?>) {
                editOption.style.display = 'none';
             } else {
@@ -142,7 +167,6 @@ $currentUserId = $_SESSION['userid'];
          popupMenu.style.display = 'block';
          document.addEventListener('click', hidePopupMenu);
       }
-
 
       function hidePopupMenu() {
          document.getElementById('popup-menu').style.display = 'none';
@@ -169,8 +193,8 @@ $currentUserId = $_SESSION['userid'];
                })
                .then(data => {
                   if (data.status === "success") {
-                     pollMessages(); // Refresh the messages list after deletion
-                     hidePopupMenu(); // Close any context menus or popups
+                     pollMessages();
+                     hidePopupMenu();
                   } else {
                      alert('Error deleting message');
                   }
@@ -182,46 +206,44 @@ $currentUserId = $_SESSION['userid'];
          }
       }
 
-
-
       function selectChat(chatItem, userId) {
          selectedUserId = userId;
          const username = chatItem.querySelector('.chat-info h4').textContent;
-         const user_profiletatus = chatItem.querySelector('.chat-status').textContent;
+         const userStatus = chatItem.querySelector('.chat-status').textContent;
+         const avatarSrc = chatItem.querySelector('.avatar').src;
 
          document.getElementById('chat-username').textContent = username;
-         document.getElementById('chat-status').textContent = user_profiletatus;
+         document.getElementById('chat-status').textContent = userStatus;
+         document.getElementById('chat-avatar').src = avatarSrc;
 
          startChat(userId);
-
       }
 
       async function startChat(receiverId) {
          try {
-            const response = await fetch(`<?= ROOT ?>/ChatController/getMessages/${receiverId}`);
-            if (response.ok) {
-               const data = await response.json();
-               const chatMessages = document.getElementById("chat-messages");
-               chatMessages.innerHTML = '';
-               data.messages.forEach(message => {
-                  const div = document.createElement('div');
-                  // window.alert(message.sender);
-                  div.classList.add('message', message.sender == receiverId ? 'received' : 'sent');
-                  div.setAttribute('data-message-id', message.id);
+         const response = await fetch(`<?= ROOT ?>/ChatController/getMessages/${receiverId}`);
+         if (response.ok) {
+            const data = await response.json();
+            const chatMessages = document.getElementById("chat-messages");
+            chatMessages.innerHTML = '';
+            data.messages.forEach(message => {
+            const messageDate = new Date(message.date);
+            const formattedDate = formatTimeOrDate(messageDate);
 
-                  div.innerHTML = `
-                           <p>${message.message}</p>
-                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${message.date}</span>
-                           
-                        `;
-                  chatMessages.appendChild(div);
-               });
-               chatMessages.scrollTop = chatMessages.scrollHeight;
-            } else {
-               console.error('Failed to fetch messages. Status:', response.status);
-            }
+            const div = document.createElement('div');
+            div.classList.add('message', message.sender == receiverId ? 'received' : 'sent');
+            div.setAttribute('data-message-id', message.id);
+
+            div.innerHTML = `
+                  <p>${message.message}</p>
+                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+               `;
+            chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+         }
          } catch (error) {
-            console.error('An error occurred while fetching messages:', error);
+         console.error('Error fetching messages:', error);
          }
       }
 
@@ -229,33 +251,33 @@ $currentUserId = $_SESSION['userid'];
 
       function pollMessages() {
          if (selectedUserId) {
-            fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
-               .then(response => response.json())
-               .then(data => {
-                  if (data.messages.length > 0) {
-                     const latestMessage = data.messages[data.messages.length - 1];
-                     const chatMessages = document.getElementById("chat-messages");
-                     chatMessages.innerHTML = '';
-                     data.messages.forEach(message => {
-                        // window.alert(selectedUserId);
-                        const div = document.createElement('div');
-                        div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
-                        div.setAttribute('data-message-id', message.id);
+         fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
+            .then(response => response.json())
+            .then(data => {
+            if (data.messages.length > 0) {
+               const latestMessage = data.messages[data.messages.length - 1];
+               const chatMessages = document.getElementById("chat-messages");
+               chatMessages.innerHTML = '';
+               data.messages.forEach(message => {
+               const messageDate = new Date(message.date);
+               const formattedDate = formatTimeOrDate(messageDate);
 
-                        div.innerHTML = `
-                           <p>${message.message}</p>
-                           <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${message.date}</span>
-                           
-                        `;
+               const div = document.createElement('div');
+               div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
+               div.setAttribute('data-message-id', message.id);
 
-                        chatMessages.appendChild(div);
-                     });
-                     if (lastMessageId !== latestMessage.id) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                        lastMessageId = latestMessage.id;
-                     }
-                  }
+               div.innerHTML = `
+                  <p>${message.message}</p>
+                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+               `;
+               chatMessages.appendChild(div);
                });
+               if (lastMessageId !== latestMessage.id) {
+               chatMessages.scrollTop = chatMessages.scrollHeight;
+               lastMessageId = latestMessage.id;
+               }
+            }
+            });
          }
       }
 
@@ -263,8 +285,8 @@ $currentUserId = $_SESSION['userid'];
 
       function editMessage() {
          if (!selectedMessage) {
-            alert("No message selected for editing.");
-            return;
+         alert("No message selected for editing.");
+         return;
          }
 
          const messageId = selectedMessage.getAttribute('data-message-id');
@@ -272,187 +294,257 @@ $currentUserId = $_SESSION['userid'];
          const newMessage = prompt("Edit your message:", currentText);
 
          if (newMessage === null || newMessage.trim() === "") {
-            alert("Message cannot be empty.");
-            return;
+         alert("Message cannot be empty.");
+         return;
          }
 
-         fetch(`<?= ROOT ?>/ChatController/editMessage/${messageId}/${encodeURIComponent(newMessage)}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to edit message');
-               }
-               return response.json();
-            })
-            .then(data => {
-               if (data.status === "success") {
-                  pollMessages(); // Refresh the messages list after editing
-                  hidePopupMenu(); // Close any context menus or popups
-               } else {
-                  alert('Error editing message');
-               }
-            })
-            .catch(error => {
-               console.error('An error occurred while editing the message:', error);
-               alert('An error occurred while editing the message.');
-            });
+         fetch(`<?= ROOT ?>/ChatController/editMessage`, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            messageId: messageId,
+            newMessage: newMessage.trim(),
+            }),
+         })
+         .then(response => response.json())
+         .then(data => {
+            if (data.status === "success") {
+            pollMessages();
+            hidePopupMenu();
+            } else {
+            alert(data.message || "Error editing message.");
+            }
+         })
+         .catch(error => {
+            console.error("Error editing message:", error);
+            alert("Error editing message.");
+         });
       }
 
+      document.getElementById('message-input').addEventListener('keypress', function(event) {
+         if (event.key === 'Enter' && !event.shiftKey) {
+         event.preventDefault();
+         sendMessage();
+         }
+      });
+
       function sendMessage() {
-         const message = document.getElementById('message-input').value;
+         const messageInput = document.getElementById('message-input');
+         const message = messageInput.value.trim();
+
+         if (!message) return;
          if (!selectedUserId) {
-            alert("Please select a chat.");
-            return;
+         alert("Please select a chat.");
+         return;
          }
 
-         // Prepare data to send via POST
          const data = {
-            message: message,
-            receiver: selectedUserId
+         message: message,
+         receiver: selectedUserId
          };
 
          fetch('<?= ROOT ?>/ChatController/sendMessage', {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json' // Ensure the body is treated as JSON
-               },
-               body: JSON.stringify(data) // Send data as JSON
-            })
-            .then(response => response.json())
-            .then(data => {
-               if (data.status === "success") {
-                  document.getElementById('message-input').value = ''; // Clear input field
-                  pollMessages(); // Refresh chat
-               } else {
-                  alert('Error sending message');
-               }
-            })
-            .catch(error => console.error("Error:", error));
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+         })
+         .then(response => response.json())
+         .then(data => {
+            if (data.status === "success") {
+            messageInput.value = '';
+            pollMessages();
+            } else {
+            alert('Error sending message');
+            }
+         })
+         .catch(error => console.error("Error:", error));
       }
 
-      setInterval(refreshuser_profiletatuses, 3000);
+      setInterval(refreshUserStatuses, 3000);
 
-      function refreshuser_profiletatuses() {
+      function refreshUserStatuses() {
          const xhr = new XMLHttpRequest();
-         xhr.open("GET", "<?= ROOT ?>/ChatController/getuser_profiletatuses", true);
+         xhr.open("GET", "<?= ROOT ?>/ChatController/getUserStatuses", true);
          xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-               const user_profile = JSON.parse(xhr.responseText);
-               user_profile.forEach(user => {
-                  const chatItem = document.querySelector(`.chat-item[data-receiver-id="${user.id}"]`);
-                  if (chatItem) {
-                     const statusElement = chatItem.querySelector('.chat-status');
-                     statusElement.textContent = user.state ? 'Online' : 'Offline';
-                  }
-               });
+         if (xhr.readyState == 4 && xhr.status == 200) {
+            const users = JSON.parse(xhr.responseText);
+            users.forEach(user => {
+            const chatItem = document.querySelector(`.chat-item[data-receiver-id="${user.id}"]`);
+            if (chatItem) {
+               const statusElement = chatItem.querySelector('.chat-status');
+               statusElement.textContent = user.state ? 'Online' : 'Offline';
             }
+            });
+         }
          };
          xhr.send();
       }
 
-      function updateChatTimestamps() {
-         fetch('<?= ROOT ?>/ChatController/getLastMessageDates')
-            .then(response => response.json())
-            .then(dates => {
-               dates.forEach(item => {
-                  const timeElement = document.getElementById(`time-${item.id}`);
-                  if (timeElement) {
-                     timeElement.textContent = item.date;
-                  }
-               });
-            })
-            .catch(error => console.error("Error updating timestamps:", error));
-      }
+      function formatTimeOrDate(messageDate) {
+         const today = new Date();
+         const yesterday = new Date(today);
+         yesterday.setDate(today.getDate() - 1);
+         
+         const isToday = messageDate.toDateString() === today.toDateString();
+         const isYesterday = messageDate.toDateString() === yesterday.toDateString();
 
-      // Call the update function every 3 seconds
-      setInterval(updateChatTimestamps, 3000);
-
-      function refreshUnseenCounts(roleArray) {
-         const roles = roleArray.join(','); // Serialize roles into a comma-separated string
-
-         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
-            .then(response => response.json())
-            .then(user_profile => {
-               if (user_profile.error) {
-                  console.error("Error:", user_profile.error);
-                  return;
-               }
-
-               const chatList = document.getElementById('chat-list');
-               chatList.innerHTML = ''; // Clear current list
-
-               user_profile.forEach(user => {
-                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-
-                  // Prepare last message date or time
-                  let lastMessageDisplay = '';
-                  if (user.last_message_date) {
-                     const messageDate = new Date(user.last_message_date);
-                     const today = new Date();
-
-                     if (messageDate.toDateString() === today.toDateString()) {
-                        lastMessageDisplay = formatTimeToAmPm(messageDate);
-                     } else {
-                        lastMessageDisplay = messageDate.toLocaleDateString('en-GB');
-                     }
-                  }
-
-                  const chatItemHTML = `
-                  <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, ${user.id})">
-                        <div class="avatar"></div>
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                        </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
-                     </div>
-                  </li>
-               `;
-
-                  // Append each user item to the chat list
-                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
-               });
-            })
-            .catch(error => console.error("Error fetching unseen counts:", error));
-      }
-
-      // Utility function for formatting time to AM/PM
-      function formatTimeToAmPm(date) {
-         return date.toLocaleTimeString('en-US', {
+         if (isToday) {
+         return messageDate.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true
          });
+         } else if (isYesterday) {
+         return "Yesterday";
+         } else {
+         return messageDate.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+         });
+         }
       }
 
-      // Set interval to poll unseen message counts every 3 seconds
-      // Poll unseen counts every 3 seconds
-      setInterval(() => refreshUnseenCounts([3]), 3000);
+      let isSearching = false;
 
-      // Mark messages as seen when chat is opened
+      function refreshUnseenCounts(roleArray) {
+         if (isSearching) return;
+
+         const roles = roleArray.join(',');
+
+         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
+         .then(response => response.json())
+         .then(users => {
+            if (users.error) {
+            console.error("Error:", users.error);
+            return;
+            }
+
+            const chatList = document.getElementById('chat-list');
+            chatList.innerHTML = '';
+
+            users.forEach(user => {
+            const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+
+            let lastMessageDisplay = '';
+            if (user.last_message_date) {
+               const messageDate = new Date(user.last_message_date);
+               lastMessageDisplay = formatTimeOrDate(messageDate);
+            }
+
+            const profileImageUrl = user.image ? 
+               '<?= ROOT ?>/assets/images/users/' + user.image : 
+               '<?= ROOT ?>/assets/images/users/Profile_default.png';
+
+            const chatItemHTML = `
+               <li>
+               <div class="chat-item ${unseenClass}" 
+                  data-receiver-id="${user.id}" 
+                  onclick="selectChat(this, '${user.id}')">
+                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                  <div class="chat-info">
+                     <h4>${user.username}</h4>
+                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                  </div>
+                  <div class="chat-side">
+                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                     <span class="circle"></span>
+                  </div>
+               </div>
+               </li>
+               `;
+
+            chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+            });
+         })
+         .catch(error => console.error("Error fetching unseen counts:", error));
+      }
+
+      setInterval(() => {
+         if (!isSearching) {
+         refreshUnseenCounts([3,5]);
+         }
+      }, 3000);
+
+      function searchUsers(query) {
+         const chatList = document.getElementById('chat-list');
+
+         if (!query.trim()) {
+         isSearching = false;
+         refreshUnseenCounts([3,5]);
+         return;
+         }
+
+         isSearching = true;
+
+         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
+         .then(response => response.json())
+         .then(user_profile => {
+            chatList.innerHTML = '';
+
+            if (user_profile.error || user_profile.length === 0) {
+            chatList.innerHTML = `<li></li>`;
+            return;
+            }
+
+            user_profile.forEach(user => {
+            const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+            let lastMessageDisplay = '';
+
+            if (user.last_message_date) {
+               const messageDate = new Date(user.last_message_date);
+               lastMessageDisplay = formatTimeOrDate(messageDate);
+            }
+
+            const profileImageUrl = user.image ? 
+               '<?= ROOT ?>/assets/images/users/' + user.image : 
+               '<?= ROOT ?>/assets/images/users/Profile_default.png';
+
+            const chatItemHTML = `
+               <li>
+               <div class="chat-item ${unseenClass}" 
+                  data-receiver-id="${user.id}" 
+                  onclick="selectChat(this, '${user.id}')">
+                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                  <div class="chat-info">
+                     <h4>${user.username}</h4>
+                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                  </div>
+                  <div class="chat-side">
+                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                     <span class="circle"></span>
+                  </div>
+               </div>
+               </li>
+               `;
+
+            chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+            });
+         })
+         .catch(error => console.error("Error searching users:", error));
+      }
+
       function markMessagesAsSeen(receiverId) {
          fetch(`<?= ROOT ?>/ChatController/markMessagesSeen/${receiverId}`)
-            .then(() => {
-               const chatItem = document.querySelector(`.chat-item[data-receiver-id="${receiverId}"]`);
-               if (chatItem) chatItem.classList.remove('unseen'); // Remove unseen indicator
-            });
+         .then(() => {
+            const chatItem = document.querySelector(`.chat-item[data-receiver-id="${receiverId}"]`);
+            if (chatItem) chatItem.classList.remove('unseen');
+         });
       }
 
       setInterval(refreshUnseenCounts, 3000);
 
       function updateReceivedState() {
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
-            .catch(error => console.error("Error updating timestamps:", error));
+         .catch(error => console.error("Error updating timestamps:", error));
       }
 
-      // Call the update function every 3 seconds
       setInterval(updateReceivedState, 3000);
-   </script>
-</body>
+      </script>
+   </body>
 
 </html>

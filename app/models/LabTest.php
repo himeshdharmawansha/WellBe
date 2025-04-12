@@ -24,7 +24,7 @@ class LabTest extends Model {
         $date = date('Y-m-d');
 
         $query = "SELECT id FROM test_requests WHERE doctor_id = ? AND patient_id = ? AND date = ?";
-        $result = $this->query($query, [$doctor_id, $patient_id, $date]); // Assuming `query()` returns the result set
+        $result = $this->query($query, [$doctor_id, $patient_id, $date]);
         
         return $result[0]->id;
     }

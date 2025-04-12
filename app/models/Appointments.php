@@ -166,6 +166,13 @@ class Appointments extends Model
         return $result;
     }
 
+    public function decWalletAmount(){
+
+        $query = "UPDATE patient SET e_wallet = e_wallet - 1500 WHERE id = ?";
+        $this->query($query,[$_SESSION['USER']->id]);
+    }
+
+    public function saveAppointmentDetails(){
     public function saveAppointmentDetails()
     {
 
@@ -177,9 +184,12 @@ class Appointments extends Model
         $appointment_no = $_POST['appointment_no'];
 
         $query = "INSERT INTO appointment(doctor_id,patient_id,date,time,state) VALUES(?,?,?,?,?)";
+        $query = "INSERT INTO appointment(doctor_id,patient_id,date,time,state) VALUES(?,?,?,?,?)";
 
         $this->query($query, [$doctor_id, $patient_id, $date, $time, $fees]);
 
+        return true;
+    }
         return true;
     }
 

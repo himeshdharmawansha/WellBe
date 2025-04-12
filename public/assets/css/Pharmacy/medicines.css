@@ -223,9 +223,25 @@
    background-color: #e5e7eb;
 }
 
-.no-results {
+.medicine-table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-top: 20px;
+}
+
+.medicine-table th,
+.medicine-table td {
+   border: 1px solid #ddd;
+   padding: 8px;
    text-align: center;
-   color: #666;
+}
+
+.medicine-table th {
+   background-color: #f4f4f4;
+}
+
+.out-of-stock {
+   background-color: #ffcccc;
 }
 
 a {

@@ -193,6 +193,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                })
                .then(data => {
                   if (data.status === "success") {
+                     refreshUnseenCounts([3,5]);
                      pollMessages();
                      hidePopupMenu();
                   } else {
@@ -217,6 +218,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          document.getElementById('chat-avatar').src = avatarSrc;
 
          startChat(userId);
+         markMessagesAsSeen(userId);
       }
 
       async function startChat(receiverId) {
@@ -311,6 +313,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          .then(response => response.json())
          .then(data => {
             if (data.status === "success") {
+            refreshUnseenCounts([3,5]);
             pollMessages();
             hidePopupMenu();
             } else {
@@ -357,6 +360,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             if (data.status === "success") {
             messageInput.value = '';
             pollMessages();
+            refreshUnseenCounts([3,5]);
             } else {
             alert('Error sending message');
             }
@@ -412,63 +416,98 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       let isSearching = false;
 
       function refreshUnseenCounts(roleArray) {
-         if (isSearching) return;
+         try {
+            if (isSearching) return;
 
-         const roles = roleArray.join(',');
+            const roles = roleArray.join(',');
+            fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
+               .then(response => response.json())
+               .then(users => {
+                  if (users.error) {
+                     console.error("Error:", users.error);
+                     return;
+                  }
 
-         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
-         .then(response => response.json())
-         .then(users => {
-            if (users.error) {
-            console.error("Error:", users.error);
-            return;
-            }
+                  const chatList = document.getElementById('chat-list');
+                  const existingItems = new Map(
+                     Array.from(chatList.querySelectorAll('.chat-item')).map(item => [
+                        item.getAttribute('data-receiver-id'),
+                        item
+                     ])
+                  );
 
-            const chatList = document.getElementById('chat-list');
-            chatList.innerHTML = '';
+                  // Sort users by last_message_date (newest first)
+                  users.sort((a, b) => {
+                     const dateA = a.last_message_date ? new Date(a.last_message_date) : new Date(0);
+                     const dateB = b.last_message_date ? new Date(b.last_message_date) : new Date(0);
+                     return dateB - dateA;
+                  });
 
-            users.forEach(user => {
-            const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+                  users.forEach(user => {
+                     const userId = user.id.toString();
+                     const existingItem = existingItems.get(userId);
+                     const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+                     let lastMessageDisplay = '';
+                     if (user.last_message_date) {
+                        const messageDate = new Date(user.last_message_date);
+                        lastMessageDisplay = formatTimeOrDate(messageDate);
+                     }
 
-            let lastMessageDisplay = '';
-            if (user.last_message_date) {
-               const messageDate = new Date(user.last_message_date);
-               lastMessageDisplay = formatTimeOrDate(messageDate);
-            }
+                     const profileImageUrl = user.image ?
+                        '<?= ROOT ?>/assets/images/users/' + user.image :
+                        '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
-            const profileImageUrl = user.image ? 
-               '<?= ROOT ?>/assets/images/users/' + user.image : 
-               '<?= ROOT ?>/assets/images/users/Profile_default.png';
+                     if (existingItem) {
+                        // Update existing item
+                        existingItem.className = `chat-item ${unseenClass}`;
+                        const statusElement = existingItem.querySelector('.chat-status');
+                        if (statusElement.textContent !== (user.state ? 'Online' : 'Offline')) {
+                           statusElement.textContent = user.state ? 'Online' : 'Offline';
+                        }
+                        const timeElement = existingItem.querySelector('.time');
+                        if (timeElement.textContent !== lastMessageDisplay) {
+                           timeElement.textContent = lastMessageDisplay;
+                        }
+                     } else {
+                        // Add new item at the top
+                        const chatItemHTML = `
+                           <li>
+                              <div class="chat-item ${unseenClass}" 
+                                   data-receiver-id="${user.id}" 
+                                   onclick="selectChat(this, '${user.id}')">
+                                 <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                                 <div class="chat-info">
+                                    <h4>${user.username}</h4>
+                                    <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                                 </div>
+                                 <div class="chat-side">
+                                    <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                                    <span class="circle"></span>
+                                 </div>
+                              </div>
+                           </li>
+                        `;
+                        chatList.insertAdjacentHTML('afterbegin', chatItemHTML);
+                     }
+                     existingItems.delete(userId);
+                  });
 
-            const chatItemHTML = `
-               <li>
-               <div class="chat-item ${unseenClass}" 
-                  data-receiver-id="${user.id}" 
-                  onclick="selectChat(this, '${user.id}')">
-                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                  <div class="chat-info">
-                     <h4>${user.username}</h4>
-                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                  </div>
-                  <div class="chat-side">
-                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                     <span class="circle"></span>
-                  </div>
-               </div>
-               </li>
-               `;
-
-            chatList.insertAdjacentHTML('beforeend', chatItemHTML);
-            });
-         })
-         .catch(error => console.error("Error fetching unseen counts:", error));
+                  // Remove items no longer in the user list
+                  existingItems.forEach(item => {
+                     item.parentElement.remove();
+                  });
+               })
+               .catch(error => console.error("Error fetching unseen counts:", error));
+         } catch (error) {
+            console.error('Error in refreshUnseenCounts:', error);
+         }
       }
 
       setInterval(() => {
          if (!isSearching) {
          refreshUnseenCounts([3,5]);
          }
-      }, 3000);
+      }, 1000);
 
       function searchUsers(query) {
          const chatList = document.getElementById('chat-list');
@@ -535,8 +574,6 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             if (chatItem) chatItem.classList.remove('unseen');
          });
       }
-
-      setInterval(refreshUnseenCounts, 3000);
 
       function updateReceivedState() {
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')

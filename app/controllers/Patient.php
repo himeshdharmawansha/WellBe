@@ -37,6 +37,15 @@ class Patient extends Controller
    {
       $this->view('Patient/labreports', 'labreports');
    }
+
+   public function refund()
+   {
+      $payment = new Payment();
+      $payment->refund();
+
+      $this->view('Patient/patient_dashboard', 'patient_dashboard');
+   }
+
    public function doc_appointment()
    {
       $data = [];
@@ -93,7 +102,7 @@ class Patient extends Controller
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
     
-
+      //print_r($data['doctors']);
       $this->view('Patient/doc_appointment', 'doc_appointment', $data);
 
    }
@@ -127,7 +136,11 @@ class Patient extends Controller
 
    public function hello()
    {
-      $this->view('Patient/hello', 'hello');
+      $payment = new Payment();
+      $amount = $payment -> getPatientWalletAmount();
+      $data['walletAmount'] = $amount;
+
+      $this->view('Patient/hello', 'hello', $data);
    }
 
    public function getAppointmentdata()
@@ -163,6 +176,12 @@ class Patient extends Controller
      }
 
       $appointment = new Appointments();
+
+      //Deduct from wallet if payment is made via E-Wallet
+      if($data['payment_method'] == "wallet"){
+         $appointment -> decWalletAmount();
+      }
+
 
       if ($data && $appointment->makeNewAppointment($data)) {
          $response = [

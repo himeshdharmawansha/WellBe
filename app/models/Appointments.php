@@ -152,21 +152,27 @@ class Appointments extends Model{
         return $result;
     }
 
-public function saveAppointmentDetails(){
+    public function decWalletAmount(){
 
-    $doctor_id = $_SESSION['USER']->id;
-    $patient_id = $_POST['patient'];
-    $date = $_POST['date'];
-    $time = $_POST['time'];
-    $fees = $_POST['fees'];
-    $appointment_no = $_POST['appointment_no'];
+        $query = "UPDATE patient SET e_wallet = e_wallet - 1500 WHERE id = ?";
+        $this->query($query,[$_SESSION['USER']->id]);
+    }
 
-    $query = "INSERT INTO appointment(doctor_id,patient_id,date,time,state) VALUES(?,?,?,?,?)";
+    public function saveAppointmentDetails(){
 
-    $this->query($query,[$doctor_id,$patient_id,$date,$time,$fees]);
+        $doctor_id = $_SESSION['USER']->id;
+        $patient_id = $_POST['patient'];
+        $date = $_POST['date'];
+        $time = $_POST['time'];
+        $fees = $_POST['fees'];
+        $appointment_no = $_POST['appointment_no'];
 
-    return true;
-}
+        $query = "INSERT INTO appointment(doctor_id,patient_id,date,time,state) VALUES(?,?,?,?,?)";
+
+        $this->query($query,[$doctor_id,$patient_id,$date,$time,$fees]);
+
+        return true;
+    }
 
 
 

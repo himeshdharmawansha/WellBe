@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/signup.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/signup.css?v=1.1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
@@ -29,11 +29,10 @@
                         value="<?= $_SESSION['form1_data']['first_name'] ?? '' ?>">
                 </div>
                 <?php if (!empty($errors['first_name'])): ?>
-                    <div>
+                    <div class="input-error">
                         <?php echo $errors['first_name'] ?>
                     </div>
                 <?php endif; ?>
-
 
 
                 <div class="form-row">
@@ -41,6 +40,11 @@
                     <input type="text" id="last_name" name="last_name" required
                         value="<?= $_SESSION['form1_data']['last_name'] ?? '' ?>">
                 </div>
+                <?php if (!empty($errors['last_name'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['last_name'] ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="form-row">
                     <label for="password">Password:</label>
@@ -86,10 +90,15 @@
                     <input type="text" id="contact" name="contact" required
                         value="<?= $_SESSION['form1_data']['contact'] ?? '' ?>">
                 </div>
+                <?php if (!empty($errors['contact'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['contact'] ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="buttons-bar">
                         <button type="button" class="prev-button" onclick="window.location.href='./'">Back</button>
-                        <button type="button" class="next-button">Next</button>
+                        <button type="submit" class="next-button" >Next</button>
                     </div>
             </form>
 

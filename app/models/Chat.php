@@ -135,7 +135,7 @@ class Chat extends Model
                       WHERE sender = user_profile.id AND receiver = :currentUserId AND seen = 0) AS unseen_count
               FROM user_profile 
               WHERE user_profile.id != :currentUserId 
-              AND (user_profile.username LIKE :searchTerm OR user_profile.email LIKE :searchTerm)";
+              AND (user_profile.username LIKE :searchTerm )";
       return $this->readn($sql, [
          'currentUserId' => $currentUserId,
          'searchTerm' => $searchTerm

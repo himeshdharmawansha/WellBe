@@ -212,7 +212,7 @@
                         console.log("result",result);
                         if (result.success) {
                             alert("Payment initiated successfully!");
-                            //window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
                         } else {
                             alert("Payment failed. Please try again.");
                         }

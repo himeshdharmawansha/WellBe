@@ -50,7 +50,7 @@
 
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <!-- Sidebar -->
+        
         <?php
         $this->renderComponent('navbar', $active);
         ?>
@@ -60,7 +60,7 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
+            $pageTitle = "Appointment Details"; // Set the text you want to display
             include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 

@@ -1,6 +1,23 @@
 <?php
 class Appointments extends Model
 {
+    protected $table = 'appointment';
+
+    protected $allowedColumns = [
+
+        'id',
+        'appointment_id',
+        'doctor_id',
+        'patient_id',
+        'date',
+        'payment_fee',
+        'payment_status',
+        'state',
+        'patient_type',
+        'scheduled',
+
+    ];
+
 
     public function getTodayAppointments($date = '')
     {
@@ -166,13 +183,14 @@ class Appointments extends Model
         return $result;
     }
 
-    public function decWalletAmount(){
+    public function decWalletAmount()
+    {
 
         $query = "UPDATE patient SET e_wallet = e_wallet - 1500 WHERE id = ?";
-        $this->query($query,[$_SESSION['USER']->id]);
+        $this->query($query, [$_SESSION['USER']->id]);
     }
 
-   
+
     public function saveAppointmentDetails()
     {
 
@@ -188,7 +206,7 @@ class Appointments extends Model
 
         $this->query($query, [$doctor_id, $patient_id, $date, $time, $fees]);
 
-        
+
         return true;
     }
 
@@ -201,4 +219,35 @@ class Appointments extends Model
 
         return true;
     }
+
+    public function getAllAppointmentsForPatient($patient_id)
+    {
+        $query = "
+        SELECT 
+            a.patient_id,
+            a.doctor_id,
+            a.appointment_id,
+            t.date,
+            a.payment_status,
+            d.first_name AS doctor_first_name,
+            d.last_name AS doctor_last_name,
+            d.specialization
+            
+        FROM 
+            appointment a
+        JOIN 
+            doctor d ON a.doctor_id = d.id
+        JOIN 
+            patient p ON a.patient_id = p.id
+        JOIN
+            timeslot t ON a.date = t.slot_id
+        WHERE 
+            a.patient_id = ?
+        ORDER BY 
+            a.date ASC
+    ";
+        return $this->query($query, [$patient_id]);
+    }
+
+    
 }

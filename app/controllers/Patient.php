@@ -26,8 +26,15 @@ class Patient extends Controller
 
    public function index()
    {
-      $this->view('Patient/patient_dashboard', 'patient_dashboard');
+      $appointmentsModel = new Appointments();
+      $patient_id = $_SESSION['USER']->id;
+   
+      $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
+   
+      // Pass appointment data to the dashboard view
+      $this->view('Patient/patient_dashboard', 'patient_dashboard', ['appointments' => $appointments]);
    }
+   
 
    public function medicalreports()
    {
@@ -101,7 +108,7 @@ class Patient extends Controller
       }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
-    
+
       //print_r($data['doctors']);
 
 
@@ -110,8 +117,16 @@ class Patient extends Controller
 
    public function appointments()
    {
-      $this->view('Patient/appointments', 'appointments');
+       $appointmentsModel = new Appointments();
+       $patient_id = $_SESSION['USER']->id;
+   
+       $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
+   
+       // Fix: pass active tab correctly
+       $this->view('Patient/appointments', 'appointments', ['appointments' => $appointments]);
    }
+   
+   
    public function chat()
    {
       $this->view('Patient/chat', 'chat');
@@ -138,7 +153,7 @@ class Patient extends Controller
    public function hello()
    {
       $payment = new Payment();
-      $amount = $payment -> getPatientWalletAmount();
+      $amount = $payment->getPatientWalletAmount();
       $data['walletAmount'] = $amount;
 
       $this->view('Patient/hello', 'hello', $data);
@@ -179,14 +194,14 @@ class Patient extends Controller
       $appointment = new Appointments();
 
       //Deduct from wallet if payment is made via E-Wallet
-      if($data['payment_method'] == "wallet"){
-         $appointment -> decWalletAmount();
+      if ($data['payment_method'] == "wallet") {
+         $appointment->decWalletAmount();
       }
 
 
       //Deduct from wallet if payment is made via E-Wallet
-      if($data['payment_method'] == "wallet"){
-         $appointment -> decWalletAmount();
+      if ($data['payment_method'] == "wallet") {
+         $appointment->decWalletAmount();
       }
 
 

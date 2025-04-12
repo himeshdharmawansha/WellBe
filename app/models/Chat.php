@@ -89,7 +89,7 @@ class Chat extends Model
    public function getuser_profiletatuses()
    {
       $currentUserId = $_SESSION['userid'];
-      $query = "SELECT user_profile.id, user_profile.state FROM user_profile WHERE user_profile.id != :currentUserId";
+      $query = "SELECT id, state FROM user_profile WHERE id != :currentUserId";
       return $this->query($query, ['currentUserId' => $currentUserId]);
    }
 
@@ -97,74 +97,101 @@ class Chat extends Model
    {
       $sender = $_SESSION['userid'];
       $query = "UPDATE message SET seen = 1 WHERE sender = :receiver AND receiver = :sender AND seen = 0";
-      return $this->query($query, ['receiver' => $receiver, 'sender' => $sender]);
+      return $this->write($query, ['receiver' => $receiver, 'sender' => $sender]);
    }
 
-   public function updateRecievedState($receiver, $sender)
-   {
-      $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
-      return $this->query($updateQuery, ['receiver' => $_SESSION['userid']]);
-   }
-
-   public function sendMessage($receiver, $message)
+   public function sendMessage($receiver, $message, $type, $filePath = null, $caption = null, $fileType = null, $fileSize = null)
    {
       $sender = $_SESSION['userid'];
-      date_default_timezone_set('Asia/Colombo');
-      $date = date("Y-m-d H:i:s");
-
-      $query = "INSERT INTO message (sender, receiver, message, date) VALUES (:sender, :receiver, :message, :date)";
-      return $this->write($query, [
+      $query = "INSERT INTO message (sender, receiver, message, type, file_path, caption, file_type, file_size, date, seen, deleted_sender, deleted_receiver, edited) 
+                VALUES (:sender, :receiver, :message, :type, :file_path, :caption, :file_type, :file_size, NOW(), 0, 0, 0, 0)";
+      $params = [
          'sender' => $sender,
          'receiver' => $receiver,
          'message' => $message,
-         'date' => $date,
+         'type' => $type,
+         'file_path' => $filePath,
+         'caption' => $caption,
+         'file_type' => $fileType,
+         'file_size' => $fileSize
+      ];
+      return $this->write($query, $params);
+   }
+
+   public function searchUser($query)
+   {
+      $currentUserId = $_SESSION['userid'];
+      $searchTerm = "%$query%";
+      $sql = "SELECT user_profile.*, 
+                     (SELECT seen FROM message 
+                      WHERE (sender = user_profile.id AND receiver = :currentUserId) 
+                      OR (sender = :currentUserId AND receiver = user_profile.id) 
+                      ORDER BY date DESC LIMIT 1) AS seen,
+                     (SELECT date FROM message 
+                      WHERE (sender = user_profile.id AND receiver = :currentUserId) 
+                      OR (sender = :currentUserId AND receiver = user_profile.id) 
+                      ORDER BY date DESC LIMIT 1) AS last_message_date,
+                     (SELECT COUNT(*) FROM message 
+                      WHERE sender = user_profile.id AND receiver = :currentUserId AND seen = 0) AS unseen_count
+              FROM user_profile 
+              WHERE user_profile.id != :currentUserId 
+              AND (user_profile.username LIKE :searchTerm OR user_profile.email LIKE :searchTerm)";
+      return $this->readn($sql, [
+         'currentUserId' => $currentUserId,
+         'searchTerm' => $searchTerm
       ]);
    }
 
    public function userDetails($currentUserId)
    {
-      $query = "SELECT user_profile.*, 
-                (SELECT seen FROM message 
-                 WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-                 OR (sender = :currentUserId AND receiver = user_profile.id) 
-                 ORDER BY date DESC LIMIT 1) AS seen,
-                (SELECT date FROM message 
-                 WHERE (sender = user_profile.id AND receiver = :currentUserId) 
-                 OR (sender = :currentUserId AND receiver = user_profile.id) 
-                 ORDER BY date DESC LIMIT 1) AS last_message_date,
-                (SELECT COUNT(*) FROM message 
-                 WHERE sender = user_profile.id AND receiver = :currentUserId AND seen = 0) AS unseen_count
-                FROM user_profile
-                WHERE user_profile.id != :currentUserId";
+      $query = "SELECT * FROM user_profile WHERE id = :currentUserId";
+      $result = $this->query($query, ['currentUserId' => $currentUserId]);
+      return $result ? $result[0] : null;
+   }
 
-      return $this->query($query, ['currentUserId' => $currentUserId]);
+   public function updateRecievedState($receiver, $sender)
+   {
+      $query = "UPDATE message 
+                SET received = 1 
+                WHERE sender = :sender 
+                AND receiver = :receiver 
+                AND received = 0";
+      return $this->write($query, ['sender' => $sender, 'receiver' => $receiver]);
    }
 
    public function editMessage($messageId, $newMessage)
    {
       $currentUserId = $_SESSION['userid'];
-      $query = "UPDATE message SET message = :newMessage, edited = 1 WHERE id = :messageId AND sender = :currentUserId";
+      $query = "UPDATE message 
+                SET message = :newMessage, edited = 1 
+                WHERE id = :messageId 
+                AND sender = :currentUserId 
+                AND type = 'text'";
       return $this->write($query, [
          'newMessage' => $newMessage,
          'messageId' => $messageId,
-         'currentUserId' => $currentUserId,
+         'currentUserId' => $currentUserId
       ]);
    }
 
-   public function searchUser($query)
+   public function editCaption($messageId, $newCaption)
    {
-      $querySql = "SELECT * FROM user_profile WHERE username LIKE :query AND role = 3";
-      return $this->read($querySql, [':query' => '%' . $query . '%']);
+      $currentUserId = $_SESSION['userid'];
+      $query = "UPDATE message 
+                SET caption = :newCaption, edited = 1 
+                WHERE id = :messageId 
+                AND sender = :currentUserId 
+                AND (type = 'photo' OR type = 'document')";
+      return $this->write($query, [
+         'newCaption' => $newCaption,
+         'messageId' => $messageId,
+         'currentUserId' => $currentUserId
+      ]);
    }
 
    public function setLoggedIn($userId)
    {
-      $updateStateQuery = "UPDATE user_profile SET state = 1 WHERE id = :userid";
-      $this->write($updateStateQuery, ['userid' => $userId]);
-   
-      $updateQuery = "UPDATE message SET received = 1 WHERE receiver = :receiver AND received = 0";
-      $this->write($updateQuery, ['receiver' => $userId]);
-   
-      return true;
+      $query = "UPDATE user_profile SET state = 1 WHERE id = :userId";
+      return $this->write($query, ['userId' => $userId]);
    }
 }

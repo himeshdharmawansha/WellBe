@@ -150,10 +150,12 @@ ul {
    padding: 20px;
    background-color: #f9f9f9;
    overflow-y: auto;
+   display: flex;
+   flex-direction: column;
 }
 
 .message {
-   max-width: 60%;
+   display: block; /* Changed to block to respect flexbox alignment */
    margin-bottom: 15px;
    padding: 10px;
    border-radius: 10px;
@@ -162,21 +164,27 @@ ul {
 
 .message.received {
    background-color: #f1f1f1;
-   align-self: flex-start;
+   align-self: flex-start; /* Align to the left */
    margin-top: 25px;
+   min-width: 100px; /* Minimum width for short messages */
+   max-width: 550px; /* Updated maximum width */
 }
 
 .message.sent {
-   background-color: #007bff;
-   color: #fff;
-   align-self: flex-end;
-   margin-left: auto;
+   background-color: #589eff;
+   color: #333; /* Updated to white for better contrast */
+   align-self: flex-end; /* Align to the right */
+   margin-left: auto; /* Ensure it pushes to the right */
    margin-right: 0;
    margin-top: 25px;
+   min-width: 100px; /* Minimum width for short messages */
+   max-width: 550px; /* Updated maximum width */
 }
 
 .message p {
    margin: 0;
+   white-space: normal; /* Ensure text wraps to the next line */
+   word-break: break-word; /* Force long words to break and wrap */
 }
 
 .message .time {
@@ -187,20 +195,149 @@ ul {
    right: 10px;
 }
 
+.message.photo {
+   width: 230px; /* Fixed width to match document */
+}
+
+.message.photo img {
+   width: 100%; /* Fit the image to the 230px width */
+   max-height: 200px;
+   border-radius: 10px;
+   cursor: pointer;
+   object-fit: contain; /* Maintain aspect ratio */
+}
+
+.message.photo .caption {
+   margin-top: 5px;
+   font-size: 0.9em;
+   color: #333;
+}
+
+.message.document {
+   background-color: #589eff;
+   padding: 15px; /* Increased padding for better spacing */
+   border-radius: 10px;
+   width: 230px; /* Fixed width to match photo */
+   display: flex;
+   flex-direction: column;
+   align-items: center; /* Center content */
+}
+
+.message.document .file-frame {
+   display: flex;
+   align-items: center;
+   background-color: rgba(255, 255, 255, 0.1); /* Slight white overlay for sender */
+   border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for sender */
+   border-radius: 5px;
+   padding: 5px 10px;
+   width: 100%; /* Full width of the parent */
+   margin-bottom: 5px; /* Space below the frame */
+}
+
+.message.document p {
+   margin: 0;
+   color: #fff; /* White text for sender's document messages */
+   font-weight: bold;
+   font-size: 0.9em;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   flex: 1; /* Take remaining space in the frame */
+}
+
+.message.document .doc-icon {
+   font-size: 1.2em; /* Slightly larger icon */
+   color: #fff; /* White icon for sender */
+   margin-right: 5px; /* Space between icon and file name */
+}
+
+.message.document .file-details {
+   margin-top: 5px;
+   font-size: 0.8em;
+   color: #fff; /* White text for sender */
+   text-align: center;
+}
+
+.message.document hr {
+   width: 100%;
+   border: none;
+   border-top: 1px solid rgba(255, 255, 255, 0.3); /* Light divider for sender */
+   margin: 10px 0; /* Space above and below the divider */
+}
+
+.message.received.document {
+   background-color: #f1f1f1; /* Background color for receiver's document messages */
+}
+
+.message.received.document .file-frame {
+   background-color: rgba(0, 0, 0, 0.05); /* Slight dark overlay for receiver */
+   border: 1px solid rgba(0, 0, 0, 0.1); /* Darker border for receiver */
+}
+
+.message.received.document p {
+   color: #333; /* Dark text for better contrast against #f1f1f1 */
+}
+
+.message.received.document .doc-icon {
+   color: #333; /* Dark icon for receiver */
+}
+
+.message.received.document .file-details {
+   color: #333; /* Dark text for receiver */
+}
+
+.message.received.document hr {
+   border-top: 1px solid rgba(0, 0, 0, 0.1); /* Darker divider for receiver */
+}
+
+.message.document .caption {
+   /* margin-top: 5px; */
+   font-size: 0.9em;
+   color: #333;
+}
+
+.message-actions {
+   margin-top: 5px;
+   display: flex;
+   gap: 5px;
+   width: 100%; /* Ensure the container takes the full width of the parent */
+}
+
+.message-actions button {
+   flex: 1; /* Each button takes 50% of the container's width */
+   padding: 5px 0; /* Adjust padding to fit the new width */
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   background-color: #fff;
+   color: #333;
+   font-size: 0.8em;
+}
+
+.message-actions button:hover {
+   background-color: #d5d5d5;
+}
+
 .chat-input {
    display: flex;
    padding: 10px;
    background-color: #fff;
    border-top: 1px solid #e0e0e0;
+   align-items: center;
+   position: relative;
 }
 
-.chat-input input {
+.chat-input input[type="text"] {
    flex: 1;
    padding: 10px;
    border: 1px solid #ccc;
    border-radius: 20px;
    outline: none;
    margin-right: 10px;
+}
+
+.chat-input input[type="file"] {
+   display: none;
 }
 
 .chat-input button {
@@ -219,6 +356,157 @@ ul {
 .upload {
    display: inline-block;
    margin: 10px;
+   cursor: pointer;
+   position: relative;
+}
+
+.upload i {
+   font-size: 1.2em;
+   color: #666;
+}
+
+.upload:hover i {
+   color: #007bff;
+}
+
+.upload-popup {
+   display: none;
+   position: absolute;
+   bottom: 45px;
+   left: -10px;
+   background: #fff;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   border-radius: 10px;
+   padding: 10px 0;
+   z-index: 10;
+   width: 150px;
+}
+
+.upload-popup ul {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+}
+
+.upload-popup li {
+   padding: 10px 20px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   font-size: 0.9em;
+   color: #333;
+}
+
+.upload-popup li:hover {
+   background-color: #f5f5f5;
+}
+
+.upload-popup i {
+   color: #666;
+   font-size: 1.1em;
+}
+
+.upload-popup li.selected {
+   background-color: #f5f5f5; /* Same as the hover color */
+}
+
+.preview-area {
+   display: none;
+   background-color: #fff;
+   border-top: 1px solid #e0e0e0;
+   padding: 10px;
+   position: absolute;
+   bottom: 65px;
+   left: 215px;
+   transform: translateX(-50%);
+   width: 400px; /* Fixed width */
+   max-width: 90%;
+   z-index: 5;
+   border-radius: 10px;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-area #preview-content {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-bottom: 10px;
+}
+
+.preview-area img {
+   width: 200px; /* Fixed width to match document preview */
+   max-height: 200px;
+   padding: 40px;
+   border-radius: 10px;
+   object-fit: contain; /* Maintain aspect ratio */
+}
+
+.preview-area .document-preview {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   background-color: #f5f5f5;
+   padding: 40px;
+   border-radius: 10px;
+   width: 200px; /* Fixed width to match photo preview */
+}
+
+.preview-area .document-preview .file-frame {
+   display: flex;
+   align-items: center;
+   background-color: rgba(0, 0, 0, 0.05); /* Slight dark overlay */
+   border: 1px solid rgba(0, 0, 0, 0.1); /* Darker border */
+   border-radius: 5px;
+   padding: 5px 10px;
+   width: 100%; /* Full width of the parent */
+   margin-bottom: 5px; /* Space below the frame */
+}
+
+.preview-area .document-preview p {
+   margin: 0;
+   font-size: 0.9em;
+   text-align: center; /* Center the file name */
+   white-space: nowrap; /* Prevent wrapping */
+   overflow: hidden;
+   text-overflow: ellipsis;
+   flex: 1; /* Take remaining space in the frame */
+}
+
+.preview-area .document-preview .doc-icon {
+   font-size: 1.2em; /* Slightly larger icon */
+   color: #333; /* Dark icon */
+   margin-right: 5px; /* Space between icon and file name */
+}
+
+.preview-area .document-preview .file-details {
+   font-size: 0.8em;
+   color: #333; /* Dark text */
+   text-align: center;
+}
+
+.preview-area .caption-send {
+   display: flex;
+   align-items: center;
+   /* gap: 10px; */
+}
+
+.preview-area input[type="text"] {
+   flex: 1;
+   padding: 8px;
+   border: 1px solid #ccc;
+   border-radius: 20px;
+   outline: none;
+}
+
+.preview-area .send-icon {
+   font-size: 1.2em;
+   color: #28a745; /* Green color to match the screenshot */
+   cursor: pointer;
+}
+
+.preview-area .send-icon:hover {
+   color: #218838;
 }
 
 .edited-label {
@@ -230,4 +518,61 @@ ul {
 a {
    text-decoration: none;
    color: inherit;
+}
+
+/* Styles for the discard notification */
+#discard-notification {
+   width: 400px;
+   background-color: #fff;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   padding: 15px;
+   position: fixed;
+   top: 50%;
+   left: 50%;
+}
+
+#discard-notification h4 {
+   margin: 0 0 10px 0;
+   font-size: 1.1em;
+   font-weight: bold;
+}
+
+#discard-notification p {
+   margin: 0 0 15px 0;
+   font-size: 0.9em;
+   color: #333;
+}
+
+.notification-actions {
+   display: flex;
+   gap: 10px;
+}
+
+.notification-actions button {
+   flex: 1;
+   padding: 8px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 0.9em;
+}
+
+.notification-actions .discard-btn {
+   background-color: #28a745;
+   color: #fff;
+}
+
+.notification-actions .discard-btn:hover {
+   background-color: #218838;
+}
+
+.notification-actions .return-btn {
+   background-color: #fff;
+   color: #333;
+   border: 1px solid #ccc;
+}
+
+.notification-actions .return-btn:hover {
+   background-color: #f5f5f5;
 }

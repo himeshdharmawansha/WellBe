@@ -190,6 +190,16 @@
 
 }
 
+.profile-img {
+  width: 200px; /* Adjust size as needed */
+  height: 200px;
+  object-fit: cover; /* Ensures the image fills the area without distortion */
+  border-radius: 50%; /* Makes it circular */
+  border: 2px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
 .profile-card::before {
   content: "";
   position: absolute;
@@ -201,29 +211,6 @@
   background-color: #172554;
 }
 
-.image {
-  position: relative;
-  width: 156px; /* 150px + 3px padding on both sides */
-  height: 156px;
-  border-radius: 50%;
-  background-color: #172554;
-  padding: 3px;
-  margin: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.image .profile-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #fff;
-}
-
-
 
 .profile-card .text-data {
   display: flex;
@@ -232,47 +219,13 @@
   color: #333;
 }
 
-
-.text-data .name {
-  font-size: 22px;
-  font-weight: 500;
-}
-
-.text-data .job {
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.profile-card .media-buttons {
-  display: flex;
-  align-items: center;
-  margin-top: 15px;
-}
-
-.media-buttons .link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 18px;
-  height: 34px;
-  width: 36px;
-  border-radius: 50%;
-  margin: 0 8px;
-  background-color: #172554;
-  text-decoration: none;
-}
-
 .profile-card .buttons {
   display: flex;
   align-items: center;
   margin-top: 25px;
 }
 
-.profile-details p {
-    margin: 5px 0;
-    font-size: 0.95em;
-  }
+
 
 .buttons .button {
   color: #fff;
@@ -288,33 +241,6 @@
   width: 150px;
 }
 
-.buttons .button:hover {
-  background-color: #172554;
-}
-
-.profile-card .analytics {
-  display: flex;
-  align-items: center;
-  margin-top: 25px;
-}
-
-.analytics .data {
-  display: flex;
-  align-items: center;
-  color: #333;
-  padding: 0 20px;
-  border-right: 2px solid #e7e7e7;
-}
-
-.data i {
-  font-size: 18px;
-  margin-right: 6px;
-}
-
-.data:last-child {
-  border-right: none;
-}
-
 .cards-container {
 
         margin-top: 15px;
@@ -324,7 +250,7 @@
         margin-left: 10px;
         width: 900px;
         
-    }
+  }
 
 
 .card {
@@ -418,14 +344,37 @@
     flex: 1; /* Adjusts the size so both containers take equal space */
     border: 1px solid #ccc; /* Optional styling */
     background-color: #ffffff;
-    padding: 10px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     height: auto;
     width: 383px;
     text-align: left;
     margin-top: 10px;
+    max-height: 600px; /* Adjust based on your card height × 3 */
+    overflow-y: auto;
+    padding-right: 10px;
 }
+
+.mini-scroll-container {
+  max-height: 360px; /* Adjust height based on your card size */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Optional: space between cards */
+  padding-right: 8px; /* For scrollbar space */
+}
+
+
+.mini-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.mini-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 4px;
+}
+
+
 
 .additional-container h3{
     text-align: center;
@@ -442,6 +391,7 @@
     text-align: center;
     margin-top: 15px;
     color: #ffffff;
+
 }
 
 .mini:hover{

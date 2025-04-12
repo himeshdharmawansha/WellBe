@@ -21,8 +21,8 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/newWellBe2/wellbe/app/views/Components/Patient/header.php';
+            $pageTitle = "Search Doctor"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
 
             <!-- Dashboard Content -->

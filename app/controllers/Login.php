@@ -36,9 +36,10 @@ class Login extends Controller
                 $row = $user->first($arr);
 
                 if ($row) {
-                    if (password_verify($_POST['password'], $row->password)) {
+                    if (($_POST['password']== $row->password)) {
                         $_SESSION['USER'] = $row; // Save user details in the session
                         $model->loggedin();
+                        $_SESSION['userid'] = $row->id;
                         redirect($_SESSION['user_type']);
                     } else {
                         $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password

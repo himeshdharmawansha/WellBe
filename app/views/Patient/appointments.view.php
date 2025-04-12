@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/appointments.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -19,7 +21,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 
             <!-- Dashboard Content -->
@@ -30,38 +32,39 @@
                         <button class="btn1">Reschedule/ Cancellation Policy</button>
                     </span>
                 </div>
-                <hr>  
+                <hr>
                 <div class="container">
-                    <div class="card">
-                        <p>Hi K.S.Perera,</p>
-                        <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)</p>
-                        <h1>25</h1>
-                        <h2>Monday<br>September 2024</h2>
-                        <div class="buttons">
-                            <button class="accept">Details</button>
-                            <button class="reschedule">Reschedule</button>
-                            <button class="cancel" onclick="showModal()">Cancel</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <p>Hi K.S.Perera,</p>
-                        <p>you have an appointment<br>with</p>
-                        <p class="doc_name">Dr. Narayanan (Cardiologist)</p>
-                        <h1>25</h1>
-                        <h2>Monday<br>September 2024</h2>
-                        <div class="buttons">
-                            <button class="accept">Details</button>
-                            <button class="reschedule">Reschedule</button>
-                            <button class="cancel" onclick="showModal()">Cancel</button>
-                        </div>
-                    </div>
+                    <?php if (!empty($appointments)) : ?>
+                        <?php foreach ($appointments as $appointment) : ?>
+                            <div class="card">
+                                <p>Hi <?= htmlspecialchars($_SESSION['USER']->first_name ?? 'Patient') ?>,</p>
+                                <p>You have an appointment with:</p>
+                                <p class="doc_name">
+                                    Dr. <?= htmlspecialchars($appointment->doctor_first_name . " " . $appointment->doctor_last_name) ?>
+                                    (<?= htmlspecialchars($appointment->specialization) ?>)
+                                </p>
+                                <p>Appointment Number: <?= htmlspecialchars($appointment->appointment_id) ?></p>
 
-                    <!-- Additional appointment cards here -->
+                                <p>Appointment Date: <?= date('Y-m-d', strtotime($appointment->date)) ?></p>
+                                <div class="buttons">
+                                    <button class="reschedule">Reschedule</button>
+                                    <button class="cancel" onclick="showModal()">Cancel</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <p>No appointments found.</p>
+                    <?php endif; ?>
                 </div>
+
+
+
+
+                <!-- Additional appointment cards here -->
             </div>
         </div>
     </div>
+
 
     <!-- Modal HTML -->
     <div id="cancelModal" class="modal">
@@ -102,4 +105,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -66,7 +66,7 @@ header {
       rgba(18, 172, 142, 0.9),
       rgba(18, 172, 141, 0.638)
     ),
-    url("http://localhost/Wellbe1/public/assets/images/header.jpg");
+    url("http://localhost/wellbe/public/assets/images/header.jpg");
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;

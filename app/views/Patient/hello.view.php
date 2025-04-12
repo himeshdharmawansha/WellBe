@@ -50,7 +50,7 @@
 
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <!-- Sidebar -->
+        
         <?php
         $this->renderComponent('navbar', $active);
         ?>
@@ -60,8 +60,8 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display      ///WellBe1/app/views/Components/Patient/header.php
-            include $_SERVER['DOCUMENT_ROOT'] . '/april/WellBe/app/views/Components/Patient/header.php';
+            $pageTitle = "Appointment Details"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 
 
@@ -230,7 +230,7 @@
 
                     try {
                         // Send data to the controller
-                        const response = await fetch('http://localhost/newWellBe2/WellBe/public/patient/getAppointmentdata', {
+                        const response = await fetch('http://localhost/WellBe/public/patient/getAppointmentdata', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -243,8 +243,8 @@
                         const result = JSON.parse(text);
                         console.log("result",result);
                         if (result.success) {
-                            //alert("Payment initiated successfully!");
-                            //window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                            alert("Payment initiated successfully!");
+                //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
                         } else {
                             alert("Payment failed. Please try again.");
                         }

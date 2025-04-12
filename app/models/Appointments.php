@@ -172,7 +172,7 @@ class Appointments extends Model
         $this->query($query,[$_SESSION['USER']->id]);
     }
 
-    public function saveAppointmentDetails(){
+   
     public function saveAppointmentDetails()
     {
 
@@ -188,8 +188,7 @@ class Appointments extends Model
 
         $this->query($query, [$doctor_id, $patient_id, $date, $time, $fees]);
 
-        return true;
-    }
+        
         return true;
     }
 

@@ -176,12 +176,17 @@
 
                     document.getElementById('doctor-info').innerHTML = '<strong>Doctor: </strong>' + (doctor ? doctor : 'N/A');
                     document.getElementById('specialization-info').innerHTML = '<strong>Specialization: </strong>' + (specialization ? specialization : 'N/A');
+<<<<<<< Updated upstream
                     document.getElementById('appointment-id-info').innerHTML = '<strong>Appointment Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
+=======
+                    document.getElementById('appointment-id-info').innerHTML = '<strong>Patient Number: </strong>' + (appointment_id ? appointment_id : 'N/A');
+>>>>>>> Stashed changes
                     document.getElementById('start-time-info').innerHTML = '<strong>Start Time: </strong>' + (start_time ? start_time : 'N/A');
                     document.getElementById('day-info').innerHTML = '<strong>Appointment Date: </strong>' + (day ? day : 'N/A');
                     document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
                 });
 
+<<<<<<< Updated upstream
 
                 async function sendAppointmentData(paymentMethod) {
                     const data = {
@@ -224,6 +229,44 @@
 
                 document.getElementById('payHereBtn').addEventListener('click', () => sendAppointmentData("online"));
                 document.getElementById('payLaterBtn').addEventListener('click', () => sendAppointmentData("counter"));
+=======
+                document.getElementById('payHereBtn').addEventListener('click', async function () {
+                // Collect data from the fields
+                const data = {
+                    doctor: document.getElementById('doctor-info').innerText.replace("Doctor: ", "").trim(),
+                    specialization: document.getElementById('specialization-info').innerText.replace("Specialization: ", "").trim(),
+                    appointment_date: document.getElementById('day-info').innerText.replace("Appointment Date: ", "").trim(),
+                    appointment_time: document.getElementById('start-time-info').innerText.replace("Appointment Time: ", "").trim(),
+                    appointment_number: document.getElementById('appointment-id-info').innerText.replace("Appointment Number: ", "").trim(),
+                    appointment_fee: document.getElementById('appointment-fee').innerText.replace("Appointment Fees: ", "").trim(),
+                    patient_name: "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>",
+                    contact_number: "<?= $_SESSION['USER']->contact; ?>",
+                    emergency_contact: "<?= $_SESSION['USER']->emergency_contact_no; ?>"
+                };
+
+                try {
+                    // Send data to the controller
+                    const response = await fetch('<?= ROOT ?>/patient/hello', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json(); // Assuming your PHP controller returns JSON
+                    if (result.success) {
+                        alert("Payment initiated successfully!");
+                        window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                    } else {
+                        alert("Payment failed. Please try again.");
+                    }
+                } catch (error) {
+                    //console.error("Error:", error);
+                    alert("An error occurred while processing the payment.");
+                }
+                });
+>>>>>>> Stashed changes
 
         </script>
 

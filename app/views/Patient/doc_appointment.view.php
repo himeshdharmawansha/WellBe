@@ -21,8 +21,8 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
+            $pageTitle = "Search Doctor"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
             ?>
 
             <!-- Dashboard Content -->
@@ -52,11 +52,18 @@
                                 <input list="specializations" id="specialization" name="specialization"
                                     placeholder="Type specialization"
                                     value="<?= isset($_POST['specialization']) ? htmlspecialchars($_POST['specialization']) : '' ?>">
-                                <datalist id="specializations">
-                                    <?php foreach ($doctors as $doctor): ?>
-                                        <option value="<?= htmlspecialchars($doctor->specialization); ?>"></option>
-                                    <?php endforeach; ?>
-                                </datalist>
+                                    <datalist id="specializations">
+                                        <?php
+                                        $uniqueSpecializations = [];
+                                        foreach ($doctors as $doctor) {
+                                            $spec = htmlspecialchars($doctor->specialization);
+                                            if (!in_array($spec, $uniqueSpecializations)) {
+                                                $uniqueSpecializations[] = $spec;
+                                                echo "<option value=\"$spec\"></option>";
+                                            }
+                                        }
+                                        ?>
+                                    </datalist>
                             </div>
 
                             <button type="submit" class="find-doctor-btn">Search</button>
@@ -104,6 +111,58 @@
 </body>
 
 <script>
+
+    const doctors = <?= json_encode($data['doctors']) ?>;
+
+    const doctorInput = document.getElementById('doctor');
+    const specializationInput = document.getElementById('specialization');
+    const doctorsDatalist = document.getElementById('doctors');
+    const specializationsDatalist = document.getElementById('specializations');
+
+    // Helper to update datalist options
+    function updateDatalist(datalistElement, values) {
+        datalistElement.innerHTML = ''; // Clear current options
+        const uniqueValues = [...new Set(values)]; // Remove duplicates using Set
+        uniqueValues.forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            datalistElement.appendChild(option);
+        });
+    }
+
+    // When specialization changes, update doctor suggestions
+    specializationInput.addEventListener('input', function () {
+        const selectedSpecialization = this.value.trim().toLowerCase();
+
+        // Filter doctors by selected specialization
+        const filteredDoctors = doctors
+            .filter(doc => doc.specialization.toLowerCase() === selectedSpecialization)
+            .map(doc => doc.name);
+
+        // Update the doctor datalist with unique names
+        updateDatalist(doctorsDatalist, filteredDoctors);
+    });
+
+    // When doctor changes, update specialization suggestion
+    doctorInput.addEventListener('input', function () {
+        const selectedDoctor = this.value.trim().toLowerCase();
+
+        // Find the selected doctor and auto-fill specialization
+        const foundDoctor = doctors.find(doc => doc.name.toLowerCase() === selectedDoctor);
+
+        if (foundDoctor) {
+            // Auto-fill specialization field
+            specializationInput.value = foundDoctor.specialization;
+
+            // Filter specializations to only this one (showing it only once)
+            updateDatalist(specializationsDatalist, [foundDoctor.specialization]);
+        } else {
+            // Reset specialization list if doctor doesn't match
+            const allSpecs = doctors.map(doc => doc.specialization);
+            updateDatalist(specializationsDatalist, allSpecs);
+        }
+    });
+
     function storeSelection(button) {
         sessionStorage.setItem('doc_id', button.dataset.docId);
         sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);

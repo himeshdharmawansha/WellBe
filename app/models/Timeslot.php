@@ -96,6 +96,7 @@ class Timeslot extends Model
                 AND td.doctor_id = ?;";
 
         $this->query($query,[$date,$_SESSION['USER']->id]);
+        
 
         $query = "UPDATE appointment a
                 JOIN timeslot ts ON a.date = ts.slot_id
@@ -105,21 +106,43 @@ class Timeslot extends Model
 
         $this->query($query,[$date,$_SESSION['USER']->id]);
 
-        $data = [
-            "type" => "reschedule",
-            "patientId" => '200260500000p',
-        ];
-        
-        $options = [
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/json\r\n",
-                'content' => json_encode($data),
-            ],
-        ];
-    
-        $context = stream_context_create($options);
-        file_get_contents('http://localhost:3000/notify', false, $context);
+        //get patient ids for resheduled date
+        $query = "SELECT a.appointment_id, p.nic FROM appointment a 
+                JOIN patient p ON a.patient_id = p.id
+                JOIN timeslot ts ON a.date = ts.slot_id
+                WHERE a.doctor_id = ? AND ts.date = ?;";
+
+        $patientIds = $this->query($query,[$_SESSION['USER']->id,$date]);
+
+        //var_dump($date);
+        //var_dump($patientIds);
+
+        $docName = $_SESSION['USER']->first_name . " " . $_SESSION['USER']->last_name;
+        $specialization = $_SESSION['USER']->specialization;
+
+        // Loop through each patient and send notification
+        if ($patientIds) {
+            foreach ($patientIds as $patient) {
+                $data = [
+                    "type" => "reschedule",
+                    "patientId" => $patient->nic,
+                    "docName" => $docName,
+                    "specialization" => $specialization,
+                    "date" => $date
+                ];
+
+                $options = [
+                    'http' => [
+                        'method'  => 'POST',
+                        'header'  => "Content-Type: application/json\r\n",
+                        'content' => json_encode($data),
+                    ],
+                ];
+
+                $context = stream_context_create($options);
+                file_get_contents('http://localhost:3000/notify', false, $context);
+            }
+        }
 
         redirect("doctor");
     }

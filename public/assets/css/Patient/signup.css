@@ -96,6 +96,16 @@
     gap: 15px;
 }
 
+.input-error {
+    color: #d8000c;
+    background-color: #ffdddd;
+    border: 1px solid #d8000c;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
 .gender-options {
     display: flex;
     align-items: center;
@@ -128,7 +138,7 @@
 .form-row {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-top: 15px;
 
 }
 

@@ -1,5 +1,5 @@
 function paymentGateWay() {
-  fetch("/WELLBE1/public/patient/generatehash", {
+  fetch("/wellbe/public/patient/generatehash", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -19,7 +19,7 @@ function paymentGateWay() {
         payhere.onCompleted = function (orderId) {
           console.log("Payment completed. OrderID: " + orderId);
           console.log("Redirecting to return URL...");
-          window.location.href = `http://localhost/Appointment/patient_dashboard.php`;
+          window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`;
         };
 
         // PayHere payment dismissed callback
@@ -39,9 +39,9 @@ function paymentGateWay() {
           sandbox: true, // Set to false for live mode
           merchant_id: "1228628", // Replace with your PayHere Merchant ID
           return_url:
-            "http://localhost/WELLBE1/patient_dashboard.phpz", // Your return URL
-          cancel_url: "http://localhost/WELLBE1/hello.php", // Your cancel URL
-          notify_url: "http://sample.com/notify", // Your backend URL for payment notifications
+            "http://localhost/wellbe/public/patient/patient_dashboard.php", // Your return URL
+          cancel_url: "http://localhost/wellbe/hello.php", // Your cancel URL
+          notify_url: "https://wellbe.loca.lt/wellbe/public/payment/getPaymentData", // Your backend URL for payment notifications
           order_id: obj["order_id"],
           items: obj["items"],
           amount: obj["amount"],
@@ -57,7 +57,12 @@ function paymentGateWay() {
           delivery_address: obj["delivery_address"],
           delivery_city: obj["delivery_city"],
           delivery_country: obj["delivery_country"],
-          custom_1: "",//appointment id
+          custom_1: JSON.stringify({
+            appointment_id: sessionStorage.getItem("appointment_id"),
+            doc_id: sessionStorage.getItem("doc_id"),
+            date: sessionStorage.getItem("day"),
+            patient_id: obj["patient_id"],
+          }),//appointment id
           custom_2: "",
         };
 

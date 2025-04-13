@@ -22,14 +22,35 @@
         .hidden {
             display: none;
         }
+
+        .submit-btn:disabled {
+        background-color: #ccc;
+        color: #666;
+        cursor: not-allowed;
+        opacity: 0.6;
+        }
+
+        .low-fund {
+            color: red;
+            font-weight: bold;
+        }
+
     </style>
 
 </head>
 
 <body>
+
+    <?php
+        $amount = $data['walletAmount'][0]->e_wallet; //e_wallet is patient e_wallet column
+        $disableWalletBtn = ($amount <= 1500) ? 'disabled' : '';
+        //print_r($amount);
+        //echo gettype($amount);
+    ?>
+
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <!-- Sidebar -->
+        
         <?php
         $this->renderComponent('navbar', $active);
         ?>
@@ -39,8 +60,8 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe1/app/views/Components/Patient/header.php';
+            $pageTitle = "Appointment Details"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 
 
@@ -71,9 +92,15 @@
                             Now</button>
                         <button id="payLaterBtn" name="save_patient" class="submit-btn hidden">Pay
                             Over the Counter</button>
+                        </div>
+                        <button id="payByWalletBtn" name="save_patient" class="submit-btn hidden" <?= $disableWalletBtn ?>>Pay
+                            By E-Wallet 
+                            <span class="wallet-amount <?= ($amount < 1500) ? 'low-fund' : '' ?>">
+                                (Amount: Rs.<?= $amount ?>.00)
+                            </span>
+                        </button>
+                        </div>
                     </div>
-
-                </div>
             </section>
             </main>
         </div>
@@ -115,6 +142,7 @@
                 const confirmBtn = document.getElementById('confirmBtn');
                 const payHereBtn = document.getElementById('payHereBtn');
                 const payLaterBtn = document.getElementById('payLaterBtn');
+                const payByWalletBtn = document.getElementById('payByWalletBtn');
 
 
                 confirmBtn.addEventListener('click', function () {
@@ -122,6 +150,7 @@
                     confirmBtn.classList.add('hidden'); // Hide Pay Here button
                     payHereBtn.classList.remove('hidden'); // Show Confirm Appointment button
                     payLaterBtn.classList.remove('hidden');
+                    payByWalletBtn.classList.remove('hidden');
                 });
             });
 
@@ -129,6 +158,7 @@
                 const confirmBtn = document.getElementById('confirmBtn');
                 const payHereBtn = document.getElementById('payHereBtn');
                 const payLaterBtn = document.getElementById('payLaterBtn');
+                const payByWalletBtn = document.getElementById('payByWalletBtn')
                 const popupModal = document.getElementById('popupModal');
                 const closeModal = document.getElementById('closeModal');
 
@@ -142,6 +172,7 @@
 
 
                 payLaterBtn.addEventListener('click', showModal);
+                payByWalletBtn.addEventListener('click', showModal);
                 closeModal.addEventListener('click', hideModal);
             });
 
@@ -191,6 +222,7 @@
                         appointment_time: document.getElementById('start-time-info').innerText.replace("Appointment Time: ", "").trim(),
                         appointment_number: document.getElementById('appointment-id-info').innerText.replace("Appointment Number: ", "").trim(),
                         appointment_fee: document.getElementById('appointment-fee').innerText.replace("Appointment Fees: ", "").trim(),
+                        payment_method : paymentMethod,
                         patient_name: "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>",
                         contact_number: "<?= $_SESSION['USER']->contact; ?>",
                         emergency_contact: "<?= $_SESSION['USER']->emergency_contact_no; ?>"
@@ -198,7 +230,7 @@
 
                     try {
                         // Send data to the controller
-                        const response = await fetch('http://localhost/april/WellBe/public/patient/getAppointmentdata', {
+                        const response = await fetch('http://localhost/WellBe/public/patient/getAppointmentdata', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -212,7 +244,7 @@
                         console.log("result",result);
                         if (result.success) {
                             alert("Payment initiated successfully!");
-                            //window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
                         } else {
                             alert("Payment failed. Please try again.");
                         }
@@ -224,6 +256,7 @@
 
                 document.getElementById('payHereBtn').addEventListener('click', () => sendAppointmentData("online"));
                 document.getElementById('payLaterBtn').addEventListener('click', () => sendAppointmentData("counter"));
+                document.getElementById('payByWalletBtn').addEventListener('click', () => sendAppointmentData("wallet"));
 
         </script>
 

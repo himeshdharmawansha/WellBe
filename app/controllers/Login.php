@@ -31,7 +31,6 @@ class Login extends Controller
                     $_SESSION['user_type'] = "admin";
                 }
 
-
                 //password_verify($_POST['password'], $row->password
                 $arr['nic'] = $_POST['nic'];
                 $row = $user->first($arr);

@@ -23,18 +23,18 @@ body {
 
 
 .loginsignup{
-    width: 96.5%;
-    height: 90vh;
+    width: 100%;
+    height: 100vh;
     background-image: linear-gradient(
       to right,
       rgba(18, 172, 141, 0.345),
       rgba(18, 172, 142, 0.7)
     ),
-    url("http://localhost/Wellbe1/public/assets/images/login.jpg");
-  background-position: center center;
+    url("http://localhost/wellbe/public/assets/images/login.jpg");
+  background-position:  center;
   background-size: cover;
   background-repeat: no-repeat;
-    padding: 25px;
+    /* padding: 25px; */
     justify-content: space-between; /* Distributes space between the container and image */
     align-items: center;
 overflow: hidden;

@@ -17,13 +17,14 @@
     $this->renderComponent('navbar', $active);
     ?>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Header -->
-            <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/april/WellBe/app/views/Components/Patient/header.php';
-            ?>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Header -->
+      <?php
+      $pageTitle = "Dashboard"; // Set the text you want to display
+      include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
+      ?>
 
       <!-- Dashboard Content -->
       <div class="container">
@@ -31,7 +32,7 @@
           <div class="profile-card">
             <div class="image">
               <?php
-              $profileImage = ($_SESSION['USER']->gender == 'Male') ? 'male_pro.png' : 'female_pro.png';
+              $profileImage = ($_SESSION['USER']->gender == 'M') ? 'male_pro.png' : 'female_pro.png';
               ?>
               <img src="<?= ROOT ?>/assets/images/<?= $profileImage ?>" alt="Profile Picture" class="profile-img" />
             </div>
@@ -112,44 +113,33 @@
               </div>
 
               <div class="additional-container">
-                <h3>Upcoming Appointments</h3>
-                <div class="mini-wrapper">
-                  <div class="mini">
-                    <div class="mini-part part1">
-                      <h4>Dr. Upul Priyarathne</h4>
-                    </div>
-                    <div class="mini-part part2">
-                      <span>Date: <span>24/11/2024</span></span>
-                    </div>
-                    <div class="mini-part part3">
-                      <span>Appointment No: <span>25</span></span>
-                    </div>
+                <?php if (!empty($appointments)) : ?>
+                  <h3>Upcoming Appointments</h3>
+
+                  <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
+                    <?php foreach ($appointments as $appt) : ?>
+                      <div class="mini-wrapper">
+                        <div class="mini">
+                          <div class="mini-part part1">
+                            <h4><?= htmlspecialchars($appt->doctor_first_name . " " . $appt->doctor_last_name) ?>
+                              (<?= htmlspecialchars($appt->specialization) ?>)</h4>
+                          </div>
+                          <div class="mini-part part2">
+                            <span>Date: <span><?= date('Y-m-d', strtotime($appt->date)) ?></span></span>
+                          </div>
+                          <div class="mini-part part3">
+                            <span>Appointment No: <span><?= htmlspecialchars($appt->appointment_id) ?></span></span>
+                          </div>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
                   </div>
 
-                  <div class="mini">
-                    <div class="mini-part part1">
-                      <h4>Dr. Saman Rathnayake</h4>
-                    </div>
-                    <div class="mini-part part2">
-                      <span>Date: <span>24/11/2024</span></span>
-                    </div>
-                    <div class="mini-part part3">
-                      <span>Appointment No: <span>25</span></span>
-                    </div>
-                  </div>
-                  <div class="mini">
-                    <div class="mini-part part1">
-                      <h4>Dr. Jaya Swaminadan</h4>
-                    </div>
-                    <div class="mini-part part2">
-                      <span>Date: <span>24/11/2024</span></span>
-                    </div>
-                    <div class="mini-part part3">
-                      <span>Appointment No: <span>25</span></span>
-                    </div>
-                  </div>
-                </div>
+                <?php else : ?>
+                  <p>No upcoming appointments.</p>
+                <?php endif; ?>
               </div>
+
 
             </div>
 
@@ -199,7 +189,6 @@
             });
           }
         });
-
       </script>
 
       <script>
@@ -245,7 +234,6 @@
           });
 
         });
-
       </script>
 
 </body>

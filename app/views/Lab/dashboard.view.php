@@ -218,12 +218,19 @@
             setInterval(fetchNewMessages, 5000);
         });
 
-        function updateReceivedState() {
+        function updateState() {
             fetch('<?= ROOT ?>/ChatController/loggedin')
                 .catch(error => console.error("Error in loggedin :", error));
         }
 
-        setInterval(updateReceivedState, 3000);
+        setInterval(updateState, 3000);
+
+        function updateReceivedState(receiverId) {
+         fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
+            .catch(error => console.error("Error updating timestamps:", error));
+      }
+
+      setInterval(updateReceivedState(<?php echo $user['id']; ?>), 3000);
     </script>
 </body>
 

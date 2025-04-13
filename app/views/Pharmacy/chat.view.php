@@ -457,6 +457,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             console.error('Error fetching messages:', error);
          }
       }
+      
+      let lastMessageId = null;
 
       function pollMessages() {
          if (selectedUserId) {

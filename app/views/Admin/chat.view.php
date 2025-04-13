@@ -458,6 +458,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          }
       }
 
+      let lastMessageId = null;
+
       function pollMessages() {
          if (selectedUserId) {
             fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
@@ -1122,12 +1124,12 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             });
       }
 
-      function updateReceivedState() {
-         fetch('<?= ROOT ?>/ChatController/updateReceivedState')
+      function updateReceivedState(receiverId) {
+         fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
             .catch(error => console.error("Error updating timestamps:", error));
       }
 
-      setInterval(updateReceivedState, 3000);
+      setInterval(updateReceivedState(<?php echo $user['id']; ?>), 3000);
    </script>
 </body>
 

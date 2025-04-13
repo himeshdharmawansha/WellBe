@@ -234,9 +234,9 @@ class ChatController extends Controller
       return $this->chatModel->userDetails($currentUserId);
    }
 
-   public function updateRecievedState($receiver, $sender)
+   public function updateReceivedState($receiver)
    {
-      return $this->chatModel->updateRecievedState($receiver, $sender);
+      return $this->chatModel->updateRecievedState($receiver);
    }
 
    public function editMessage()

@@ -149,8 +149,9 @@ class Chat extends Model
       return $result ? $result[0] : null;
    }
 
-   public function updateRecievedState($receiver, $sender)
+   public function updateRecievedState($receiver)
    {
+      $sender = $_SESSION['userid'];
       $query = "UPDATE message 
                 SET received = 1 
                 WHERE sender = :sender 

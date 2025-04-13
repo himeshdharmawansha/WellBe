@@ -81,7 +81,7 @@ class Lab extends Controller
 
    public function fetchNewMessages()
    {
-      $messages = $this->labModel->fetchNewMessages($_SESSION['userid']);
+      $messages = $this->labModel->fetchNewMessages();
       echo json_encode($messages);
    }
 }

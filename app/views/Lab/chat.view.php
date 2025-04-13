@@ -458,6 +458,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          }
       }
 
+      let lastMessageId = null;
+
       function pollMessages() {
          if (selectedUserId) {
             fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)

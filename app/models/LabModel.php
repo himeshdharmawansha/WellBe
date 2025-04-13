@@ -82,9 +82,10 @@ class LabModel extends Model
       return $this->query($query);
    }
 
-   public function fetchNewMessages($sender)
+   public function fetchNewMessages()
    {
-      $receiverQuery = "SELECT id FROM user_profile WHERE role = 3";
+      $sender = $_SESSION['userid']; // Current user's ID
+      $receiverQuery = "SELECT id FROM user_profile WHERE role IN (3, 5)";
       $receivers = $this->query($receiverQuery);
 
       if (!$receivers) {
@@ -92,22 +93,21 @@ class LabModel extends Model
       }
 
       $receiverIds = array_map(fn($r) => $r->id, $receivers);
-
       $placeholders = implode(',', array_fill(0, count($receiverIds), '?'));
 
       $messageQuery = "
-           SELECT 
-               a.first_name,
-               MAX(m.date) AS last_message_date  
-           FROM message m
-           JOIN administrative_staff a ON m.sender = a.id
-           WHERE m.receiver = ?  
-             AND m.sender IN ($placeholders)  
-             AND m.seen = 0 
-             AND m.received = 1
-           GROUP BY m.sender, a.first_name  
-           ORDER BY last_message_date DESC
-           LIMIT 20";
+         SELECT 
+            u.username AS first_name,
+            MAX(m.date) AS last_message_date
+         FROM message m
+         JOIN user_profile u ON m.sender = u.id
+         WHERE m.receiver = ?  
+           AND m.sender IN ($placeholders)  
+           AND m.seen = 0 
+           -- AND m.received = 1
+         GROUP BY m.sender, u.username
+         ORDER BY last_message_date DESC
+         LIMIT 20";
 
       $params = array_merge([$sender], $receiverIds);
 

@@ -20,9 +20,9 @@ body {
     align-items: center;
     height: 100vh;
     background-image: linear-gradient(
-      to right,
-      rgba(18, 172, 141, 0.345),
-      rgba(18, 172, 142, 0.7)
+        to right,
+        rgba(18, 172, 141, 0.345),
+        rgba(18, 172, 142, 0.7)
     ),
     url("http://localhost/wellbe/public/assets/images/login.jpg");
     background-position: center center;
@@ -142,6 +142,32 @@ h1 {
     font-size: 14px;
 }
 
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* reserve space for the icon inside the input */
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #777;
+    user-select: none;
+}
+
+.toggle-password i {
+    font-size: 18px; /* Adjust icon size if needed */
+}
+
 @media(max-width: 1280px) {
     .loginsignup-container {
         width: 90%;
@@ -175,5 +201,12 @@ h1 {
         font-size: 12px;
     }
 
+    .toggle-password {
+        font-size: 16px;
+        right: 8px;
+    }
 
+    .toggle-password i {
+        font-size: 16px; /* Adjust icon size for smaller screens */
+    }
 }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= ROOT?>/assets/css/signup.css?v=1.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Login</title>
     <script>
         function validateForm(event) {
@@ -28,6 +29,20 @@
                 input.addEventListener('focus', clearErrorMessages); // Clear error on focus
             });
         };
+
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("password");
+            var toggleIcon = document.querySelector(".toggle-password i");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            }
+        }
     </script>
 </head>
 <body>
@@ -41,7 +56,12 @@
             <form method="post" onsubmit="validateForm(event)">
                 <div class="loginsignup-fields">
                     <input name="nic" type="text" placeholder="Type your NIC number" required />
-                    <input name="password" type="password" placeholder="Type your Password" required />
+                    <div class="password-wrapper">
+                        <input name="password" type="password" placeholder="Type your Password" id="password" required />
+                        <span class="toggle-password" onclick="togglePasswordVisibility()">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </span>
+                    </div>
                 </div>
 
                 <?php if (!empty($errors)): ?>

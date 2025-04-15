@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../../models/ProfileModel.php");
 $he = new ChatController();
 $profileModel = new ProfileModel();
 
-$unseenCounts = $he->UnseenCounts([3, 5]);
+$unseenCounts = $he->UnseenCounts([1, 2, 3, 4]);
 $user_profile = $unseenCounts;
 if (!is_array($user_profile)) {
    $user_profile = [];
@@ -36,7 +36,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>WELLBE</title>
-   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/message.css">
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/message.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -249,7 +249,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                })
                .then(data => {
                   if (data.status === "success") {
-                     refreshUnseenCounts([3, 5]);
+                     refreshUnseenCounts([1, 2, 3, 4]);
                      pullMessages();
                      hidePopupMenu();
                   } else {
@@ -291,7 +291,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([1, 2, 3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -331,7 +331,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([1, 2, 3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -572,7 +572,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                });
          }
       }
-      //setInterval(pullMessages, 6000);
+      setInterval(pullMessages, 6000);
 
       document.getElementById('message-input').addEventListener('keypress', function(event) {
          if (event.key === 'Enter' && !event.shiftKey) {
@@ -621,7 +621,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([1, 2, 3, 4]);
                } else {
                   console.error('Server responded with failure:', data);
                   alert(data.message || 'Error sending message');
@@ -934,7 +934,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([1, 2, 3, 4]);
                   document.removeEventListener('click', handleOutsideClick);
                   isNotificationDismissed = false;
                } else {
@@ -1011,101 +1011,67 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       let isSearching = false;
 
       function refreshUnseenCounts(roleArray) {
-         try {
-            if (isSearching) return;
+         if (isSearching) return;
 
-            const roles = roleArray.join(',');
-            fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
-               .then(response => response.json())
-               .then(users => {
-                  if (users.error) {
-                     console.error("Error:", users.error);
-                     return;
+         const roles = roleArray.join(',');
+
+         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
+            .then(response => response.json())
+            .then(users => {
+               if (users.error) {
+                  console.error("Error:", users.error);
+                  return;
+               }
+
+               // Update the unseenCountsMap
+               unseenCountsMap = {};
+               users.forEach(user => {
+                  unseenCountsMap[user.id] = user.unseen_count || 0;
+               });
+
+               const chatList = document.getElementById('chat-list');
+               chatList.innerHTML = '';
+
+               users.forEach(user => {
+                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+
+                  let lastMessageDisplay = '';
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
-                  // Update the unseenCountsMap
-                  unseenCountsMap = {};
-                  users.forEach(user => {
-                     unseenCountsMap[user.id] = user.unseen_count || 0;
-                  });
+                  const profileImageUrl = user.image ?
+                     '<?= ROOT ?>/assets/images/users/' + user.image :
+                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
-                  const chatList = document.getElementById('chat-list');
-                  const existingItems = new Map(
-                     Array.from(chatList.querySelectorAll('.chat-item')).map(item => [
-                        item.getAttribute('data-receiver-id'),
-                        item
-                     ])
-                  );
+                  const chatItemHTML = `
+               <li>
+               <div class="chat-item ${unseenClass}" 
+                  data-receiver-id="${user.id}" 
+                  onclick="selectChat(this, '${user.id}')">
+                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                  <div class="chat-info">
+                     <h4>${user.username}</h4>
+                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                  </div>
+                  <div class="chat-side">
+                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                     <span class="circle"></span>
+                  </div>
+               </div>
+               </li>
+               `;
 
-                  // Sort users by last_message_date (newest first)
-                  users.sort((a, b) => {
-                     const dateA = a.last_message_date ? new Date(a.last_message_date) : new Date(0);
-                     const dateB = b.last_message_date ? new Date(b.last_message_date) : new Date(0);
-                     return dateB - dateA;
-                  });
-
-                  users.forEach(user => {
-                     const userId = user.id.toString();
-                     const existingItem = existingItems.get(userId);
-                     const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-                     let lastMessageDisplay = '';
-                     if (user.last_message_date) {
-                        const messageDate = new Date(user.last_message_date);
-                        lastMessageDisplay = formatTimeOrDate(messageDate);
-                     }
-
-                     const profileImageUrl = user.image ?
-                        '<?= ROOT ?>/assets/images/users/' + user.image :
-                        '<?= ROOT ?>/assets/images/users/Profile_default.png';
-
-                     if (existingItem) {
-                        // Update existing item
-                        existingItem.className = `chat-item ${unseenClass}`;
-                        const statusElement = existingItem.querySelector('.chat-status');
-                        if (statusElement.textContent !== (user.state ? 'Online' : 'Offline')) {
-                           statusElement.textContent = user.state ? 'Online' : 'Offline';
-                        }
-                        const timeElement = existingItem.querySelector('.time');
-                        if (timeElement.textContent !== lastMessageDisplay) {
-                           timeElement.textContent = lastMessageDisplay;
-                        }
-                     } else {
-                        // Add new item at the top
-                        const chatItemHTML = `
-                            <li>
-                                <div class="chat-item ${unseenClass}" 
-                                     data-receiver-id="${user.id}" 
-                                     onclick="selectChat(this, '${user.id}')">
-                                    <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                                    <div class="chat-info">
-                                        <h4>${user.username}</h4>
-                                        <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                                    </div>
-                                    <div class="chat-side">
-                                        <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                                        <span class="circle"></span>
-                                    </div>
-                                </div>
-                            </li>
-                        `;
-                        chatList.insertAdjacentHTML('afterbegin', chatItemHTML);
-                     }
-                     existingItems.delete(userId);
-                  });
-
-                  // Remove items no longer in the user list
-                  existingItems.forEach(item => {
-                     item.parentElement.remove();
-                  });
-               })
-               .catch(error => console.error("Error fetching unseen counts:", error));
-         } catch (error) {
-            console.error('Error in refreshUnseenCounts:', error);
-         }
+                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+               });
+            })
+            .catch(error => console.error("Error fetching unseen counts:", error));
       }
+
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([1, 2, 3, 4]);
          }
       }, 1000);
 
@@ -1114,7 +1080,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
          if (!query.trim()) {
             isSearching = false;
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([1, 2, 3, 4]);
             return;
          }
 

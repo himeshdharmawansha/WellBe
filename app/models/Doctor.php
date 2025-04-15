@@ -2,7 +2,7 @@
 
 class Doctor extends Model
 {
-
+    // public $errors = [];
     protected $table = 'doctor';
 
     protected $allowedColumns = [

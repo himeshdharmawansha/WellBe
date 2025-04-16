@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../../models/ProfileModel.php");
 $he = new ChatController();
 $profileModel = new ProfileModel();
 
-$unseenCounts = $he->UnseenCounts([3, 5]);
+$unseenCounts = $he->UnseenCounts([1, 2, 3, 4]);
 $user_profile = $unseenCounts;
 if (!is_array($user_profile)) {
    $user_profile = [];
@@ -36,7 +36,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>WELLBE</title>
-   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Pharmacy/message.css">
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/message.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -182,6 +182,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       let selectedMessage = null;
       let selectedFile = null;
       let selectedFileType = null;
+      let unseenCountsMap = {}; // Store unseen counts for each user
 
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
          event.preventDefault();
@@ -248,8 +249,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                })
                .then(data => {
                   if (data.status === "success") {
-                     refreshUnseenCounts([3, 5]);
-                     pollMessages();
+                     refreshUnseenCounts([1, 2, 3, 4]);
+                     pullMessages();
                      hidePopupMenu();
                   } else {
                      alert('Error deleting message');
@@ -290,8 +291,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
-                  pollMessages();
+                  refreshUnseenCounts([1, 2, 3, 4]);
+                  pullMessages();
                   hidePopupMenu();
                } else {
                   alert(data.message || "Error editing message.");
@@ -330,8 +331,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
-                  pollMessages();
+                  refreshUnseenCounts([1, 2, 3, 4]);
+                  pullMessages();
                   hidePopupMenu();
                } else {
                   alert(data.message || "Error editing caption.");
@@ -370,7 +371,15 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                const data = await response.json();
                const chatMessages = document.getElementById("chat-messages");
                chatMessages.innerHTML = '';
-               data.messages.forEach(message => {
+
+               // Get the unseen count from the map
+               const unseenCount = unseenCountsMap[receiverId] || 0;
+
+               // Track the position of unseen messages
+               let unseenMessagesStartIndex = data.messages.length - unseenCount;
+               let insertedUnseenLine = false;
+
+               data.messages.forEach((message, index) => {
                   const messageDate = new Date(message.date);
                   const formattedDate = formatTimeOrDate(messageDate);
 
@@ -380,31 +389,28 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
                   if (message.type === 'text') {
                      div.innerHTML = `
-                  <p>${escapeHTML(message.message)}</p>
-                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-               `;
+                        <p>${escapeHTML(message.message)}</p>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
                   } else if (message.type === 'photo') {
                      div.classList.add('photo');
                      div.innerHTML = `
-                  <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
-                  ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-                  <div class="message-actions">
-                     <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                     <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
-                  </div>
-                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-               `;
+                        <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
+                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                        <div class="message-actions">
+                            <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                            <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                        </div>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
                   } else if (message.type === 'document') {
                      div.classList.add('document');
-                     // Truncate file name to 40 characters and append "..."
                      const maxLength = 40;
                      let displayName = message.message;
                      if (displayName.length > maxLength) {
                         displayName = displayName.substring(0, maxLength - 3) + '...';
                      }
-                     // Use placeholder values for file size
-                     const fileSize = message.file_size || '1.7 MB'; // Replace with actual file size
-                     // Determine the icon and file type display based on file extension from message.message
+                     const fileSize = message.file_size || '1.7 MB';
                      let iconClass;
                      let fileTypeDisplay = message.file_type || 'Document';
                      const extension = message.message.split('.').pop().toLowerCase();
@@ -434,33 +440,43 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                         fileTypeDisplay = message.file_type || 'Document';
                      }
                      div.innerHTML = `
-                  <div class="file-frame">
-                     <i class="fa-solid ${iconClass} doc-icon"></i>
-                     <p>${escapeHTML(displayName)}</p>
-                  </div>
-                  <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-                  <hr>
-                  ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-                  <div class="message-actions">
-                     <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                     <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
-                  </div>
-                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-               `;
+                        <div class="file-frame">
+                            <i class="fa-solid ${iconClass} doc-icon"></i>
+                            <p>${escapeHTML(displayName)}</p>
+                        </div>
+                        <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                        <hr>
+                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                        <div class="message-actions">
+                            <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                            <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                        </div>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
+                  }
+
+                  // Insert the unseen messages line before the first unseen message
+                  if (unseenCount > 0 && index === unseenMessagesStartIndex && !insertedUnseenLine) {
+                     const unseenLine = document.createElement('div');
+                     unseenLine.classList.add('unseen-line');
+                     unseenLine.innerHTML = `<span>${unseenCount} unread message${unseenCount !== 1 ? 's' : ''}</span>`;
+                     chatMessages.appendChild(unseenLine);
+                     insertedUnseenLine = true;
                   }
 
                   chatMessages.appendChild(div);
                });
+
                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
          } catch (error) {
             console.error('Error fetching messages:', error);
          }
       }
-      
+
       let lastMessageId = null;
 
-      function pollMessages() {
+      function pullMessages() {
          if (selectedUserId) {
             fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
                .then(response => response.json())
@@ -479,31 +495,28 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
                         if (message.type === 'text') {
                            div.innerHTML = `
-                        <p>${escapeHTML(message.message)}</p>
-                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-                     `;
+                                <p>${escapeHTML(message.message)}</p>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
                         } else if (message.type === 'photo') {
                            div.classList.add('photo');
                            div.innerHTML = `
-                        <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
-                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-                        <div class="message-actions">
-                           <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                           <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
-                        </div>
-                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-                     `;
+                                <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
+                                ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                                <div class="message-actions">
+                                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                                </div>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
                         } else if (message.type === 'document') {
                            div.classList.add('document');
-                           // Truncate file name to 40 characters and append "..."
                            const maxLength = 40;
                            let displayName = message.message;
                            if (displayName.length > maxLength) {
                               displayName = displayName.substring(0, maxLength - 3) + '...';
                            }
-                           // Use placeholder values for file size
-                           const fileSize = message.file_size || '1.7 MB'; // Replace with actual file size
-                           // Determine the icon and file type display based on file extension from message.message
+                           const fileSize = message.file_size || '1.7 MB';
                            let iconClass;
                            let fileTypeDisplay = message.file_type || 'Document';
                            const extension = message.message.split('.').pop().toLowerCase();
@@ -533,23 +546,24 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                               fileTypeDisplay = message.file_type || 'Document';
                            }
                            div.innerHTML = `
-                        <div class="file-frame">
-                           <i class="fa-solid ${iconClass} doc-icon"></i>
-                           <p>${escapeHTML(displayName)}</p>
-                        </div>
-                        <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-                        <hr>
-                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-                        <div class="message-actions">
-                           <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                           <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
-                        </div>
-                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
-                     `;
+                                <div class="file-frame">
+                                    <i class="fa-solid ${iconClass} doc-icon"></i>
+                                    <p>${escapeHTML(displayName)}</p>
+                                </div>
+                                <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                                <hr>
+                                ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                                <div class="message-actions">
+                                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                                </div>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
                         }
 
                         chatMessages.appendChild(div);
                      });
+
                      if (lastMessageId !== latestMessage.id) {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                         lastMessageId = latestMessage.id;
@@ -558,7 +572,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                });
          }
       }
-      setInterval(pollMessages, 3000);
+      setInterval(pullMessages, 6000);
 
       document.getElementById('message-input').addEventListener('keypress', function(event) {
          if (event.key === 'Enter' && !event.shiftKey) {
@@ -586,19 +600,36 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                method: 'POST',
                body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+               // Log the response status and headers for debugging
+               console.log('Response Status:', response.status);
+               console.log('Response Headers:', response.headers);
+               // Check if the response is OK (status 200-299)
+               if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+               }
+               return response.json();
+            })
             .then(data => {
                if (data.status === "success") {
                   messageInput.value = '';
-                  pollMessages();
-                  refreshUnseenCounts([3, 5]);
+                  // Remove the unseen messages line
+                  const unseenLine = document.querySelector('.unseen-line');
+                  if (unseenLine) {
+                     unseenLine.remove();
+                  }
+                  // Update unseen count for this user
+                  unseenCountsMap[selectedUserId] = 0;
+                  pullMessages();
+                  refreshUnseenCounts([1, 2, 3, 4]);
                } else {
+                  console.error('Server responded with failure:', data);
                   alert(data.message || 'Error sending message');
                }
             })
             .catch(error => {
                console.error("Error sending message:", error);
-               alert("Error sending message.");
+               alert(`Error sending message: ${error.message}`);
             });
       }
 
@@ -878,7 +909,16 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                method: 'POST',
                body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+               // Log the response status and headers for debugging
+               console.log('Response Status:', response.status);
+               console.log('Response Headers:', response.headers);
+               // Check if the response is OK (status 200-299)
+               if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+               }
+               return response.json();
+            })
             .then(data => {
                if (data.status === "success") {
                   document.getElementById('file-upload').value = '';
@@ -886,19 +926,25 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   document.getElementById('preview-area').style.display = 'none';
                   selectedFile = null;
                   selectedFileType = null;
-                  pollMessages();
-                  refreshUnseenCounts([3, 5]);
-                  // Remove the outside click listener after sending
+                  // Remove the unseen messages line
+                  const unseenLine = document.querySelector('.unseen-line');
+                  if (unseenLine) {
+                     unseenLine.remove();
+                  }
+                  // Update unseen count for this user
+                  unseenCountsMap[selectedUserId] = 0;
+                  pullMessages();
+                  refreshUnseenCounts([1, 2, 3, 4]);
                   document.removeEventListener('click', handleOutsideClick);
-                  // Reset the flag since the preview area is closed
                   isNotificationDismissed = false;
                } else {
+                  console.error('Server responded with failure:', data);
                   alert(data.message || 'Error uploading file');
                }
             })
             .catch(error => {
                console.error("Error uploading file:", error);
-               alert("Error uploading file.");
+               alert(`Error uploading file: ${error.message}`);
             });
       }
 
@@ -965,96 +1011,67 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       let isSearching = false;
 
       function refreshUnseenCounts(roleArray) {
-         try {
-            if (isSearching) return;
+         if (isSearching) return;
 
-            const roles = roleArray.join(',');
-            fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
-               .then(response => response.json())
-               .then(users => {
-                  if (users.error) {
-                     console.error("Error:", users.error);
-                     return;
+         const roles = roleArray.join(',');
+
+         fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
+            .then(response => response.json())
+            .then(users => {
+               if (users.error) {
+                  console.error("Error:", users.error);
+                  return;
+               }
+
+               // Update the unseenCountsMap
+               unseenCountsMap = {};
+               users.forEach(user => {
+                  unseenCountsMap[user.id] = user.unseen_count || 0;
+               });
+
+               const chatList = document.getElementById('chat-list');
+               chatList.innerHTML = '';
+
+               users.forEach(user => {
+                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+
+                  let lastMessageDisplay = '';
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
-                  const chatList = document.getElementById('chat-list');
-                  const existingItems = new Map(
-                     Array.from(chatList.querySelectorAll('.chat-item')).map(item => [
-                        item.getAttribute('data-receiver-id'),
-                        item
-                     ])
-                  );
+                  const profileImageUrl = user.image ?
+                     '<?= ROOT ?>/assets/images/users/' + user.image :
+                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
-                  // Sort users by last_message_date (newest first)
-                  users.sort((a, b) => {
-                     const dateA = a.last_message_date ? new Date(a.last_message_date) : new Date(0);
-                     const dateB = b.last_message_date ? new Date(b.last_message_date) : new Date(0);
-                     return dateB - dateA;
-                  });
+                  const chatItemHTML = `
+               <li>
+               <div class="chat-item ${unseenClass}" 
+                  data-receiver-id="${user.id}" 
+                  onclick="selectChat(this, '${user.id}')">
+                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                  <div class="chat-info">
+                     <h4>${user.username}</h4>
+                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                  </div>
+                  <div class="chat-side">
+                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                     <span class="circle"></span>
+                  </div>
+               </div>
+               </li>
+               `;
 
-                  users.forEach(user => {
-                     const userId = user.id.toString();
-                     const existingItem = existingItems.get(userId);
-                     const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-                     let lastMessageDisplay = '';
-                     if (user.last_message_date) {
-                        const messageDate = new Date(user.last_message_date);
-                        lastMessageDisplay = formatTimeOrDate(messageDate);
-                     }
-
-                     const profileImageUrl = user.image ?
-                        '<?= ROOT ?>/assets/images/users/' + user.image :
-                        '<?= ROOT ?>/assets/images/users/Profile_default.png';
-
-                     if (existingItem) {
-                        // Update existing item
-                        existingItem.className = `chat-item ${unseenClass}`;
-                        const statusElement = existingItem.querySelector('.chat-status');
-                        if (statusElement.textContent !== (user.state ? 'Online' : 'Offline')) {
-                           statusElement.textContent = user.state ? 'Online' : 'Offline';
-                        }
-                        const timeElement = existingItem.querySelector('.time');
-                        if (timeElement.textContent !== lastMessageDisplay) {
-                           timeElement.textContent = lastMessageDisplay;
-                        }
-                     } else {
-                        // Add new item at the top
-                        const chatItemHTML = `
-                           <li>
-                              <div class="chat-item ${unseenClass}" 
-                                   data-receiver-id="${user.id}" 
-                                   onclick="selectChat(this, '${user.id}')">
-                                 <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                                 <div class="chat-info">
-                                    <h4>${user.username}</h4>
-                                    <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                                 </div>
-                                 <div class="chat-side">
-                                    <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                                    <span class="circle"></span>
-                                 </div>
-                              </div>
-                           </li>
-                        `;
-                        chatList.insertAdjacentHTML('afterbegin', chatItemHTML);
-                     }
-                     existingItems.delete(userId);
-                  });
-
-                  // Remove items no longer in the user list
-                  existingItems.forEach(item => {
-                     item.parentElement.remove();
-                  });
-               })
-               .catch(error => console.error("Error fetching unseen counts:", error));
-         } catch (error) {
-            console.error('Error in refreshUnseenCounts:', error);
-         }
+                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+               });
+            })
+            .catch(error => console.error("Error fetching unseen counts:", error));
       }
 
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([1, 2, 3, 4]);
          }
       }, 1000);
 
@@ -1063,7 +1080,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
          if (!query.trim()) {
             isSearching = false;
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([1, 2, 3, 4]);
             return;
          }
 

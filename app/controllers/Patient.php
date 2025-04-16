@@ -10,7 +10,7 @@ class Patient extends Controller
          'labreports' => ["fas fa-flask", "View Lab Reports"],
          'doc_appointment' => ["fas fa-user-md", "Search for a Doctor"],
          'appointments' => ["fas fa-calendar-alt", "Appointments"],
-         'chat' => ["fas fa-comments", "Chat with the Doctor"],
+         'chat' => ["fas fa-comments", "Chat"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
       'userType' => 'patient'

@@ -119,7 +119,7 @@
                   <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
                     <?php foreach ($appointments as $appt) : ?>
                       <div class="mini-wrapper">
-                        <div class="mini">
+                        <div class="mini" onclick="window.location.href='appointments'">
                           <div class="mini-part part1">
                             <h4><?= htmlspecialchars($appt->doctor_first_name . " " . $appt->doctor_last_name) ?>
                               (<?= htmlspecialchars($appt->specialization) ?>)</h4>

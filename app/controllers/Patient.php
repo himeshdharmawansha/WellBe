@@ -40,6 +40,12 @@ class Patient extends Controller
    {
       $this->view('Patient/medicalreports', 'medicalreports');
    }
+
+   public function reschedule()
+   {
+      $this->view('Patient/reschedule', 'reschedule');
+   }
+
    public function labreports()
    {
       $this->view('Patient/labreports', 'labreports');

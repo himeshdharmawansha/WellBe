@@ -47,7 +47,7 @@
 
                                 <p>Appointment Date: <?= date('Y-m-d', strtotime($appointment->date)) ?></p>
                                 <div class="buttons">
-                                    <button class="reschedule">Reschedule</button>
+                                    <button class="reschedule" onclick="window.location.href='doc_appointment'">Reschedule</button>
                                     <button class="cancel" onclick="showModal()">Cancel</button>
                                 </div>
                             </div>

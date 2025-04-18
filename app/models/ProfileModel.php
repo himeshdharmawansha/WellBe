@@ -104,24 +104,47 @@ class ProfileModel extends Model
         }
     }
 
-    public function addUser($data)
+    public function addUser($data, $role)
     {
-        // Append 'd' to the NIC to create a new ID
-        $doc_id = $data['nic'] . 'd';
-        $doc_pw = 'doc123';
-        $doc_role = '5';
-        $state = '0';
+        if($role == 1){
+            $id = $data['nic'] . 'h';
+            $password = 'pharm123';
+            $role ='1';
+        }
+
+        if($role == 2){
+            $id = $data['nic'] . 'l';
+            $password = 'lab123';
+            $role = '2';
+        }
+
+        if($role == 3){
+            $id = $data['nic'] . 'a';
+            $password = 'admin';
+            $role = '3';
+        }
+
+        if($role == 4){
+            $id = $data['nic'] . 'p';
+            $password = 'patient123';
+            $role = '4';
+        }
+
+        if($role == 5){
+            $id = $data['nic'] . 'd';
+            $password = 'doc123';
+            $role = '5';
+        }
 
         // Build the SQL query using the provided data
         $query = "
             INSERT INTO `user_profile` 
-            (`id`, `username`, `password`, `role`, `state`) 
+            (`id`, `username`, `password`, `role`) 
             VALUES (
-                '{$doc_id}', 
+                '{$id}', 
                 '{$data['first_name']}',
-                '{$doc_pw}', 
-                '{$doc_role}', 
-                '{$state}'
+                '{$password}', 
+                '{$role}'
             )
         ";
 

@@ -85,6 +85,7 @@ class Admin extends Controller
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          $patient = new Patient();
+         $user = new ProfileModel();
 
          // Merge previously stored data with current data
          $patientData = array_merge($_SESSION['patient_data'] ?? [], $_POST);
@@ -92,7 +93,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($patient->validate($patientData, 2)) {
                // Add doctor to the database
-               if ($patient->addPatient($patientData)) {
+               if ($patient->addPatient($patientData) && $user->addUser($patientData, 4)) {
                   echo "<script>
                         alert('Patient Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/patients';
@@ -229,7 +230,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($doctor->validate($doctorData, 2)) {
                // Add doctor to the database
-               if ($doctor->addDoctor($doctorData) && $user->addUser($doctorData)) {
+               if ($doctor->addDoctor($doctorData) && $user->addUser($doctorData, 5)) {
                   echo "<script>
                         alert('Doctor Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/doctors';
@@ -356,6 +357,7 @@ class Admin extends Controller
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          $pharmacist = new Pharmacy();
+         $user = new ProfileModel();
 
          // Merge previously stored data with current data
          $pharmacistData = array_merge($_SESSION['pharmacist_data'] ?? [], $_POST);
@@ -363,7 +365,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($pharmacist->formValidate($pharmacistData, 2)) {
                // Add doctor to the database
-               if ($pharmacist->addPharmacist($pharmacistData)) {
+               if ($pharmacist->addPharmacist($pharmacistData) && $user->addUser($pharmacistData, 1)) {
                   echo "<script>
                         alert('Pharmacist Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/pharmacists';
@@ -490,6 +492,7 @@ class Admin extends Controller
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          $labTech = new Lab();
+         $user = new ProfileModel();
 
          // Merge previously stored data with current data
          $labTechData = array_merge($_SESSION['labTech_data'] ?? [], $_POST);
@@ -497,7 +500,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($labTech->formValidate($labTechData, 2)) {
                // Add doctor to the database
-               if ($labTech->addLabTech($labTechData)) {
+               if ($labTech->addLabTech($labTechData) && $user->addUser($labTechData, 2)) {
                   echo "<script>
                         alert('Lab Technician Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/labTechs';

@@ -6,7 +6,11 @@ class ProfileModel extends Model
 
     protected $allowedColumns = [
         'id',
+        'username',
+        'password',
+        'role',
         'image',
+        'state'
     ];
 
     public function getImage($userId)
@@ -98,5 +102,34 @@ class ProfileModel extends Model
         if (!$result) {
             throw new Exception("Failed to delete image from user_profile table for user ID: $userId");
         }
+    }
+
+    public function addUser($data)
+    {
+        // Append 'd' to the NIC to create a new ID
+        $doc_id = $data['nic'] . 'd';
+        $doc_pw = 'doc123';
+        $doc_role = '5';
+        $state = '0';
+
+        // Build the SQL query using the provided data
+        $query = "
+            INSERT INTO `user_profile` 
+            (`id`, `username`, `password`, `role`, `state`) 
+            VALUES (
+                '{$doc_id}', 
+                '{$data['first_name']}',
+                '{$doc_pw}', 
+                '{$doc_role}', 
+                '{$state}'
+            )
+        ";
+
+        // Debug the query
+        echo("Generated Query: <pre>$query</pre>");
+
+        // Execute the query
+        return $this->query($query);
+
     }
 }

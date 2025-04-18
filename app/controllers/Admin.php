@@ -221,6 +221,7 @@ class Admin extends Controller
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          $doctor = new Doctor();
+         $user = new ProfileModel();
 
          // Merge previously stored data with current data
          $doctorData = array_merge($_SESSION['doctor_data'] ?? [], $_POST);
@@ -228,7 +229,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($doctor->validate($doctorData, 2)) {
                // Add doctor to the database
-               if ($doctor->addDoctor($doctorData)) {
+               if ($doctor->addDoctor($doctorData) && $user->addUser($doctorData)) {
                   echo "<script>
                         alert('Doctor Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/doctors';

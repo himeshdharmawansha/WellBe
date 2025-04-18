@@ -6,7 +6,11 @@ class ProfileModel extends Model
 
     protected $allowedColumns = [
         'id',
+        'username',
+        'password',
+        'role',
         'image',
+        'state'
     ];
 
     public function getImage($userId)
@@ -98,5 +102,57 @@ class ProfileModel extends Model
         if (!$result) {
             throw new Exception("Failed to delete image from user_profile table for user ID: $userId");
         }
+    }
+
+    public function addUser($data, $role)
+    {
+        if($role == 1){
+            $id = $data['nic'] . 'h';
+            $password = 'pharm123';
+            $role ='1';
+        }
+
+        if($role == 2){
+            $id = $data['nic'] . 'l';
+            $password = 'lab123';
+            $role = '2';
+        }
+
+        if($role == 3){
+            $id = $data['nic'] . 'a';
+            $password = 'admin';
+            $role = '3';
+        }
+
+        if($role == 4){
+            $id = $data['nic'] . 'p';
+            $password = 'patient123';
+            $role = '4';
+        }
+
+        if($role == 5){
+            $id = $data['nic'] . 'd';
+            $password = 'doc123';
+            $role = '5';
+        }
+
+        // Build the SQL query using the provided data
+        $query = "
+            INSERT INTO `user_profile` 
+            (`id`, `username`, `password`, `role`) 
+            VALUES (
+                '{$id}', 
+                '{$data['first_name']}',
+                '{$password}', 
+                '{$role}'
+            )
+        ";
+
+        // Debug the query
+        echo("Generated Query: <pre>$query</pre>");
+
+        // Execute the query
+        return $this->query($query);
+
     }
 }

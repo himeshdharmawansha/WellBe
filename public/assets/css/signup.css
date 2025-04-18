@@ -30,7 +30,7 @@ body {
       rgba(18, 172, 141, 0.345),
       rgba(18, 172, 142, 0.7)
     ),
-    url("http://localhost/mvc/public/assets/images/login.jpg");
+    url("http://localhost/wellbe/public/assets/images/login.jpg");
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -125,6 +125,9 @@ overflow: hidden;
     color: #4141ff;
     font-weight: 600;
     margin-left: 5px;
+    color: #5c5c5c;
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .loginsignup-agree{

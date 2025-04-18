@@ -1,3 +1,57 @@
+<?php
+require_once(__DIR__ . "/../../controllers/ProfileController.php");
+require_once(__DIR__ . "/../../models/ProfileModel.php");
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+
+$profileModel = new ProfileModel();
+$chatController = new ChatController();
+
+$userId = $_SESSION['USER']->nic ?? $_SESSION['userid'] ?? null;
+
+$profiles = $profileModel->getAll();
+$profileImageUrl = ROOT . '/assets/images/users/Profile_default.png';
+
+if (!empty($profiles) && !isset($profiles['error'])) {
+    foreach ($profiles as $profile) {
+        if ($profile->id == $userId && isset($profile->image)) {
+            $profileImageUrl = ROOT . '/assets/images/users/' . $profile->image;
+            break;
+        }
+    }
+}
+
+$userType = strtolower($_SESSION['user_type'] ?? '');
+switch ($userType) {
+    case 'pharmacy':
+        $roles = [3, 5];
+        break;
+    case 'lab':
+        $roles = [3, 5];
+        break;
+    case 'admin':
+        $roles = [1, 2, 4, 5];
+        break;
+    case 'patient':
+        $roles = [3, 5];
+        break;
+    case 'doctor':
+        $roles = [3, 4, 1, 2];
+        break;
+    default:
+        $roles = [3];
+        break;
+}
+
+$unseenCounts = $chatController->UnseenCounts($roles);
+$totalUnseen = 0;
+if (is_array($unseenCounts)) {
+    $totalUnseen = array_reduce($unseenCounts, function($sum, $user) {
+        return $sum + ($user['unseen_count'] ?? 0);
+    }, 0);
+}
+$badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,65 +59,9 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Administrative Staff</title>
-   <style>
-      .main-header {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         padding: 20px;
-         background-color: #f0f8ff;
-         border-bottom: 2px solid #d1d9f1;
-      }
-
-      .header-left h1 {
-         font-size: 24px;
-         color: #172554;
-      }
-
-      .header-right {
-         display: flex;
-         align-items: center;
-      }
-
-      .user-details {
-         display: flex;
-         align-items: center;
-         margin-right: 20px;
-         margin-left: 20px;
-      }
-
-      .user-avatar {
-         width: 40px;
-         height: 40px;
-         border-radius: 50%;
-         background-color: #d1d9f1;
-         margin-right: 10px;
-      }
-
-      .user-info p {
-         margin: 0;
-         font-size: 14px;
-         color: #172554;
-      }
-
-      .notification-icon {
-         position: relative;
-         padding-top: 6px;
-         font-size: 28px;
-         color: #a0a0a0;
-      }
-
-      .notification-badge {
-         position: absolute;
-         top: 3px;
-         right: -4px;
-         width: 14px;
-         height: 14px;
-         background-color: red;
-         border-radius: 50%;
-         border: 2px solid white;
-      }
-   </style>
+   <link rel="stylesheet" href="<?= ROOT ?>/assets/css/header.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
 
 <body>
@@ -72,19 +70,382 @@
          <h1><?php echo isset($pageTitle) ? $pageTitle : ''; ?></h1>
       </div>
       <div class="header-right">
-         <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge"></span>
-         </div>
+         <a href="chat">
+            <div class="notification-icon">
+               <i class="fas fa-bell"></i>
+               <span class="notification-badge" style="display: <?= $badgeVisibility ?>;"></span>
+            </div>
+         </a>
          <div class="user-details">
-            <div class="user-avatar"></div>
+            <img src="<?= htmlspecialchars($profileImageUrl) ?>" alt="User Avatar" class="user-avatar" id="userAvatar">
             <div class="user-info">
-               <p style="font-weight: bold;"><?=$_SESSION['USER']->first_name?></p>
-               <p style="color:#989898"><?=$_SESSION['user_type']?></p>
+               <p style="font-weight: bold;"><?= $_SESSION['USER']->first_name ?? 'Unknown' ?></p>
+               <p style="color:#989898"><?= $_SESSION['user_type'] ?? 'Unknown' ?></p>
             </div>
          </div>
       </div>
    </header>
+
+   <div class="modal" id="profileModal">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h3>Profile photo</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+         </div>
+         <img src="<?= htmlspecialchars($profileImageUrl) ?>" alt="Profile Image" class="modal-image" id="modalProfileImage">
+         <hr style="border-color: #555; margin: 10px 0 0 0;">
+         <div class="modal-footer">
+            <div class="left-buttons">
+               <button class="edit-btn" onclick="openEditModal()"><i class="fas fa-edit"></i> Edit</button>
+               <label for="photoUpload"><i class="fas fa-camera"></i> Add photo</label>
+               <input type="file" id="photoUpload" accept="image/*" onchange="handlePhotoUpload(event)">
+            </div>
+            <div class="right-buttons">
+               <button class="delete-btn" onclick="deletePhoto()"><i class="fas fa-trash"></i> Delete</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="modal" id="editModal">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h3>Edit photo</h3>
+            <button class="close-btn" onclick="closeEditModal()">×</button>
+         </div>
+         <div class="edit-container">
+            <div class="edit-image-container">
+               <img id="editImage" class="edit-image" src="" alt="Image to edit">
+            </div>
+            <div class="edit-controls">
+               <button onclick="rotateLeft()"><i class="fas fa-undo"></i> Rotate Left 90°</button>
+               <button onclick="rotateRight()"><i class="fas fa-redo"></i> Rotate Right 90°</button>
+               <label>Zoom</label>
+               <input type="range" id="zoomSlider" min="1" max="3" step="0.1" value="1" oninput="updateZoom()">
+               <label>Straighten</label>
+               <input type="range" id="straightenSlider" min="-45" max="45" step="1" value="0" oninput="updateStraighten()">
+            </div>
+         </div>
+         <button class="save-btn" onclick="saveEditedPhoto()">Save photo</button>
+      </div>
+   </div>
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+   <script>
+      const userId = '<?php echo $userId; ?>';
+      const avatar = document.getElementById('userAvatar');
+      const modalImage = document.getElementById('modalProfileImage');
+      const defaultImageUrl = '<?= ROOT ?>/assets/images/users/Profile_default.png';
+
+      let cropper = null;
+      let uploadedFile = null;
+      let currentFilename = null;
+
+      if (userId) {
+         fetch('<?= ROOT ?>/ProfileController/get/' + userId)
+            .then(response => response.json())
+            .then(data => {
+               if (data && !data.error) {
+                  const imageUrl = data.profile_image_url || defaultImageUrl;
+                  avatar.src = imageUrl;
+                  modalImage.src = imageUrl;
+                  updateButtonStates(imageUrl);
+               } else {
+                  avatar.src = defaultImageUrl;
+                  modalImage.src = defaultImageUrl;
+                  updateButtonStates(defaultImageUrl);
+               }
+            })
+            .catch(error => {
+               console.error('Error fetching profile:', error);
+               avatar.src = defaultImageUrl;
+               modalImage.src = defaultImageUrl;
+               updateButtonStates(defaultImageUrl);
+            });
+      }
+
+      function updateButtonStates(imageUrl) {
+         const editButton = document.querySelector('.edit-btn');
+         const deleteButton = document.querySelector('.delete-btn');
+         const isDefault = imageUrl.includes('Profile_default.png');
+         editButton.disabled = isDefault;
+         deleteButton.disabled = isDefault;
+      }
+
+      const modal = document.getElementById('profileModal');
+      avatar.addEventListener('dblclick', function() {
+         modal.style.display = 'flex';
+         updateButtonStates(modalImage.src);
+      });
+
+      function closeModal() {
+         modal.style.display = 'none';
+         uploadedFile = null;
+         currentFilename = null;
+      }
+
+      const editModal = document.getElementById('editModal');
+      function openEditModal() {
+         if (uploadedFile) {
+            const editImage = document.getElementById('editImage');
+            editImage.src = URL.createObjectURL(uploadedFile);
+            initializeCropper();
+            editModal.style.display = 'flex';
+            modal.style.display = 'none';
+         } else if (!modalImage.src.includes('Profile_default.png')) {
+            fetch('<?= ROOT ?>/ProfileController/get/' + userId)
+               .then(response => response.json())
+               .then(data => {
+                  if (data && !data.error && data.profile_image_url) {
+                     const baseFilename = data.profile_image_url.split('/').pop();
+                     const originalFilename = baseFilename.replace(/(\.[^.]+)$/, '_original$1');
+                     const originalImageUrl = '<?= ROOT ?>/assets/images/users/' + originalFilename;
+                     const editImage = document.getElementById('editImage');
+                     editImage.src = originalImageUrl;
+                     currentFilename = baseFilename;
+                     initializeCropper();
+                     editModal.style.display = 'flex';
+                     modal.style.display = 'none';
+                  } else {
+                     alert('Failed to load original image for editing.');
+                  }
+               })
+               .catch(error => {
+                  console.error('Error fetching profile:', error);
+                  alert('Failed to load image for editing.');
+               });
+         } else {
+            alert('Please upload a photo first.');
+         }
+      }
+
+      function closeEditModal() {
+         if (cropper) {
+            cropper.destroy();
+            cropper = null;
+         }
+         editModal.style.display = 'none';
+         modal.style.display = 'flex';
+         document.getElementById('zoomSlider').value = 1;
+         document.getElementById('straightenSlider').value = 0;
+      }
+
+      function handlePhotoUpload(event) {
+         uploadedFile = event.target.files[0];
+         if (!uploadedFile) return;
+
+         const randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+         const extension = uploadedFile.name.split('.').pop();
+         const filename = `${randomString}.${extension}`;
+
+         const formData = new FormData();
+         formData.append('photo', uploadedFile);
+         formData.append('userId', userId);
+         formData.append('filename', filename);
+
+         fetch('<?= ROOT ?>/ProfileController/saveOriginalPhoto', {
+            method: 'POST',
+            body: formData
+         })
+         .then(response => {
+            if (!response.ok) {
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
+            }
+            return response.json();
+         })
+         .then(data => {
+            if (data.status === 'success') {
+               currentFilename = data.filename;
+               const editImage = document.getElementById('editImage');
+               editImage.src = URL.createObjectURL(uploadedFile);
+               initializeCropper();
+               editModal.style.display = 'flex';
+               modal.style.display = 'none';
+            } else {
+               console.error('Upload error:', data);
+               alert('Error uploading original photo: ' + (data.error || 'Unknown error'));
+            }
+         })
+         .catch(error => {
+            console.error('Upload error:', error);
+            alert('Failed to upload original photo: ' + error.message);
+         });
+      }
+
+      function initializeCropper() {
+         const image = document.getElementById('editImage');
+         if (cropper) {
+            cropper.destroy();
+         }
+         cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            toggleDragModeOnDblclick: false,
+            autoCropArea: 0.8,
+            ready() {
+               const cropBox = this.cropper.cropBox;
+               cropBox.style.borderRadius = '50%';
+            }
+         });
+      }
+
+      function rotateLeft() {
+         if (cropper) {
+            cropper.rotate(-90);
+         }
+      }
+
+      function rotateRight() {
+         if (cropper) {
+            cropper.rotate(90);
+         }
+      }
+
+      function updateZoom() {
+         if (cropper) {
+            const zoomValue = parseFloat(document.getElementById('zoomSlider').value);
+            cropper.zoomTo(zoomValue);
+         }
+      }
+
+      function updateStraighten() {
+         if (cropper) {
+            const angle = parseFloat(document.getElementById('straightenSlider').value);
+            cropper.rotateTo(angle);
+         }
+      }
+
+      function saveEditedPhoto() {
+         if (!cropper) return;
+
+         const canvas = cropper.getCroppedCanvas({
+            width: 280,
+            height: 280,
+         });
+
+         canvas.toBlob(blob => {
+            if (!blob) {
+               alert('Failed to process the image.');
+               return;
+            }
+
+            const editedFile = new File([blob], currentFilename, {
+               type: 'image/jpeg',
+            });
+
+            const formData = new FormData();
+            formData.append('photo', editedFile);
+            formData.append('userId', userId);
+            formData.append('filename', currentFilename);
+
+            fetch('<?= ROOT ?>/ProfileController/saveEditedPhoto', {
+               method: 'POST',
+               body: formData
+            })
+            .then(response => {
+               if (!response.ok) {
+                  return response.text().then(text => {
+                     throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+                  });
+               }
+               return response.json();
+            })
+            .then(data => {
+               if (data.status === 'success') {
+                  const newImageUrl = '<?= ROOT ?>/assets/images/users/' + data.filename;
+                  avatar.src = newImageUrl;
+                  modalImage.src = newImageUrl;
+                  updateButtonStates(newImageUrl);
+                  closeEditModal();
+                  closeModal();
+                  uploadedFile = null;
+                  currentFilename = null;
+                  location.reload();
+               } else {
+                  console.error('Upload error:', data);
+                  alert('Error uploading edited photo: ' + (data.error || 'Unknown error'));
+               }
+            })
+            .catch(error => {
+               console.error('Upload error:', error);
+               alert('Failed to upload edited photo: ' + error.message);
+            });
+         }, 'image/jpeg');
+      }
+
+      function deletePhoto() {
+         if (!confirm('Are you sure you want to delete your profile photo?')) return;
+
+         fetch('<?= ROOT ?>/ProfileController/deletePhoto/' + userId, {
+            method: 'POST'
+         })
+         .then(response => {
+            if (!response.ok) {
+               return response.text().then(text => {
+                  throw new Error('Network response was not ok: ' + response.statusText + ' - Response: ' + text);
+               });
+            }
+            return response.json();
+         })
+         .then(data => {
+            if (data.status === 'success') {
+               avatar.src = defaultImageUrl;
+               modalImage.src = defaultImageUrl;
+               updateButtonStates(defaultImageUrl);
+               closeModal();
+            } else {
+               console.error('Delete error:', data);
+               alert('Error deleting photo: ' + (data.error || 'Unknown error'));
+            }
+         })
+         .catch(error => {
+            console.error('Delete error:', error);
+            alert('Failed to delete photo: ' + error.message);
+         });
+      }
+
+      window.addEventListener('click', function(event) {
+         if (event.target === modal) {
+            closeModal();
+         }
+         if (event.target === editModal) {
+            closeEditModal();
+         }
+      });
+
+      const userType = '<?php echo strtolower($_SESSION['user_type'] ?? ''); ?>';
+      let roles = '<?php echo implode(',', $roles); ?>';
+
+      function updateNotificationBadge() {
+         fetch('<?= ROOT ?>/ChatController/getUnseenCounts?roles=' + roles)
+            .then(response => {
+               if (!response.ok) {
+                  throw new Error('Network response was not ok');
+               }
+               return response.json();
+            })
+            .then(data => {
+               let totalUnseen = 0;
+               if (Array.isArray(data)) {
+                  totalUnseen = data.reduce((sum, user) => sum + (user.unseen_count || 0), 0);
+               } else if (data.error) {
+                  console.error("Error from server:", data.error);
+               }
+               const badge = document.querySelector('.notification-badge');
+               if (badge) {
+                  badge.style.display = totalUnseen > 0 ? 'block' : 'none';
+               }
+            })
+            .catch(error => console.error("Fetch error:", error));
+      }
+
+      setInterval(updateNotificationBadge, 500);
+   </script>
 </body>
 
 </html>

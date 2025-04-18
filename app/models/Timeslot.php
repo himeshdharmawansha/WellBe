@@ -27,7 +27,7 @@ class Timeslot extends Model
         
                 $count = $exist[0]->count;
                 if($count == 0){
-                    echo $count;
+                    //echo $count;
                     $sql_insert = "INSERT INTO timeslot (date) VALUES (?)";
                     $this->query($sql_insert, [$currentDate]);
                 }
@@ -46,7 +46,8 @@ class Timeslot extends Model
                     SELECT 
                         t.date,
                         td.start_time AS start,
-                        td.end_time AS end
+                        td.end_time AS end,
+                        td.session AS session
                     FROM 
                         timeslot t
                     JOIN 
@@ -54,12 +55,12 @@ class Timeslot extends Model
                     JOIN 
                         doctor d ON td.doctor_id = d.id
                     WHERE 
-                        d.id = '{$_SESSION['USER']->id}'
+                        d.id = ?
                     ORDER BY 
                         t.date, td.start_time;";
 
 
-		$schedule =  $this->query($query);
+		$schedule =  $this->query($query,[$_SESSION['USER']->id]);
 
         //echo "<pre>";  // Optional: Format output for readability
 		//print_r($schedule);  // Displays array structure
@@ -71,31 +72,89 @@ class Timeslot extends Model
     public function updateSchedule($date,$timeslot){
 
         $id = $_SESSION['USER']->id;
-
         $timeSlots = explode(',', $timeslot);
         
-        $query = "INSERT INTO timeslot_doctor (slot_id, doctor_id, start_time, end_time)
+        $query = "INSERT INTO timeslot_doctor (slot_id, doctor_id, start_time, end_time, session)
                 VALUES (
                     (SELECT slot_id FROM timeslot WHERE date = ?), 
                     ?, 
                     ?, 
+                    ?,
                     ?
                 );";
 
-        $this->query($query, [$date, $id, $timeSlots[0], $timeSlots[1]]);
+        $this->query($query, [$date, $id, $timeSlots[0], $timeSlots[1],"SET"]);
         redirect("doctor");
     }
 
     public function deleteDate($date){
 
-        $query = "DELETE td
-              FROM timeslot_doctor td
-              JOIN timeslot ts ON td.slot_id = ts.slot_id
-              WHERE ts.date = '$date' 
-                AND td.doctor_id = '{$_SESSION['USER']->id}'";
+        $query = "UPDATE timeslot_doctor td
+                JOIN timeslot ts ON td.slot_id = ts.slot_id
+                SET td.session = 'CANCELED'
+                WHERE ts.date = ? 
+                AND td.doctor_id = ?;";
 
-        $this->query($query);
+        $this->query($query,[$date,$_SESSION['USER']->id]);
+        
+
+        $query = "UPDATE appointment a
+                JOIN timeslot ts ON a.date = ts.slot_id
+                SET a.scheduled = 'Rescheduled'
+                WHERE ts.date = ? 
+                AND a.doctor_id = ?;";
+
+        $this->query($query,[$date,$_SESSION['USER']->id]);
+
+        //get patient ids for resheduled date
+        $query = "SELECT a.appointment_id, p.nic FROM appointment a 
+                JOIN patient p ON a.patient_id = p.id
+                JOIN timeslot ts ON a.date = ts.slot_id
+                WHERE a.doctor_id = ? AND ts.date = ?;";
+
+        $patientIds = $this->query($query,[$_SESSION['USER']->id,$date]);
+
+        //var_dump($date);
+        //var_dump($patientIds);
+
+        $docName = $_SESSION['USER']->first_name . " " . $_SESSION['USER']->last_name;
+        $specialization = $_SESSION['USER']->specialization;
+
+        // Loop through each patient and send notification
+        if ($patientIds) {
+            foreach ($patientIds as $patient) {
+                $data = [
+                    "type" => "reschedule",
+                    "patientId" => $patient->nic,
+                    "docName" => $docName,
+                    "specialization" => $specialization,
+                    "date" => $date
+                ];
+
+                $options = [
+                    'http' => [
+                        'method'  => 'POST',
+                        'header'  => "Content-Type: application/json\r\n",
+                        'content' => json_encode($data),
+                    ],
+                ];
+
+                $context = stream_context_create($options);
+                file_get_contents('http://localhost:3000/notify', false, $context);
+            }
+        }
+
         redirect("doctor");
+    }
+
+    //get slot id using date
+    public function getDateId($date){
+
+        $query = "SELECT slot_id FROM timeslot WHERE date = :date";
+        $data = ['date'=>$date];
+        $dateId = $this->query($query,$data);
+
+        return $dateId;
     }
 
     public function getAvailableDays($id){
@@ -113,7 +172,7 @@ class Timeslot extends Model
         }*/
 
         //get a doctors available dates
-        $query = "SELECT start_time, slot_id FROM timeslot_doctor WHERE slot_id >= :todayId AND doctor_id = :id";
+        $query = "SELECT start_time, slot_id FROM timeslot_doctor WHERE slot_id >= :todayId AND doctor_id = :id AND session = 'SET'";
         $data = ['todayId'=>$todayId, 'id'=>$id];
         $availableDays = $this ->query($query, $data);
         

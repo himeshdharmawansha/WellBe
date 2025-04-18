@@ -2,7 +2,7 @@
 
    //echo $_SESSION['appointment_id'];
 
-   $patient_id = $data['id'];
+   $patient_id = $data['patient_id'];
 
    if ($_SERVER['REQUEST_METHOD'] == "POST") {
       $diagnosis = $_POST['diagnosis'];
@@ -92,6 +92,11 @@
 
         <!-- Main Content -->
         <div class="main-content">
+
+            <?php
+               $pageTitle = "Medical Records";
+               require '../app/views/Components/Doctor/header.php';
+            ?>
            
             <!-- Dashboard Content -->
             <div class="dashboard-content">

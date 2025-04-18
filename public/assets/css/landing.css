@@ -64,7 +64,7 @@ header {
   background-image: linear-gradient(to right,
       rgba(18, 172, 142, 0.9),
       rgba(18, 172, 142, 0.7)),
-    url("http://localhost/mvc/public/assets/images/header.jpg");
+    url("http://localhost/wellbe/public/assets/images/header.jpg");
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -477,14 +477,14 @@ header {
   color: var(--secondary-color);
 }
 
-.footer__col h4 {
+.footer_col h4 {
   margin-bottom: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--primary-color);
 }
 
-.footer__col p {
+.footer_col p {
   margin-bottom: 1rem;
   color: var(--text-dark);
   cursor: pointer;
@@ -492,15 +492,15 @@ header {
   margin-top: 1.5rem;
 }
 
-.footer__col p:hover {
+.footer_col p:hover {
   color: var(--primary-color);
 }
 
-.footer__col i {
+.footer_col i {
   color: var(--primary-color);
 }
 
-.footer__bar {
+.footer_bar {
   background-color: var(--primary-color);
 }
 
@@ -512,11 +512,13 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+
 }
 
 .footer_bar_content p {
   font-size: 0.8rem;
   color: var(--white);
+
 }
 
 .footer__socials {

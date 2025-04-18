@@ -11,24 +11,17 @@
 
 <body>
    <div class="dashboard-container">
-      <!-- Sidebar -->
       <?php
       $this->renderComponent('navbar', $active);
       ?>
-
-      <!-- Main Content -->
       <div class="main-content">
-         <!-- Top Header -->
          <?php
          $pageTitle = "Medication Requests";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
          ?>
-
-         <!-- Dashboard Content -->
          <div class="dashboard-content">
             <h2>MEDICINES NEED TO BE GIVEN:</h2>
             <?php
-            // Retrieve and sanitize GET parameters
             $requestID = isset($_GET['ID']) ? htmlspecialchars($_GET['ID']) : null;
             $doctorID = isset($_GET['doctor_id']) ? htmlspecialchars($_GET['doctor_id']) : null;
             $patientID = isset($_GET['patient_id']) ? htmlspecialchars($_GET['patient_id']) : null;
@@ -36,13 +29,11 @@
             if ($requestID && $doctorID && $patientID) {
                $db = new Database();
 
-               // Fetch medication details excluding remarks
                $query = "SELECT medication_name, dosage, taken_time, substitution, state 
                          FROM medication_request_details 
                          WHERE req_id = :req_id";
                $medicationDetails = $db->read($query, ['req_id' => $requestID]);
 
-               // Fetch remarks for the request
                $remarksQuery = "SELECT remark FROM medication_requests WHERE id = :req_id";
                $remarksResult = $db->read($remarksQuery, ['req_id' => $requestID]);
                $additionalRemarks = $remarksResult[0]['remark'] ?? '';
@@ -100,7 +91,6 @@
                   echo "</tbody>
                          </table>";
 
-                  // Remarks section
                   echo "<div class='remarks-section'>
                            <h3>Remarks</h3>
                            <p>Patient ID: {$patientID}</p>
@@ -109,7 +99,6 @@
                            <textarea id='additionalRemarks' placeholder='Enter additional remarks...'>" . htmlspecialchars($additionalRemarks) . "</textarea>
                          </div>";
 
-                  // Buttons
                   echo "<div class='buttons'>
                            <button class='btn done' id='doneButton' data-request-id={$requestID}>Done</button>
                            <button class='btn remarks' id='remarksButton'>Print</button>
@@ -120,15 +109,11 @@
             } else {
                echo "<p>Missing or invalid request details. Please provide valid Request ID, Doctor ID, and Patient ID.</p>";
             }
-
             ?>
          </div>
       </div>
-
-      <!-- Include JavaScript for dynamic features -->
       <script src="<?= ROOT ?>/assets/js/Pharmacy/remarkPopup.js"></script>
       <script>
-         // Set the current date dynamically in the remarks section
          document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
          document.addEventListener('DOMContentLoaded', function() {
             const doneButton = document.getElementById('doneButton');
@@ -138,7 +123,6 @@
                const remarks = document.getElementById('additionalRemarks').value;
                const rows = document.querySelectorAll('.medication-table tbody tr');
 
-               // Prepare data
                const medications = [];
                rows.forEach(row => {
                   const medicationName = row.cells[0].textContent.trim();
@@ -150,7 +134,6 @@
                   });
                });
 
-               // Send data to the server
                fetch('<?= ROOT ?>/MedicationRequests/update', {
                      method: 'POST',
                      headers: {
@@ -165,7 +148,6 @@
                   .then(response => response.json())
                   .then(data => {
                      if (data.success) {
-                        //alert('Medication request updated successfully.');
                         window.location.href = `requests`;
                      } else {
                         alert('Failed to update medication request.');
@@ -174,7 +156,6 @@
                   .catch(error => console.error('Error:', error));
             });
          });
-
       </script>
    </div>
 </body>

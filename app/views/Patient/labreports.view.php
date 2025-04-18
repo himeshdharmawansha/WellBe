@@ -43,21 +43,15 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
+            $pageTitle = "Lab Reports"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <div class="welcome-message">
-                    <p>Welcome Mr. K.S.Perera</p>
-                </div >
+
                 <div class="container">
                    
-                    <div class="search-date">
-                        <input type="text" placeholder="Search by Date">
-                        <p>10 August, 2024</p> 
-                    </div>
                     <div class="table-container">
                         <table>
                             <thead>

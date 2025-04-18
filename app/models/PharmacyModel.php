@@ -117,7 +117,6 @@ class PharmacyModel extends Model
             INNER JOIN medication_requests mr ON mrd.req_id = mr.id
             WHERE mr.date BETWEEN :start_date AND :end_date
             GROUP BY mrd.medication_name
-            ORDER BY count DESC
             LIMIT 10
         ";
         $medicationData = $db->read($medicationQuery, ['start_date' => $startDate, 'end_date' => $endDate]);

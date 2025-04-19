@@ -222,7 +222,6 @@
         <h4>Dr. Emily Smith</h4>
         <p>Cardiologist</p>
       </div>
-      <<<<<<< HEAD
         <div class="doctors__card">
         <div class="doctors__card__image">
           <img src="<?= ROOT ?>/assets/images/doctor-2.jpg" alt="doctor" />
@@ -305,14 +304,14 @@
           best possible outcomes for you and your loved ones.
         </p>
       </div>
-      <div class="footer__col">
+      <!-- <div class="footer__col">
         <h4>About Us</h4>
         <p>Home</p>
         <p>About Us</p>
         <p>Work With Us</p>
         <p>Our Blog</p>
         <p>Terms & Conditions</p>
-      </div>
+      </div> -->
       <div class="footer__col">
         <h4>Services</h4>
         <p>Search Terms</p>

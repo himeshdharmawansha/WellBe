@@ -107,7 +107,7 @@ class Timeslot extends Model
         $this->query($query,[$date,$_SESSION['USER']->id]);
 
         //get patient ids for resheduled date
-        $query = "SELECT a.appointment_id, p.nic FROM appointment a 
+        $query = "SELECT a.id,a.appointment_id, p.nic FROM appointment a 
                 JOIN patient p ON a.patient_id = p.id
                 JOIN timeslot ts ON a.date = ts.slot_id
                 WHERE a.doctor_id = ? AND ts.date = ?;";
@@ -125,6 +125,7 @@ class Timeslot extends Model
             foreach ($patientIds as $patient) {
                 $data = [
                     "type" => "reschedule",
+                    "id" => $patient->id,
                     "patientId" => $patient->nic,
                     "docName" => $docName,
                     "specialization" => $specialization,

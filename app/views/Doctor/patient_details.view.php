@@ -35,29 +35,29 @@
                   </div>
 
                   <div class="record-navigation">
-                        <?php if (count($data) <= 1): ?>
-                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftRecord(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftRecord(1)">&#8250;</button>
+                        <?php if (count($data['past_records']) <= 1): ?>
+                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftMedication(-1)">&#8249;</button>
+                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftMedication(1)">&#8250;</button>
                         <?php else: ?>
-                            <button id="prev-btn" class="nav-btn" onclick="shiftRecord(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn" onclick="shiftRecord(1)">&#8250;</button>
+                            <button id="prev-btn" class="nav-btn" onclick="shiftMedication(-1)">&#8249;</button>
+                            <button id="next_btn" class="nav-btn" onclick="shiftMedication(1)">&#8250;</button>
                         <?php endif; ?>
                     </div>
                   
                   <div style="display: flex; justify-content: space-between; gap: 30px;margin-top:2%;margin-bottom:3%">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="dr-name">Doctor's Name:</label>
-                            <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data[0]->doctor); ?></p>
+                            <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data['past_records'][0]->doctor); ?></p>
                         </div>
 
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="diagnosis">Diagnosis:</label>
-                            <p id="diagnosis" style="width: 17vw; font-weight: bold;"><?= htmlspecialchars($data[0]->diagnosis); ?></p>
+                            <p id="diagnosis" style="width: 17vw; font-weight: bold;"><?= htmlspecialchars($data['past_records'][0]->diagnosis); ?></p>
                         </div>
 
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="date">Date:</label>
-                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data[0]->date))); ?></p>
+                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_records'][0]->date))); ?></p>
                         </div>
                     </div>
 
@@ -84,7 +84,7 @@
                         </thead>
                         <tbody id="medication-body">
                             <?php 
-                                $medications = json_decode($data[0]->medications, true);
+                                $medications = json_decode($data['past_records'][0]->medications, true);
                                 foreach ($medications as $medication):
                                     list($morning, $noon, $night, $if_needed) = explode(' ', $medication['taken_time']);
                                 ?>
@@ -112,23 +112,23 @@
                     <!-- Lab Tests -->
                     <div class="record-navigation">
                         <?php if (count($data) <= 1): ?>
-                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftRecord(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftRecord(1)">&#8250;</button>
+                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftLabTest(-1)">&#8249;</button>
+                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftLabTest(1)">&#8250;</button>
                         <?php else: ?>
-                            <button id="prev-btn" class="nav-btn" onclick="shiftRecord(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn" onclick="shiftRecord(1)">&#8250;</button>
+                            <button id="prev-btn" class="nav-btn" onclick="shiftLabTest(-1)">&#8249;</button>
+                            <button id="next_btn" class="nav-btn" onclick="shiftLabTest(1)">&#8250;</button>
                         <?php endif; ?>
                     </div>
                   
                   <div style="display: flex; justify-content: space-between; gap: 30px;margin-top:2%;margin-bottom:3%">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="dr-name">Doctor's Name:</label>
-                            <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data[0]->doctor); ?></p>
+                            <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data['past_tests'][0]->doctor); ?></p>
                         </div>
                         
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="date">Date:</label>
-                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data[0]->date))); ?></p>
+                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_tests'][0]->date))); ?></p>
                         </div>
                     </div>
                     
@@ -140,22 +140,17 @@
                                 <th>Report</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>FBC</td>
-                                <td>High</td>
-                                <td><button class="view"><a href="<?= ROOT ?>/doctor/Lab_download">View</a></button></td>
-                            </tr>
-                            <tr>
-                                <td>FBC</td>
-                                <td>Medium</td>
-                                <td><button class="view"><a href="<?= ROOT ?>/doctor/Lab_download">View</a></button></td>
-                            </tr>
-                            <tr>
-                                <td>FBC</td>
-                                <td>Low</td>
-                                <td><button class="pending" >Pending</button></td>
-                            </tr>
+                        <tbody id="labtest-body">
+                            <?php 
+                                $labTests = json_decode($data['past_tests'][0]->tests, true);
+                                foreach ($labTests as $test):
+                            ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($test['test_name']); ?></td>
+                                    <td><?= htmlspecialchars($test['priority']); ?></td>
+                                    <td>Not available</td> <!-- Update if you plan to link reports later -->
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                
@@ -166,24 +161,25 @@
                  
     </div>
 
-   <script>
-        const records = <?= json_encode($data); ?>; 
-        let currentIndex = 0;
+    <script>
+        const records = <?= json_encode($data['past_records']); ?>;
+        const labTests = <?= json_encode($data['past_tests']); ?>;
 
-        function updateView(index) {
+        let medicationIndex = 0;
+        let labTestIndex = 0;
+
+        // --- Update Medication Section ---
+        function updateMedicationsView(index) {
             const record = records[index];
-            console.log('All records:', records);
-            console.log('Current record:', record);
-
             document.getElementById('doctor-name').innerText = `Dr. ${record.doctor}`;
             document.getElementById('record-date').innerText = new Date(record.date).toLocaleDateString('en-GB');
             document.getElementById('diagnosis').innerText = record.diagnosis;
 
             const medicationBody = document.getElementById('medication-body');
-            medicationBody.innerHTML = '';  // Clear previous rows
+            medicationBody.innerHTML = '';
 
             try {
-                const medications = JSON.parse(record.medications);  // Parse the JSON string
+                const medications = JSON.parse(record.medications);
                 medications.forEach(med => {
                     const [morning, noon, night, ifNeeded] = med.taken_time.split(' ');
                     const row = document.createElement('tr');
@@ -196,26 +192,69 @@
                         <td>${ifNeeded}</td>
                         <td><input type="checkbox" disabled ${med.substitution === "1" ? 'checked' : ''}></td>
                     `;
-                    medicationBody.appendChild(row);  // Append row to the table body
+                    medicationBody.appendChild(row);
                 });
             } catch (error) {
                 console.error('Failed to parse medications:', error);
             }
 
             document.getElementById('prev-btn').disabled = index === 0;
-            document.getElementById('next-btn').disabled = index === records.length - 1;
+            document.getElementById('next_btn').disabled = index === records.length - 1;
         }
 
-        function shiftRecord(direction) {
-            const newIndex = currentIndex + direction;
+        // --- Update Lab Tests Section ---
+        function updateLabTestsView(index) {
+            console.log(labTests);
+            // Parse the tests string into an array, or use an empty array if undefined
+            const tests = labTests[index] && labTests[index].tests
+                ? JSON.parse(labTests[index].tests)
+                : [];
+            const labTestBody = document.getElementById('labtest-body');
+            labTestBody.innerHTML = '';
+
+            // Iterate over the tests array and display the test name and priority
+            tests.forEach(test => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${test.test_name}</td>
+                    <td>${test.priority}</td>
+                    <td>Not available</td> <!-- Placeholder for report status -->
+                `;
+                labTestBody.appendChild(row);
+            });
+
+            // Navigation buttons for lab tests
+            document.getElementById('prev-lab-btn').disabled = index === 0;
+            document.getElementById('next-lab-btn').disabled = index === labTests.length - 1;
+        }
+
+        // --- Navigation Functions ---
+        function shiftMedication(direction) {
+            const newIndex = medicationIndex + direction;
             if (newIndex >= 0 && newIndex < records.length) {
-                currentIndex = newIndex;
-                updateView(currentIndex);
+                medicationIndex = newIndex;
+                updateMedicationsView(medicationIndex);
             }
         }
 
-        window.onload = () => updateView(currentIndex);  
+        function shiftLabTest(direction) {
+            const newIndex = labTestIndex + direction;
+            if (newIndex >= 0 && newIndex < labTests.length) {
+                labTestIndex = newIndex;
+                updateLabTestsView(labTestIndex);
+            }
+        }
+
+        // --- On Page Load ---
+        window.onload = function () {
+            updateMedicationsView(medicationIndex);
+            updateLabTestsView(labTestIndex);
+        };
     </script>
+
+
+
+
 </body>
 </html>
               

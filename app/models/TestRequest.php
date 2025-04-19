@@ -135,4 +135,27 @@ class TestRequest extends Model
       }
       return null;
    }
+
+   public function getPastTestDetials($patient_id) {
+      $query = "SELECT 
+                  tr.id AS request_id,
+                  CONCAT(d.first_name, ' ', d.last_name) AS doctor,
+                  t.date,
+                  CONCAT('[', GROUP_CONCAT(
+                      JSON_OBJECT(
+                          'test_name', IFNULL(trd.test_name, ''),
+                          'priority', IFNULL(trd.priority, '')
+                      )
+                  ), ']') AS tests
+              FROM test_requests tr
+              JOIN doctor d ON tr.doctor_id = d.id
+              JOIN timeslot t ON tr.date = t.slot_id
+              JOIN test_request_details trd ON tr.id = trd.test_request_id
+              WHERE tr.patient_id = ?
+              GROUP BY tr.id, d.first_name, d.last_name, t.date
+              ORDER BY tr.id ASC;";
+  
+      $records = $this->query($query, [$patient_id]);
+      return $records;
+  }
 }

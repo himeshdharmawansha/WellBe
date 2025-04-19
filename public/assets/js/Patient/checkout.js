@@ -1,4 +1,5 @@
 function paymentGateWay() {
+
   fetch("/wellbe/public/patient/generatehash", {
     method: "POST",
     headers: {
@@ -19,7 +20,9 @@ function paymentGateWay() {
         payhere.onCompleted = function (orderId) {
           console.log("Payment completed. OrderID: " + orderId);
           console.log("Redirecting to return URL...");
+
           window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`;
+
         };
 
         // PayHere payment dismissed callback
@@ -39,6 +42,7 @@ function paymentGateWay() {
           sandbox: true, // Set to false for live mode
           merchant_id: "1228628", // Replace with your PayHere Merchant ID
           return_url:
+
             "http://localhost/wellbe/public/patient/patient_dashboard.php", // Your return URL
           cancel_url: "http://localhost/wellbe/hello.php", // Your cancel URL
           notify_url: "https://wellbe.loca.lt/wellbe/public/payment/getPaymentData", // Your backend URL for payment notifications

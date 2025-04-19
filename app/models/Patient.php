@@ -3,7 +3,9 @@
 //user class
 
 class Patient extends Model
-{
+{   
+
+    // public $errors = [];
     protected $table = 'patient';
 
     protected $allowedColumns = [

@@ -210,10 +210,25 @@ class Appointments extends Model
         return true;
     }
 
+
+    public function rescheduleAppointment($id, $newDocId,$newAppointId,$newDateId){
+
+        $query = "UPDATE appointment SET doctor_id = ?, appointment_id = ?, date = ?, scheduled = 'Scheduled' WHERE id = ?;";
+
+        $this->query($query,[$newDocId, $newAppointId, $newDateId, $id]);
+    }
+
+    public function deleteAppointment($appointmentId){
+
+        $query = "DELETE FROM appointment WHERE id = ? ;";
+        $this->query($query,[$appointmentId]);
+    }
+
     public function updatePaymentStatus($appointment_id, $doctor_id, $patient_id, $date, $status)
     {
 
         $query = "UPDATE appointment SET payment_status = ? WHERE appointment_id = ? AND doctor_id = ? AND patient_id = ? AND date = ?";
+
 
         $this->query($query, [$status, $appointment_id, $doctor_id, $patient_id, $date]);
 
@@ -227,11 +242,13 @@ class Appointments extends Model
             a.patient_id,
             a.doctor_id,
             a.appointment_id,
+            a.state,
             t.date,
             a.payment_status,
             d.first_name AS doctor_first_name,
             d.last_name AS doctor_last_name,
-            d.specialization
+            d.specialization,
+            td.start_time
             
         FROM 
             appointment a
@@ -241,6 +258,8 @@ class Appointments extends Model
             patient p ON a.patient_id = p.id
         JOIN
             timeslot t ON a.date = t.slot_id
+        JOIN
+            timeslot_doctor td ON a.date = td.slot_id
         WHERE 
             a.patient_id = ?
         ORDER BY 
@@ -249,5 +268,4 @@ class Appointments extends Model
         return $this->query($query, [$patient_id]);
     }
 
-    
 }

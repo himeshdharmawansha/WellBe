@@ -227,11 +227,13 @@ class Appointments extends Model
             a.patient_id,
             a.doctor_id,
             a.appointment_id,
+            a.state,
             t.date,
             a.payment_status,
             d.first_name AS doctor_first_name,
             d.last_name AS doctor_last_name,
-            d.specialization
+            d.specialization,
+            td.start_time
             
         FROM 
             appointment a
@@ -241,6 +243,8 @@ class Appointments extends Model
             patient p ON a.patient_id = p.id
         JOIN
             timeslot t ON a.date = t.slot_id
+        JOIN
+            timeslot_doctor td ON a.date = td.slot_id
         WHERE 
             a.patient_id = ?
         ORDER BY 
@@ -249,5 +253,4 @@ class Appointments extends Model
         return $this->query($query, [$patient_id]);
     }
 
-    
 }

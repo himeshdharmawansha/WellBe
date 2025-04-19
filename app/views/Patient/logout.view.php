@@ -1,11 +1,11 @@
 <?php
-session_start(); // Start the session
+$model = new Model;
+if (isset($_SESSION['USER'])) {
+   unset($_SESSION['USER']);
+   unset($_SESSION['user_type']);
+}
+$model->logout();
+redirect('landing');
+exit();
 
-// Destroy all session data
-session_unset(); // Unset all session variables
-session_destroy(); // Destroy the session
-
-// Redirect to the login page or homepage
-header("Location: landing.php");
-exit;
 ?>

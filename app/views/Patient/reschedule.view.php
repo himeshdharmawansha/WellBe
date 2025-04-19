@@ -42,10 +42,10 @@
 <body>
 
     <?php
-        $amount = $data['walletAmount'][0]->e_wallet; //e_wallet is patient e_wallet column
-        $disableWalletBtn = ($amount <= 1500) ? 'disabled' : '';
-        //print_r($amount);
-        //echo gettype($amount);
+        // $amount = $data['walletAmount'][0]->e_wallet; //e_wallet is patient e_wallet column
+        // $disableWalletBtn = ($amount <= 1500) ? 'disabled' : '';
+        // //print_r($amount);
+        // //echo gettype($amount);
     ?>
 
     <div class="dashboard-container">
@@ -60,10 +60,8 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-
             $pageTitle = "Appointment Details"; // Set the text you want to display
             include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
-
             ?>
 
 
@@ -144,47 +142,6 @@
                 const confirmBtn = document.getElementById('confirmBtn');
                 const payHereBtn = document.getElementById('payHereBtn');
                 const payLaterBtn = document.getElementById('payLaterBtn');
-
-    // payLaterBtn.addEventListener('click', function () {
-    //     const patientName = "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>";
-    //     const doctor = sessionStorage.getItem('doctor') || 'N/A';
-    //     const specialization = sessionStorage.getItem('specialization') || 'N/A';
-    //     const appointmentDate = sessionStorage.getItem('day') || 'N/A';
-    //     const appointmentNumber = sessionStorage.getItem('appointment_id') || 'N/A';
-    //     const appointmentFee = sessionStorage.getItem('doctor_fee') || 'N/A';
-
-    //     const message = 
-    //     `Patient: ${patientName}\n` +
-    //     `Doctor: ${doctor}\n` +
-    //     `Specialization: ${specialization}\n` +
-    //     `Date: ${appointmentDate}\n` +
-    //     `Appointment No: ${appointmentNumber}\n` +
-    //     `Fees: Rs.${appointmentFee}\n` +
-    //     `Please pay the appointment fees before you meet the doctor.`;
-
-    //     // Request notification permission if not already granted
-    //     if (Notification.permission === 'granted') {
-    //         new Notification("Appointment Confirmation", {
-    //             body: message
-    //         });
-    //     } else if (Notification.permission !== 'denied') {
-    //         Notification.requestPermission().then(permission => {
-    //             if (permission === 'granted') {
-    //                 new Notification("Appointment Confirmation", {
-    //                     body: message
-    //                 });
-    //             } else {
-    //                 alert(message); // fallback
-    //             }
-    //         });
-    //     } else {
-    //         alert(message); // fallback if denied
-    //     }
-    // });
-});
-
-                
-
                 const payByWalletBtn = document.getElementById('payByWalletBtn');
 
 
@@ -195,7 +152,7 @@
                     payLaterBtn.classList.remove('hidden');
                     payByWalletBtn.classList.remove('hidden');
                 });
-            
+            });
 
             document.addEventListener('DOMContentLoaded', function () {
                 const confirmBtn = document.getElementById('confirmBtn');
@@ -214,8 +171,8 @@
                 };
 
 
-                //payLaterBtn.addEventListener('click', showModal);
-                //payByWalletBtn.addEventListener('click', showModal);
+                payLaterBtn.addEventListener('click', showModal);
+                payByWalletBtn.addEventListener('click', showModal);
                 closeModal.addEventListener('click', hideModal);
             });
 
@@ -256,16 +213,6 @@
                     document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
                 });
 
-                const popupModal = document.getElementById('popupModal');
-                const closeModal = document.getElementById('closeModal');
-
-                const showModalsucess = () => {
-                    popupModal.classList.remove('hidden');
-                };
-
-                const hideModalsucess = () => {
-                    popupModal.classList.add('hidden');
-                };
 
                 async function sendAppointmentData(paymentMethod) {
                     const data = {
@@ -296,13 +243,8 @@
                         const result = JSON.parse(text);
                         console.log("result",result);
                         if (result.success) {
-                            if(paymentMethod == "counter" || paymentMethod == "wallet"){
-                                showModalsucess();
-                            }
-
                             alert("Payment initiated successfully!");
                 //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
-
                         } else {
                             alert("Payment failed. Please try again.");
                         }

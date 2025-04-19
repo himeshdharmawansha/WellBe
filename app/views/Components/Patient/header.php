@@ -127,7 +127,7 @@
       </div>
       <div class="header-right">
          <div class="user-details">
-            <div class="user-avatar"></div>
+           
             <div class="user-info">
                <p style="font-weight: bold;"><?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></p>
                <p style="padding-top:4px;color:#989898">Patient</p>
@@ -191,7 +191,8 @@
    function handleReschedule() {
       const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       document.getElementById('notificationModal').style.display = 'none';
-      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/reschedule_doc_appointment/${appointmentPrimaryId}`;
+      window.location.href = `http://localhost/WellBe/public/patient/doc_appointment`;
+
    }
 
    function handleCancel() {
@@ -199,7 +200,8 @@
       document.getElementById('notificationModal').style.display = 'none';
       alert('Appointment canceled.');
       const userId = <?php echo json_encode($_SESSION['USER']->id); ?>;
-      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/refund/${appointmentPrimaryId}`;
+      window.location.href = `http://localhost/WellBe/public/patient/refund`;
+
    }
 </script>
 

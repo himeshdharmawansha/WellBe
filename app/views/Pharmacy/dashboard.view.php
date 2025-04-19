@@ -95,37 +95,50 @@
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
             google.charts.load('current', {
-                packages: ['corechart']
+            packages: ['corechart']
             });
             google.charts.setOnLoadCallback(drawChart);
 
             function drawChart() {
-                fetch('<?= ROOT ?>/Pharmacy/getRequestsByDay')
-                    .then(response => response.json())
-                    .then(data => {
-                        const chartData = [
-                            ['Day', 'Given'],
-                            ['M', data[0]],
-                            ['T', data[1]],
-                            ['W', data[2]],
-                            ['T', data[3]],
-                            ['F', data[4]],
-                            ['S', data[5]],
-                            ['S', data[6]],
-                        ];
+            // Set default date range (last 30 days)
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            const startDate = `${thirtyDaysAgo.getFullYear()}-${String(thirtyDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(thirtyDaysAgo.getDate()).padStart(2, '0')}`;
+            const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-                        const options = {
-                            title: 'Medication Requests',
-                            curveType: 'function',
-                            legend: {
-                                position: 'bottom'
-                            },
-                        };
+            // Fetch medication usage data
+            fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                const chartData = [
+                    ['Medication', 'Usage', { role: 'tooltip', p: { html: true } }]
+                ];
+                // Assuming data.medications contains medication_name and count
+                data.medications.forEach(med => {
+                    const truncatedName = med.medication_name.substring(0, 3);
+                    const tooltip = `<div style="width:90px;"><strong>${med.medication_name}</strong><br>Usage: ${med.count}</div>`;
+                    chartData.push([truncatedName, parseInt(med.count), tooltip]);
+                });
 
-                        const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-                        chart.draw(google.visualization.arrayToDataTable(chartData), options);
-                    })
-                    .catch(error => console.error('Error fetching chart data:', error));
+                const options = {
+                    title: 'Medication Usage',
+                    vAxis: {
+                    title: 'Usage'
+                    },
+                    colors: ['#1a73e8'],
+                    legend: {
+                    position: 'bottom'
+                    },
+                    tooltip: {
+                    isHtml: true
+                    }
+                };
+
+                const chart = new google.visualization.ColumnChart(document.getElementById('curve_chart'));
+                chart.draw(google.visualization.arrayToDataTable(chartData), options);
+                })
+                .catch(error => console.error('Error fetching medication usage data:', error));
             }
         });
 
@@ -239,6 +252,7 @@
                 }
             });
         });
+
         document.addEventListener("DOMContentLoaded", function() {
             const searchInput = document.getElementById('search-input');
             const tableBody = document.querySelector('.message-table tbody');
@@ -251,7 +265,7 @@
                 fetch(`<?= ROOT ?>/Pharmacy/searchMedicine?query=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
-                        tableBody.innerHTML = ''; 
+                        tableBody.innerHTML = '';
 
                         if (data.length > 0) {
                             data.forEach(med => {

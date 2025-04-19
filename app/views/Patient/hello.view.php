@@ -142,6 +142,47 @@
                 const confirmBtn = document.getElementById('confirmBtn');
                 const payHereBtn = document.getElementById('payHereBtn');
                 const payLaterBtn = document.getElementById('payLaterBtn');
+
+    // payLaterBtn.addEventListener('click', function () {
+    //     const patientName = "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>";
+    //     const doctor = sessionStorage.getItem('doctor') || 'N/A';
+    //     const specialization = sessionStorage.getItem('specialization') || 'N/A';
+    //     const appointmentDate = sessionStorage.getItem('day') || 'N/A';
+    //     const appointmentNumber = sessionStorage.getItem('appointment_id') || 'N/A';
+    //     const appointmentFee = sessionStorage.getItem('doctor_fee') || 'N/A';
+
+    //     const message = 
+    //     `Patient: ${patientName}\n` +
+    //     `Doctor: ${doctor}\n` +
+    //     `Specialization: ${specialization}\n` +
+    //     `Date: ${appointmentDate}\n` +
+    //     `Appointment No: ${appointmentNumber}\n` +
+    //     `Fees: Rs.${appointmentFee}\n` +
+    //     `Please pay the appointment fees before you meet the doctor.`;
+
+    //     // Request notification permission if not already granted
+    //     if (Notification.permission === 'granted') {
+    //         new Notification("Appointment Confirmation", {
+    //             body: message
+    //         });
+    //     } else if (Notification.permission !== 'denied') {
+    //         Notification.requestPermission().then(permission => {
+    //             if (permission === 'granted') {
+    //                 new Notification("Appointment Confirmation", {
+    //                     body: message
+    //                 });
+    //             } else {
+    //                 alert(message); // fallback
+    //             }
+    //         });
+    //     } else {
+    //         alert(message); // fallback if denied
+    //     }
+    // });
+});
+
+                
+
                 const payByWalletBtn = document.getElementById('payByWalletBtn');
 
 
@@ -152,7 +193,7 @@
                     payLaterBtn.classList.remove('hidden');
                     payByWalletBtn.classList.remove('hidden');
                 });
-            });
+            
 
             document.addEventListener('DOMContentLoaded', function () {
                 const confirmBtn = document.getElementById('confirmBtn');

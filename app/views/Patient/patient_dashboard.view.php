@@ -17,7 +17,6 @@
     $this->renderComponent('navbar', $active);
     ?>
 
-
     <!-- Main Content -->
     <div class="main-content">
       <!-- Top Header -->
@@ -25,6 +24,7 @@
       $pageTitle = "Dashboard"; // Set the text you want to display
       include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
       ?>
+
 
       <!-- Dashboard Content -->
       <div class="container">

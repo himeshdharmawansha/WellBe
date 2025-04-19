@@ -210,10 +210,25 @@ class Appointments extends Model
         return true;
     }
 
+
+    public function rescheduleAppointment($id, $newDocId,$newAppointId,$newDateId){
+
+        $query = "UPDATE appointment SET doctor_id = ?, appointment_id = ?, date = ?, scheduled = 'Scheduled' WHERE id = ?;";
+
+        $this->query($query,[$newDocId, $newAppointId, $newDateId, $id]);
+    }
+
+    public function deleteAppointment($appointmentId){
+
+        $query = "DELETE FROM appointment WHERE id = ? ;";
+        $this->query($query,[$appointmentId]);
+    }
+
     public function updatePaymentStatus($appointment_id, $doctor_id, $patient_id, $date, $status)
     {
 
         $query = "UPDATE appointment SET payment_status = ? WHERE appointment_id = ? AND doctor_id = ? AND patient_id = ? AND date = ?";
+
 
         $this->query($query, [$status, $appointment_id, $doctor_id, $patient_id, $date]);
 

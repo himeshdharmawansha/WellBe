@@ -7,7 +7,6 @@ class Doctor extends Model
 
     protected $allowedColumns = [
 
-        'id',
         'password',
         'nic',
         'first_name',
@@ -32,14 +31,14 @@ class Doctor extends Model
         // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
         $doc_pw = 'doc123';
+        $id = $data['nic'] . 'd';
 
         // Build the SQL query using the provided data
         $query = "
             INSERT INTO `doctor` 
-            (`id`, `nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact`, `emergency_contact_relationship`, `medical_license_no`, `specialization`, `experience`, `qualifications`, `medical_school`) 
-            VALUES (
-                '{$data['nic']}', 
-                '{$data['nic']}',
+            (`nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact`, `emergency_contact_relationship`, `medical_license_no`, `specialization`, `experience`, `qualifications`, `medical_school`, `user_id`) 
+            VALUES ( 
+                '{$id}',
                 '{$doc_pw}', 
                 '{$data['first_name']}', 
                 '{$data['last_name']}', 
@@ -55,7 +54,8 @@ class Doctor extends Model
                 '{$data['specialization']}', 
                 '{$data['experience']}', 
                 '{$data['qualifications']}', 
-                '{$data['medical_school']}'
+                '{$data['medical_school']}',
+                '{$id}'
             )
         ";
 
@@ -218,12 +218,11 @@ class Doctor extends Model
     {
         // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
+        //$new_nic = $data['nic'] . 'd';
 
         // SQL query with positional placeholders
         $query = "
         UPDATE `doctor` SET
-            `id` = ?,
-            `nic` = ?, 
             `first_name` = ?, 
             `last_name` = ?, 
             `dob` = ?,
@@ -231,7 +230,6 @@ class Doctor extends Model
             `gender` = ?, 
             `address` = ?, 
             `email` = ?, 
-            `fees` = ?,
             `contact` = ?, 
             `emergency_contact` = ?, 
             `emergency_contact_relationship` = ?, 
@@ -244,8 +242,6 @@ class Doctor extends Model
 
         // Parameters array
         $params = [
-            $data['nic'],
-            $data['nic'],
             $data['first_name'],
             $data['last_name'],
             $data['dob'],
@@ -263,6 +259,10 @@ class Doctor extends Model
             $data['medical_school'],
             $old_nic // NIC for the WHERE condition
         ];
+
+        // Debug the query
+        // echo("Generated Query: <pre>$query</pre>");
+        // echo(print_r($params, true));
 
         // Execute the query with parameter binding
         return $this->query($query, $params);

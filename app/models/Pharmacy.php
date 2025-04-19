@@ -10,7 +10,6 @@ class Pharmacy extends Model
 
     protected $allowedColumns = [
 
-        'id',
         'nic',
         'password',
         'first_name',
@@ -121,14 +120,14 @@ class Pharmacy extends Model
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
       $pharm_pw = 'pharm123';
+      $id = $data['nic'] . 'h';
 
       // Build the SQL query using the provided data
       $query = "
          INSERT INTO `pharmacist` 
-         (`id`, `nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact_no`, `medical_license_no`, `experience`, `qualifications`, `prev_employment_history`) 
+         (`nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact_no`, `medical_license_no`, `experience`, `qualifications`, `prev_employment_history`, `user_id`) 
             VALUES (
-               '{$data['nic']}', 
-               '{$data['nic']}',
+               '{$id}',
                '{$pharm_pw}', 
                '{$data['first_name']}', 
                '{$data['last_name']}', 
@@ -142,12 +141,13 @@ class Pharmacy extends Model
                '{$data['medical_license_no']}',  
                '{$data['experience']}', 
                '{$data['qualifications']}', 
-               '{$data['prev_employment_history']}'
+               '{$data['prev_employment_history']}',
+               '{$id}'
             );
          ";
 
       // Debug the query
-      echo("Generated Query: <pre>$query</pre>");
+      //echo("Generated Query: <pre>$query</pre>");
 
       // Execute the query
       return $this->query($query);
@@ -238,8 +238,6 @@ class Pharmacy extends Model
         // SQL query with positional placeholders
         $query = "
         UPDATE `pharmacist` SET
-            `id` = ?,
-            `nic` = ?, 
             `first_name` = ?, 
             `last_name` = ?, 
             `dob` = ?,
@@ -257,8 +255,6 @@ class Pharmacy extends Model
 
         // Parameters array
         $params = [
-            $data['nic'],
-            $data['nic'],
             $data['first_name'],
             $data['last_name'],
             $data['dob'],
@@ -271,7 +267,7 @@ class Pharmacy extends Model
             $data['medical_license_no'],
             $data['experience'],
             $data['qualifications'],
-            $data['prev_employment_hsitory'],
+            $data['prev_employment_history'],
             $old_nic // NIC for the WHERE condition
         ];
 

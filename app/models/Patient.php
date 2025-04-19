@@ -7,7 +7,6 @@ class Patient extends Model
     protected $table = 'patient';
 
     protected $allowedColumns = [
-        'id',
         'nic',
         'password',
         'first_name',
@@ -188,14 +187,14 @@ class Patient extends Model
         // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
         $patient_pw = 'patient123';
+        $id = $data['nic'] . 'p';
 
         // Build the SQL query using the provided data
         $query = "
             INSERT INTO `patient` 
-            (`id`, `nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `medical_history`, `allergies`, `emergency_contact_name`, `emergency_contact_no`, `emergency_contact_relationship`) 
-            VALUES (
-                '{$data['nic']}', 
-                '{$data['nic']}',
+            (`nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `medical_history`, `allergies`, `emergency_contact_name`, `emergency_contact_no`, `emergency_contact_relationship`, `user_id`) 
+            VALUES ( 
+                '{$id}',
                 '{$patient_pw}', 
                 '{$data['first_name']}', 
                 '{$data['last_name']}', 
@@ -209,7 +208,8 @@ class Patient extends Model
                 '{$data['allergies']}', 
                 '{$data['emergency_contact_name']}', 
                 '{$data['emergency_contact_no']}', 
-                '{$data['emergency_contact_relationship']}'
+                '{$data['emergency_contact_relationship']}',
+                '{$id}'
             )
         ";
 
@@ -299,9 +299,7 @@ class Patient extends Model
 
         // SQL query with positional placeholders
         $query = "
-        UPDATE `patient` SET
-            `id` = ?,
-            `nic` = ?, 
+        UPDATE `patient` SET 
             `first_name` = ?, 
             `last_name` = ?, 
             `dob` = ?,
@@ -319,8 +317,6 @@ class Patient extends Model
 
         // Parameters array
         $params = [
-            $data['nic'],
-            $data['nic'],
             $data['first_name'],
             $data['last_name'],
             $data['dob'],

@@ -38,8 +38,14 @@ class Patient extends Controller
 
    public function medicalreports()
    {
-      $this->view('Patient/medicalreports', 'medicalreports');
+      $medicalRecord = new MedicalRecord();
+      $patientId = $_SESSION['USER']->id;
+      $pastRecords = $medicalRecord->getRequest($patientId);
+      //print_r($pastRecords);
+      $data['pastRecords'] = $pastRecords;
+      $this->view('Patient/medicalreports', 'medicalreports', $data);
    }
+
 
    public function reschedule()
    {

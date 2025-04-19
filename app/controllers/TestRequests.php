@@ -9,10 +9,7 @@ class TestRequests extends Controller
       $this->testRequestModel = new TestRequest();
    }
 
-   public function index()
-   {
-
-   }
+   public function index() {}
 
    public function getRequestsJson()
    {
@@ -65,14 +62,30 @@ class TestRequests extends Controller
          $data = $_POST;
          $files = $_FILES;
 
+         // Validate patientID
+         if (!isset($data['patientID']) || empty($data['patientID'])) {
+            throw new Exception("Patient ID is missing or invalid.");
+         }
+
+         // Validate tests
          if (!isset($data['tests']) || empty($data['tests'])) {
             throw new Exception("No test details provided.");
          }
 
          $tests = json_decode($data['tests'], true);
-         $requestID = $data['requestID'];
+         if (!is_array($tests) || empty($tests)) {
+            throw new Exception("Invalid test details format.");
+         }
 
-         $this->testRequestModel->updateRequestDetails($requestID, $tests, $files);
+         $requestID = $data['requestID'];
+         $patientID = $data['patientID'];
+
+         // Validate requestID
+         if (!isset($requestID) || empty($requestID)) {
+            throw new Exception("Request ID is missing or invalid.");
+         }
+
+         $this->testRequestModel->updateRequestDetails($requestID, $tests, $files, $patientID);
          $response['success'] = true;
       } catch (Exception $e) {
          $response['error'] = $e->getMessage();

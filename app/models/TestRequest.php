@@ -51,19 +51,29 @@ class TestRequest extends Model
       return $this->read($query, $params);
    }
 
-   public function updateRequestDetails($requestID, $tests, $files)
+   public function updateRequestDetails($requestID, $tests, $files, $patientID)
    {
+      // Update request state
       $updateRequestQuery = "UPDATE test_requests SET state = 'completed' WHERE id = :requestID";
       $this->query($updateRequestQuery, [':requestID' => $requestID]);
 
-      foreach ($tests as $test) {
-         $testName = $test['testName'];
-         $state = $test['state'];
-         $fileName = null;
+      $query = "SELECT date FROM test_requests WHERE id = :requestID" ;
+      $params = [':requestID' => $requestID];
+      $result = $this->read($query, $params);
 
+      foreach ($tests as $test) {
+         $testName = $test['testName'] ?? null;
+         $state = $test['state'] ?? null;
+
+         if (empty($testName) || empty($state)) {
+            throw new Exception("Invalid test name or state for test: " . ($testName ?? 'unknown'));
+         }
+
+         $fileName = null;
          if (isset($files[$testName]) && $files[$testName]['error'] === UPLOAD_ERR_OK) {
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/WellBe/public/assets/files/';
-            $fileName = basename($files[$testName]['name']);
+            $originalExtension = pathinfo($files[$testName]['name'], PATHINFO_EXTENSION);
+            $fileName = "{$result}_{$patientID}_{$requestID}_{$testName}.{$originalExtension}";
             $uploadPath = $uploadDir . $fileName;
 
             if (!file_exists($uploadDir)) {
@@ -76,8 +86,8 @@ class TestRequest extends Model
          }
 
          $query = "UPDATE test_request_details 
-                   SET state = :state, file = COALESCE(:file, file)
-                   WHERE req_id = :requestID AND test_name = :testName";
+                     SET state = :state, file = COALESCE(:file, file)
+                     WHERE req_id = :requestID AND test_name = :testName";
          $params = [
             ':state' => $state,
             ':file' => $fileName,

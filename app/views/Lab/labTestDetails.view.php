@@ -27,7 +27,7 @@ $testDetails = $he->getTestDetails($requestID);
 
             <?php if (isset($_GET['patient_id'])): ?>
                <?php $patientID = $_GET['patient_id']; ?>
-
+               <input type="hidden" id="patient_id" value="<?= $_GET['patient_id'] ?>">
                <div class="test-list" style="max-height: 450px; max-width: 800px;">
                   <table style="width: 100%; border-spacing: 0 10px;">
                      <thead>
@@ -172,10 +172,12 @@ $testDetails = $he->getTestDetails($requestID);
 
          doneButton.addEventListener('click', function() {
             const requestID = doneButton.getAttribute('data-request-id');
+            const patientID = document.getElementById('patient_id').value;
             const rows = document.querySelectorAll('.test-list tbody tr');
-
+            
             const formData = new FormData();
             formData.append('requestID', requestID);
+            formData.append('patientID', patientID);
 
             const tests = [];
             rows.forEach(row => {
@@ -186,7 +188,8 @@ $testDetails = $he->getTestDetails($requestID);
 
                tests.push({
                   testName,
-                  state
+                  state,
+                  patientID // Include patientID in tests for redundancy or alternative handling
                });
 
                if (file) {
@@ -206,10 +209,13 @@ $testDetails = $he->getTestDetails($requestID);
                      alert('Test details updated successfully!');
                      window.location.reload();
                   } else {
-                     alert('Failed to update test details.');
+                     alert('Failed to update test details: ' + (data.error || 'Unknown error'));
                   }
                })
-               .catch(error => console.error('Error:', error));
+               .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred while updating test details.');
+               });
          });
       });
 
@@ -260,7 +266,6 @@ $testDetails = $he->getTestDetails($requestID);
                const requestID = this.closest('tr').dataset.requestId;
                const newState = this.value;
                const testName = this.dataset.testName;
-
                fetch('<?= ROOT ?>/testRequests/updateState', {
                      method: 'POST',
                      headers: {
@@ -269,7 +274,7 @@ $testDetails = $he->getTestDetails($requestID);
                      body: JSON.stringify({
                         requestID: requestID,
                         state: newState,
-                        testName: testName, 
+                        testName: testName,
                      }),
                   })
                   .then(response => response.json())

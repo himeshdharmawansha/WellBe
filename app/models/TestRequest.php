@@ -1,5 +1,7 @@
 <?php
 
+use LDAP\Result;
+
 class TestRequest extends Model
 {
    protected $table = 'test_requests';
@@ -57,9 +59,15 @@ class TestRequest extends Model
       $updateRequestQuery = "UPDATE test_requests SET state = 'completed' WHERE id = :requestID";
       $this->query($updateRequestQuery, [':requestID' => $requestID]);
 
-      $query = "SELECT date FROM test_requests WHERE id = :requestID" ;
+      $query = "SELECT date FROM test_requests WHERE id = :requestID";
       $params = [':requestID' => $requestID];
       $result = $this->read($query, $params);
+
+      if (empty($result) || !isset($result[0]['date'])) {
+         throw new Exception("Invalid request ID or missing date for request ID: $requestID");
+      }
+
+      $slot_id = $result[0]['date'];
 
       foreach ($tests as $test) {
          $testName = $test['testName'] ?? null;
@@ -73,7 +81,7 @@ class TestRequest extends Model
          if (isset($files[$testName]) && $files[$testName]['error'] === UPLOAD_ERR_OK) {
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/WellBe/public/assets/files/';
             $originalExtension = pathinfo($files[$testName]['name'], PATHINFO_EXTENSION);
-            $fileName = "{$result}_{$patientID}_{$requestID}_{$testName}.{$originalExtension}";
+            $fileName = "{$slot_id}_{$patientID}_{$requestID}_{$testName}.{$originalExtension}";
             $uploadPath = $uploadDir . $fileName;
 
             if (!file_exists($uploadDir)) {

@@ -140,8 +140,9 @@
    <div id="notificationModal">
       <div class="modal-content" id="step1">
          <h3 id="appointmentMessage">Your appointment has been rescheduled.</h3>
+         <h3 id="appointmentPrimaryId" hidden>primary id</h3>
          <div class="modal-buttons">
-            <button class="btn-primary" onclick="showManageOptions()">Manage Appointment</button>
+            <button class="btn-primary" onclick="showManageOptions()" style="background-color: #007bff;">Manage Appointment</button>
          </div>
       </div>
       <div class="modal-content" id="step2" style="display: none;">
@@ -163,10 +164,18 @@
    });
 
    socket.addEventListener('message', (event) => {
-      const message = event.data;
-      document.getElementById('appointmentMessage').innerText = message;
+   try {
+      const data = JSON.parse(event.data);
+      document.getElementById('appointmentMessage').innerText = data.text;
+      document.getElementById('appointmentPrimaryId').innerText = data.id;
+      //console.log("Notification ID:", data.id);
+
       showModal();
-   });
+   } catch (err) {
+      console.error('Failed to parse WebSocket message:', err);
+   }
+});
+
 
    function showModal() {
       document.getElementById('notificationModal').style.display = 'flex';
@@ -180,15 +189,17 @@
    }
 
    function handleReschedule() {
+      const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       document.getElementById('notificationModal').style.display = 'none';
-      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/doc_appointment`;
+      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/reschedule_doc_appointment/${appointmentPrimaryId}`;
    }
 
    function handleCancel() {
+      const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       document.getElementById('notificationModal').style.display = 'none';
       alert('Appointment canceled.');
       const userId = <?php echo json_encode($_SESSION['USER']->id); ?>;
-      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/refund`;
+      window.location.href = `http://localhost/newWellBe2/WellBe/public/patient/refund/${appointmentPrimaryId}`;
    }
 </script>
 

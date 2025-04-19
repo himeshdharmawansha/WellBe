@@ -146,14 +146,14 @@
                            <tr>
                               <th>Name of the Test</th>
                               <th>Priority Level</th>
-                              <th>Report</th>
+                              <!--<th>Report</th>-->
                            </tr>
                         </thead>
                         <tbody id="prescription-body1">
                            <tr>
                               <td><input type="text" name="test_name[]" placeholder="Test Name"></td>
                               <td><input type="text" name="priority[]" placeholder="Priority"></td>
-                              <td onclick="window.location.href='Lab_download'"><button class="view">View</button></td>
+                              <!--<td onclick="window.location.href='Lab_download'"><button class="view">View</button></td>-->
                            </tr>
                         </tbody>
                      </table>

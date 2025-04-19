@@ -61,7 +61,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display      ///WellBe1/app/views/Components/Patient/header.php
-            include $_SERVER['DOCUMENT_ROOT'] . '/april/WellBe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/newWellBe2/WellBe/app/views/Components/Patient/header.php';
             ?>
 
 
@@ -171,8 +171,8 @@
                 };
 
 
-                payLaterBtn.addEventListener('click', showModal);
-                payByWalletBtn.addEventListener('click', showModal);
+                //payLaterBtn.addEventListener('click', showModal);
+                //payByWalletBtn.addEventListener('click', showModal);
                 closeModal.addEventListener('click', hideModal);
             });
 
@@ -213,6 +213,16 @@
                     document.getElementById('appointment-fee').innerHTML = '<strong>Appointment Fees: </strong>' + (appointment_fee ? appointment_fee : 'N/A');
                 });
 
+                const popupModal = document.getElementById('popupModal');
+                const closeModal = document.getElementById('closeModal');
+
+                const showModalsucess = () => {
+                    popupModal.classList.remove('hidden');
+                };
+
+                const hideModalsucess = () => {
+                    popupModal.classList.add('hidden');
+                };
 
                 async function sendAppointmentData(paymentMethod) {
                     const data = {
@@ -243,8 +253,9 @@
                         const result = JSON.parse(text);
                         console.log("result",result);
                         if (result.success) {
-                            //alert("Payment initiated successfully!");
-                            //window.location.href = "<?= ROOT ?>/patient/dashboard"; // Redirect after successful payment
+                            if(paymentMethod == "counter" || paymentMethod == "wallet"){
+                                showModalsucess();
+                            }
                         } else {
                             alert("Payment failed. Please try again.");
                         }

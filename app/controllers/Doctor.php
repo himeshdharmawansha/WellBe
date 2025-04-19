@@ -76,7 +76,13 @@ use Random\Engine\Mt19937;
             $medicalRecord = new MedicalRecord();
             $past_record_details = $medicalRecord->getPastRecordsDetials($patient_details[0]->id);
 
-            $this->view('Doctor/patient_details','today-checkups',$past_record_details);
+            $testRequest = new TestRequest();
+            $past_test_records = $testRequest -> getPastTestDetials($patient_details[0]->id);
+
+            $patient_history['past_records'] = $past_record_details;
+            $patient_history['past_tests'] = $past_test_records;
+
+            $this->view('Doctor/patient_details','today-checkups',$patient_history);
             //echo $_SESSION['appointment_id'];
         }
 

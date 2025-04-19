@@ -40,6 +40,7 @@ class Login extends Controller
 
                 if ($row) {
                     if (($_POST['password']== $row->password)) {
+                    if (($_POST['password']== $row->password)) {
                         $_SESSION['USER'] = $row; // Save user details in the session
                         $model->loggedin();
                         $_SESSION['userid'] = $row->id;

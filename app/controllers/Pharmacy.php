@@ -139,6 +139,30 @@ class Pharmacy extends Controller
         echo json_encode($results);
     }
 
+    public function updateMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->updateMedicine($data);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function deleteMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->deleteMedicine($data['medicine_id']);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function addMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->addMedicine($data);
+        echo json_encode(['success' => $success]);
+    }
+
     public function generateReport()
     {
         $startDate = $_GET['start_date'] ?? null;

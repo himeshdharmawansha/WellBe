@@ -1,3 +1,16 @@
+<?php
+foreach ($medDetails as $med) {
+    // Split the taken_time by spaces
+    $takenTimes = preg_split('/\s+/', trim($med->taken_time));
+
+    // Assign actual numbers to variables (default to '0' if not set)
+    $med->morning = $takenTimes[0] ?? '0';
+    $med->noon = $takenTimes[1] ?? '0';
+    $med->night = $takenTimes[2] ?? '0';
+    $med->if_needed = $takenTimes[3] ?? '0';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,68 +24,79 @@
 
 <body>
     <div class="dashboard-container">
-        <?php
-        $this->renderComponent('navbar', $active);
-        ?>
+        <?php $this->renderComponent('navbar', $active); ?>
 
         <!-- Main Content -->
         <div class="main-content">
             <?php
-            $pageTitle = "Medical Records"; // Set the text you want to display
+            $pageTitle = "Medical Records";
             include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
             ?>
 
-            <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <label for="dr-name">Doctor's Name:</label>
-                <p>Dr. John</p>
-                <label for="date">Date:</label>
-                <p>24/5/2024</p>
-                <label for="diagnosis">Diagnosis:</label>
-                <p>Gastritis</p>
+                <?php if (isset($requests)): ?>
+                    <?php foreach ($requests as $req): ?>
+                        <label for="dr-name">Doctor's Name:</label>
+                        <p><?= $req->doctor_first_name ?> <?= $req->doctor_last_name ?></p>
+                        <label for="date">Date:</label>
+                        <p><?= $req->date ?></p>
+                        <label for="diagnosis">Diagnosis:</label>
+                        <p><?= $req->diagnosis ?></p>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
                 <h2>MEDICINES NEED TO BE GIVEN:</h2>
 
-                <table class="medication-table">
-                    <thead>
-                        <tr>
-                            <th>Name of the Medication</th>
-                            <th>Dosage of the Medication</th>
-                            <th colspan="4">Number taken at a time</th>
-                            <th>Do not substitute</th>
-                            <th>State</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th>Morning</th>
-                            <th>Noon</th>
-                            <th>Night</th>
-                            <th>If Needed</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Omeprazole</td>
-                            <td>20mg</td>
-                            <td>1</td>
-                            <td>0</td>
-                            <td>1</td>
-                            <td>0</td>
-                            <td>can't</td>
-                            <td>
-                                <select>
-                                    <option value="pending" selected>Pending</option>
-                                    <option value="given">Given</option>
-                                    <option value="notavailable">Not available</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <!-- Add more rows if needed -->
-                    </tbody>
-                </table>
+                <?php if (isset($medDetails) && !empty($medDetails)): ?>
+                    <table class="medication-table">
+                        <thead>
+                            <tr>
+                                <th>Name of the Medication</th>
+                                <th>Dosage of the Medication</th>
+                                <th colspan="4">Number taken at a time</th>
+                                <th>Substitution</th>
+                                <!-- <th>State</th> -->
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Morning</th>
+                                <th>Noon</th>
+                                <th>Night</th>
+                                <th>If Needed</th>
+                                <th></th>
+                                <!-- <th></th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                <h2>TESTS NEED TO BE TAKEN:</h2>
+                            <!-- <pre><?php print_r($medDetails); ?></pre> -->
+                            <?php foreach ($medDetails as $med): ?>
+
+                                <tr>
+                                    <td><?= $med->medication_name ?></td>
+                                    <td><?= $med->dosage ?></td>
+                                    <td><?= $med->morning ?></td>
+                                    <td><?= $med->noon ?></td>
+                                    <td><?= $med->night ?></td>
+                                    <td><?= $med->if_needed ?></td>
+                                    <td><?= isset($med->substitution) && $med->substitution == 1 ? 'Not Allowed' : 'Allowed' ?></td>
+                                    <!-- <td>
+                                        <select>
+                                            <option value="pending" selected>Pending</option>
+                                            <option value="given">Given</option>
+                                            <option value="notavailable">Not available</option>
+                                        </select>
+                                    </td> -->
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No medication details available.</p>
+                <?php endif; ?>
+
+                <!-- <h2>TESTS NEED TO BE TAKEN:</h2>
                 <table>
                     <thead>
                         <tr>
@@ -98,13 +122,14 @@
                             <td><button class="pending">Pending</button></td>
                         </tr>
                     </tbody>
-                </table>
+                </table> -->
 
                 <div class="remarks-section">
                     <h3>Remarks</h3>
-                    <textarea id="additionalRemarks" readonly>
-Please continue the medicine for 7 days, if you do not see a change please consult again
-          </textarea>
+                    <textarea id="additionalRemarks" readonly><?= isset($medDetails[0]->remark) ? $medDetails[0]->remark : 'No remarks available.' ?></textarea>
+                </div>
+                <div class="back-button-container">
+                    <button onclick="history.back()">Back</button>
                 </div>
 
             </div>
@@ -112,38 +137,35 @@ Please continue the medicine for 7 days, if you do not see a change please consu
     </div>
 
     <script>
-        // Set the current date dynamically in the remarks section
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-
         document.addEventListener('DOMContentLoaded', function() {
             const doneButton = document.getElementById('doneButton');
 
-            doneButton.addEventListener('click', function() {
-                const requestID = doneButton.getAttribute('data-request-id');
-                const remarks = document.getElementById('additionalRemarks').value;
-                const rows = document.querySelectorAll('.medication-table tbody tr');
+            if (doneButton) {
+                doneButton.addEventListener('click', function() {
+                    const requestID = doneButton.getAttribute('data-request-id');
+                    const remarks = document.getElementById('additionalRemarks').value;
+                    const rows = document.querySelectorAll('.medication-table tbody tr');
 
-                const medications = [];
-                rows.forEach(row => {
-                    const medicationName = row.cells[0].textContent.trim();
-                    const state = row.querySelector('select').value;
+                    const medications = [];
+                    rows.forEach(row => {
+                        const medicationName = row.cells[0].textContent.trim();
+                        const state = row.querySelector('select').value;
 
-                    medications.push({
-                        medicationName,
-                        state,
+                        medications.push({
+                            medicationName,
+                            state,
+                        });
                     });
-                });
 
-                // Simulate sending data
-                console.log({
-                    requestID,
-                    remarks,
-                    medications
-                });
+                    console.log({
+                        requestID,
+                        remarks,
+                        medications
+                    });
 
-                // Simulate redirect
-                window.location.href = 'requests';
-            });
+                    window.location.href = 'requests';
+                });
+            }
         });
     </script>
 </body>

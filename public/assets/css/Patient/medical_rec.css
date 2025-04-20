@@ -287,6 +287,25 @@
    margin-bottom: 0;
 }
 
+.back-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.back-button-container button {
+    background-color: #172554;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button-container button:hover {
+    background-color: #172554;
+}
 
 
 /* Add media query for print */

@@ -161,4 +161,27 @@ class MedicalRecord extends Model
         $result = $this->query($query, [$patient_id]);
         return $result;
     }
+
+    public function getMed($req_id)
+    {
+        $query = "SELECT
+                        mrd.medication_name,
+                        mrd.dosage,
+                        mrd.taken_time,
+                        mrd.substitution,
+                        mr.remark,
+                        mr.state,
+                        d.first_name AS doctor_first_name,
+                        d.last_name AS doctor_last_name,
+                        t.date,
+                        mr.diagnosis
+        
+        FROM medication_request_details mrd
+        JOIN medication_requests mr ON mrd.req_id = mr.id
+        JOIN doctor d ON mr.doctor_id = d.id   
+        LEFT JOIN timeslot t ON mr.date = t.slot_id
+        WHERE mrd.req_id = ?";
+        $result = $this->query($query, [$req_id]);
+        return $result;
+    }
 }

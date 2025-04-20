@@ -269,3 +269,17 @@ table tbody tr:hover {
   .sidebar-menu li a:focus {
     color: #ddd; /* Change color on hover/focus */
   }
+
+  .view-button {
+    background-color: #118015; /* Green */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.view-button:hover {
+    background-color: #1b6d15; /* Slightly darker green on hover */
+}

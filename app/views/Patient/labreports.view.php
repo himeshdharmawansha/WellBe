@@ -82,17 +82,20 @@
                                             <td><?= htmlspecialchars($reports->doctor_first_name . " " . $reports->doctor_last_name) ?></td>
                                             <td><?= htmlspecialchars($reports->test_name) ?></td>
                                             <td>
-                                                <?php if (strtolower($reports->state) === 'pending'): ?>
+                                                <?php
+                                                $state = strtolower(trim($reports->state));
+                                                ?>
+
+                                                <?php if ($state === 'pending'): ?>
                                                     <span style="background-color: #fdd835; color: #000; padding: 5px 10px; border-radius: 5px;">
                                                         Pending
                                                     </span>
-                                                <?php elseif (strtolower($reports->state) === 'view'): ?>
-                                                    <button class="view-button">
-                                                        View
-                                                    </button>
+                                                <?php elseif ($state === 'view'): ?>
+                                                    <button class="view-button">View</button>
                                                 <?php else: ?>
                                                     <?= htmlspecialchars($reports->state) ?>
                                                 <?php endif; ?>
+
 
                                             </td>
                                             <td class="report-cell"></td>
@@ -122,7 +125,7 @@
                 </div>
             </div>
 
-            <script>
+            <!-- <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     function updateReportCells() {
                         const rows = document.querySelectorAll('tbody tr');
@@ -146,7 +149,7 @@
 
                     updateReportCells();
                 });
-            </script>
+            </script> -->
 </body>
 
 </html>

@@ -39,10 +39,10 @@
                             <?php endif; ?>
                         </div>
 
-                        <div class="profile-form-row">
+                        <!-- <div class="profile-form-row">
                             <label for="nic">NIC:</label>
-                            <input type="text" id="nic" name="nic" value="<?= htmlspecialchars($doctorProfile->nic) ?>" readonly>
-                        </div>
+                            <input type="text" id="nic" name="nic" value="<?= htmlspecialchars(rtrim($doctorProfile->nic, 'd')) ?>" readonly>
+                        </div> -->
                         <div class="profile-form-row">
                             <label for="first_name">First Name:</label>
                             <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($doctorProfile->first_name) ?>" readonly>

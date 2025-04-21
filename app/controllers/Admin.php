@@ -93,7 +93,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($patient->validate($patientData, 2)) {
                // Add doctor to the database
-               if ($patient->addPatient($patientData) && $user->addUser($patientData, 4)) {
+               if ($user->addUser($patientData, 4) && $patient->addPatient($patientData)) {
                   echo "<script>
                         alert('Patient Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/patients';
@@ -230,7 +230,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($doctor->validate($doctorData, 2)) {
                // Add doctor to the database
-               if ($doctor->addDoctor($doctorData) && $user->addUser($doctorData, 5)) {
+               if ($user->addUser($doctorData, 5) && $doctor->addDoctor($doctorData)) {
                   echo "<script>
                         alert('Doctor Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/doctors';
@@ -282,7 +282,7 @@ class Admin extends Controller
                $doctor = new Doctor();
 
                // Debugging: Check submitted data
-               //echo(print_r($doctorData, true));
+               echo(print_r($doctorData, true));
 
                // Validate the input data
                if ($doctor->validateDoctor($doctorData)) {
@@ -310,8 +310,10 @@ class Admin extends Controller
          $data['doctorProfile'] = $doctor->getDoctorById($nic);
 
          if (empty($data['doctorProfile'])) {
-               $data['error'] = "Doctor with NIC $nic not found.";
+            $data['error'] = "Doctor with NIC $nic not found.";
          }
+
+
       } else {
          $data['error'] = "No doctor NIC provided.";
       }
@@ -365,7 +367,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($pharmacist->formValidate($pharmacistData, 2)) {
                // Add doctor to the database
-               if ($pharmacist->addPharmacist($pharmacistData) && $user->addUser($pharmacistData, 1)) {
+               if ($user->addUser($pharmacistData, 1) && $pharmacist->addPharmacist($pharmacistData)) {
                   echo "<script>
                         alert('Pharmacist Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/pharmacists';
@@ -500,7 +502,7 @@ class Admin extends Controller
          // Validate step 2 fields
          if ($labTech->formValidate($labTechData, 2)) {
                // Add doctor to the database
-               if ($labTech->addLabTech($labTechData) && $user->addUser($labTechData, 2)) {
+               if ($user->addUser($labTechData, 2) && $labTech->addLabTech($labTechData)) {
                   echo "<script>
                         alert('Lab Technician Profile Created Successfully!');
                         window.location.href = '" . ROOT . "/Admin/labTechs';

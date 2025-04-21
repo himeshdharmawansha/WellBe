@@ -39,10 +39,10 @@
                             <?php endif; ?>
                         </div>
 
-                        <div class="profile-form-row">
+                        <!-- <div class="profile-form-row">
                             <label for="nic">NIC:</label>
                             <input type="text" id="nic" name="nic" value="<?= htmlspecialchars($pharmacistProfile->nic) ?>" readonly>
-                        </div>
+                        </div> -->
                         <div class="profile-form-row">
                             <label for="first_name">First Name:</label>
                             <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($pharmacistProfile->first_name) ?>" readonly>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="profile-form-row">
                             <label for="medical_school">Previous Employment History:</label>
-                            <input type="text" id="prev_employment_history" name="prev_employment_hisstory" value="<?= htmlspecialchars($pharmacistProfile->prev_employment_history) ?>" readonly>
+                            <input type="text" id="prev_employment_history" name="prev_employment_history" value="<?= htmlspecialchars($pharmacistProfile->prev_employment_history) ?>" readonly>
                         </div>
 
                         <div class="profile-buttons-bar">

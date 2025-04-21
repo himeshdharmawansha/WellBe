@@ -326,12 +326,6 @@ class Patient extends Controller
       }
 
 
-      //Deduct from wallet if payment is made via E-Wallet
-      if ($data['payment_method'] == "wallet") {
-         $appointment->decWalletAmount();
-      }
-
-
       if ($data && $appointment->checkAppointmentExists($data)) {
          $response = [
             "success" => true,

@@ -141,6 +141,27 @@ class Appointments extends Model
         return $data;
     }
 
+    public function getAppointmentCount(){
+
+        $query = "SELECT d.date, COUNT(a.id) AS appointment_count
+                    FROM (
+                        SELECT CURDATE() AS date
+                        UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
+                    ) d
+                    LEFT JOIN timeslot t ON t.date = d.date
+                    LEFT JOIN appointment a ON a.date = t.slot_id AND a.doctor_id = ?
+                    GROUP BY d.date
+                    ORDER BY d.date ASC;";
+
+        $appointmentCount = $this->query($query,[$_SESSION['USER']->id]);
+        return $appointmentCount;
+    }
+
 
     public function endAppointment($id)
     {

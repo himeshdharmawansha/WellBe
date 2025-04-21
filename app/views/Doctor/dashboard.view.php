@@ -1,3 +1,21 @@
+<?php
+$totalAppointments = 0;
+$newPatients = 0;
+$returningPatients = 0;
+
+// Check and loop through today's appointments
+if (!empty($data['today_appointments'])) {
+    $totalAppointments = count($data['today_appointments']);
+
+    foreach ($data['today_appointments'] as $appointment) {
+        if ($appointment->patient_type === 'NEW') {
+            $newPatients++;
+        } elseif ($appointment->patient_type === 'RETURNING') {
+            $returningPatients++;
+        }
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,12 +63,14 @@
     
                         <div class="blue-bar">
                             <div class="my-element" style="margin-right: 10px;"></div>
-                            <div class=" font-['Poppins']" style="width: 200px;font-size: 27px; font-weight: 500;height: 9.5rem;color:black"> Dr. <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?>, you have  8 appointments today</div>
+                            <div class=" font-['Poppins']" style="width: 200px;font-size: 27px; font-weight: 500;height: 9.5rem;color:black">
+                                Dr. <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?>, you have <?php echo $totalAppointments; ?> appointments today
+                            </div>
                         </div>
 
                         <div class=" font-['Poppins']" style="margin-top:30px;margin-left:0px;font-size: 27px; font-weight: 500;color:black">
-                                <p>New Patients : 03</p>
-                                <p>Returning Patients : 05</p>
+                            <p>New Patients : <?php echo $newPatients; ?></p>
+                            <p>Returning Patients : <?php echo $returningPatients; ?></p>
                         </div>
                     </div>
                 </div>

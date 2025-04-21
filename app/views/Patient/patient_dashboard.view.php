@@ -1,3 +1,6 @@
+<?php
+//print_r($rescheduledAppointments);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,6 +56,12 @@
                 <p><strong>Medical History: <?= $_SESSION['USER']->medical_history; ?></strong> </p>
                 <p><strong>Allergies: <?= $_SESSION['USER']->allergies; ?></strong></p>
               </div>
+              <div style="background-color: #fff3cd; color: #856404; padding: 10px 20px; border: 1px solid #ffeeba; border-radius: 5px; display: inline-block; margin-top: 10px;">
+   <span title="E-Wallet is your digital balance used for paying doctor appointment fees." style="text-decoration: underline dotted; cursor: help;">Your E-Wallet Balance:</span>  
+  <strong>Rs. <?= $_SESSION['USER']->e_wallet; ?></strong>
+</div>
+
+
             </div>
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>
@@ -118,6 +127,16 @@
 
                   <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
                     <?php foreach ($appointments as $appt) : ?>
+                      <?php
+                      // Get the appointment date and time
+                      $appointmentDateTime = strtotime($appt->date . ' ' . $appt->start_time);
+                      $currentDateTime = time(); // Get the current timestamp
+
+                      // Check if the appointment has already passed
+                      if ($appointmentDateTime < $currentDateTime) {
+                        continue; // Skip the rendering of this card if the appointment has passed
+                      }
+                      ?>
                       <div class="mini-wrapper">
                         <div class="mini" onclick="window.location.href='appointments'">
                           <div class="mini-part part1">
@@ -136,6 +155,7 @@
                         </div>
                       </div>
                     <?php endforeach; ?>
+
                   </div>
 
                 <?php else : ?>
@@ -167,6 +187,46 @@
         </div>
       </div>
 
+      <?php if (!empty($rescheduledAppointments)) :
+        $last = end($rescheduledAppointments);
+      ?>
+        <div id="reschedulePopup" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Rescheduled Appointment</h2>
+            </div>
+            <div class="modal-body">
+              <p style="color:black">
+                Your appointment with Dr.<?= htmlspecialchars($last->doctor_name) ?> (<?= htmlspecialchars($last->specialization) ?>)
+                on <?= date('Y-m-d', strtotime($last->date)) ?> has been rescheduled.
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button id="manageBtn" class="submit-btn" style="background-color: blue;">Manage Appointment</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="managePopup" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Manage Appointment</h2>
+            </div>
+            <div class="modal-body">
+              <p style="color: black;">Would you like to reschedule or cancel your appointment?</p>
+            </div>
+            <div class="modal-footer">
+              <button style="margin-bottom: 10px;" class="submit-btn" onclick="window.location.href = 'http://localhost/wellbe/public/patient/reschedule_doc_appointment/<?= $last->id ?>'">
+                Reschedule Appointment
+              </button>
+              <button style="background-color: red;" class="submit-btn" onclick="window.location.href='http://localhost/wellbe/public/patient/refund/<?= $last->id ?>'">
+                Cancel Appointment
+              </button>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
 
       <script src="./script.js"></script>
       <script>
@@ -191,6 +251,22 @@
               modal.classList.add("hidden"); // Hide the modal on button click
             });
           }
+        });
+      </script>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const reschedulePopup = document.getElementById("reschedulePopup");
+          const managePopup = document.getElementById("managePopup");
+
+          <?php if (!empty($rescheduledAppointments)) : ?>
+            reschedulePopup.classList.remove("hidden");
+
+            document.getElementById("manageBtn").addEventListener("click", () => {
+              reschedulePopup.classList.add("hidden");
+              managePopup.classList.remove("hidden");
+            });
+          <?php endif; ?>
         });
       </script>
 

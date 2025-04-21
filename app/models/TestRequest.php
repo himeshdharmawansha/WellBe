@@ -144,7 +144,8 @@ class TestRequest extends Model
                   CONCAT('[', GROUP_CONCAT(
                       JSON_OBJECT(
                           'test_name', IFNULL(trd.test_name, ''),
-                          'priority', IFNULL(trd.priority, '')
+                          'priority', IFNULL(trd.priority, ''),
+                          'file', IFNULL(trd.file, '')
                       )
                   ), ']') AS tests
               FROM test_requests tr

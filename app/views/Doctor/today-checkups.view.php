@@ -25,7 +25,7 @@
             <?php
             $pageTitle = "Today Check-Ups"; // Set the text you want to display
             //include $_SERVER['DOCUMENT_ROOT'] . '/MVC/app/views/Components/Patient/header.php';
-            require '../app/views/Components/Doctor/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <div class="items" style="display:flex;justify-content: space-between;">

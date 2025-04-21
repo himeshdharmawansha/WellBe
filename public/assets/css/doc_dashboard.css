@@ -1,14 +1,30 @@
 
 
 .items{
-
-    margin-top: 50px;
     display: flex;
 }
 
 .graph{
     display: flex;
     gap: 60px;
+}
+
+.dashboard-content{
+    display: flex;
+    justify-content: space-between;
+    background-color: #f7f7f7;
+}
+
+.my-element {
+    width: 0.5rem;
+    height: 10rem;
+    background-color: #60a5fa;
+}  
+
+.blue-bar{
+    display: flex;
+    flex-direction: row;
+    column-gap: 20px;
 }
 
 .container2{

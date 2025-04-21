@@ -273,6 +273,7 @@ class Appointments extends Model
     {
         $query = "
         SELECT 
+            a.id,
             a.patient_id,
             a.doctor_id,
             a.appointment_id,

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,9 @@
             color: #444;
             width: 100%;
         }
-        .view-button, .download-button {
+
+        .view-button,
+        .download-button {
             background-color: #118015;
             color: white;
             border: none;
@@ -27,41 +30,53 @@
             text-decoration: none;
             display: inline-block;
         }
-        .view-button:hover, .download-button:hover {
+
+        .view-button:hover,
+        .download-button:hover {
             background-color: #1b6d15;
         }
+
         .table-container {
             margin-top: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        th, td {
+
+        th,
+        td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+
         th {
-            background-color: #f4f4f4;
+            background-color: #eef3ff;
             font-weight: bold;
         }
+
         .pagination {
             margin-top: 20px;
             text-align: center;
         }
-        .pagination span, .pagination a {
+
+        .pagination span,
+        .pagination a {
             margin: 0 5px;
             padding: 5px 10px;
             text-decoration: none;
             color: #333;
         }
+
         .pagination a:hover {
             background-color: #ddd;
             border-radius: 5px;
         }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -74,6 +89,7 @@
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.5);
         }
+
         .modal-content {
             background-color: #fff;
             margin: 5% auto;
@@ -84,6 +100,7 @@
             border-radius: 5px;
             position: relative;
         }
+
         .close {
             color: #aaa;
             float: right;
@@ -91,11 +108,13 @@
             font-weight: bold;
             cursor: pointer;
         }
+
         .close:hover,
         .close:focus {
             color: #000;
             text-decoration: none;
         }
+
         .modal-content iframe,
         .modal-content img {
             width: 100%;
@@ -104,6 +123,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -152,8 +172,11 @@
                                                         Pending
                                                     </span>
                                                 <?php else: ?>
-                                                    <?= htmlspecialchars($report->state) ?>
+                                                    <span style="background-color: #4caf50; color: #000; padding: 5px 10px; border-radius: 5px;">
+                                                        <?= htmlspecialchars($report->state) ?>
+                                                    </span>
                                                 <?php endif; ?>
+
                                             </td>
                                             <td>
                                                 <?php if ($state === 'completed' && !empty($report->file)): ?>
@@ -195,14 +218,14 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const viewButtons = document.querySelectorAll('.view-button');
             const modal = document.getElementById('fileModal');
             const fileViewer = document.getElementById('fileViewer');
             const closeBtn = document.querySelector('.close');
 
             viewButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const fileUrl = this.getAttribute('data-file');
                     const fileExtension = fileUrl.split('.').pop().toLowerCase();
 
@@ -220,13 +243,13 @@
             });
 
             // Close modal when clicking the close button
-            closeBtn.addEventListener('click', function () {
+            closeBtn.addEventListener('click', function() {
                 modal.style.display = 'none';
                 fileViewer.innerHTML = ''; // Clear viewer content
             });
 
             // Close modal when clicking outside the modal content
-            window.addEventListener('click', function (event) {
+            window.addEventListener('click', function(event) {
                 if (event.target === modal) {
                     modal.style.display = 'none';
                     fileViewer.innerHTML = ''; // Clear viewer content
@@ -235,4 +258,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -80,7 +80,7 @@ class LabTest extends Model
                     trd.priority,
                     trd.file
     FROM test_requests tr
-    JOIN test_request_details trd ON tr.id = trd.req_id
+    JOIN test_request_details trd ON tr.id = trd.test_request_id  
     JOIN doctor d ON tr.doctor_id = d.id
     JOIN timeslot t ON tr.date = t.slot_id
     JOIN timeslot_doctor td ON tr.date = td.slot_id
@@ -97,7 +97,7 @@ class LabTest extends Model
                     t.date,
                     td.start_time
     FROM test_requests tr
-    JOIN test_request_details trd ON tr.id = trd.req_id
+    JOIN test_request_details trd ON tr.id = trd.test_request_id  
     JOIN doctor d ON tr.doctor_id = d.id
     JOIN timeslot t ON tr.date = t.slot_id
     JOIN timeslot_doctor td ON tr.date = td.slot_id

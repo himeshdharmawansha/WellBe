@@ -28,11 +28,14 @@ class Patient extends Controller
    {
       $appointmentsModel = new Appointments();
       $patient_id = $_SESSION['USER']->id;
+
+      //get rescheduled appointments
+      $rescheduledAppointments = $appointmentsModel->getRescheduledApppointments($patient_id);
    
       $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
    
       // Pass appointment data to the dashboard view
-      $this->view('Patient/patient_dashboard', 'patient_dashboard', ['appointments' => $appointments]);
+      $this->view('Patient/patient_dashboard', 'patient_dashboard', ['appointments' => $appointments, 'rescheduledAppointments' => $rescheduledAppointments]);
    }
    
 
@@ -104,7 +107,8 @@ class Patient extends Controller
 
             $timeslot = new Timeslot();
             $newDateSlotId = $timeslot -> getDateId($newDate);
-            //print_r($newDateSlotId);
+            print_r($newDateSlotId);
+            //print_r($_POST);
 
             $appointment = new Appointments();
             $appointment->rescheduleAppointment($id,$newDocId,$newAppointmentId,$newDateSlotId[0]->slot_id);

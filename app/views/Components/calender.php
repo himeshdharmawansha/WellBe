@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div id="appointmentPopup" class="modal">
         <div class="modal-content">
             <span class="close" id="appointmentClose">&times;</span>
-            <h2 id="showAppointmentHeader" style="font-weight: bold;text-align:center;margin-bottom:20px;font-size:larger"></h2>
+            <h2 id="showAppointmentHeader" style="font-weight: bold;text-align:center;margin-bottom:20px;font-size:larger;color:black"></h2>
             <div id="appointmentDetails">
                 <table id="appointmentTable" style="width: 100%; border-collapse: collapse;">
                     <thead style="background-color:#4183d9">
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th style="border: 1px solid #ddd; padding: 8px;">Patient Type</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="color:black;">
                         <!-- Rows will be dynamically added here -->
                     </tbody>
                 </table>
@@ -92,13 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="confirmModal" class="modal" style="display: none;">
         <form method="POST" id="scheduleForm" class="modal-content" style="text-align: center;">
-            <p style="font-weight: bold; margin-bottom: 20px;">
+            <p style="font-weight: bold; margin-bottom: 20px;color:black">
                 Are you sure you want to reschedule appointments on 
                 <span id="scheduleDateDisplay"></span>?
             </p>
             <!-- Hidden input to submit the date -->
             <input type="hidden" id="scheduleDate" name="scheduleDate">
-            <button id="confirmYes" type="submit" style="padding: 10px 20px; background-color: #2b85ec; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes</button>
+            <button id="confirmYes" type="submit" style="padding: 10px 20px; background-color: #2b85ec; color: white; border: none; border-radius: 5px; cursor: pointer;margin-bottom: 10px">Yes</button>
             <button id="confirmNo" type="button" style="padding: 10px 20px; background-color: #fc2f39; color: white; border: none; border-radius: 5px; cursor: pointer;">No</button>
         </form>
     </div>
@@ -144,7 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </table>
     </div>
 
-    <script src="<?= ROOT ?>/assets/js/calender.js?v=1.1"></script>
-    <script src="<?= ROOT ?>/assets/js/schedule.js?v=1.1"></script>
+    <script src="<?= ROOT ?>/assets/js/schedule.js?v=1.2"></script>
+    <script src="<?= ROOT ?>/assets/js/calender.js?v=1.2"></script>
+    
 </body>
 </html>

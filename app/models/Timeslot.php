@@ -89,9 +89,8 @@ class Timeslot extends Model
 
     public function deleteDate($date){
 
-        $query = "UPDATE timeslot_doctor td
+        $query = "DELETE td FROM timeslot_doctor td
                 JOIN timeslot ts ON td.slot_id = ts.slot_id
-                SET td.session = 'CANCELED'
                 WHERE ts.date = ? 
                 AND td.doctor_id = ?;";
 

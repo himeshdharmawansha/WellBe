@@ -1,3 +1,5 @@
+console.log("i am calender");
+
 const calendarBody = document.getElementById('calendar-body');
 const monthYearDisplay = document.getElementById('monthYear');
 const prevMonthBtn = document.getElementById('prevMonth');
@@ -154,7 +156,7 @@ function generateCalendar(month, year) {
                   
                            try {
                               // Send the scheduled date to the PHP file
-                              const response = await fetch('http://localhost/newWellBe2/WellBe/public/doctor', {
+                              const response = await fetch('http://localhost/wellbe/public/doctor', {
                                  method: 'POST',
                                  headers: {
                                        'Content-Type': 'application/json'

@@ -4,13 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Schedule Appointment</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Patient/doc_appointment.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
 </head>
 
 <body>
+    <!-- Your existing HTML unchanged -->
     <div class="dashboard-container">
         <!-- Sidebar -->
         <?php
@@ -21,7 +24,7 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments"; // Set the text you want to display
+            $pageTitle = "Appointments";
             include $_SERVER['DOCUMENT_ROOT'] . '/newWellBe/wellbe/app/views/Components/Patient/header.php';
             ?>
 
@@ -52,18 +55,18 @@
                                 <input list="specializations" id="specialization" name="specialization"
                                     placeholder="Type specialization"
                                     value="<?= isset($_POST['specialization']) ? htmlspecialchars($_POST['specialization']) : '' ?>">
-                                    <datalist id="specializations">
-                                        <?php
-                                        $uniqueSpecializations = [];
-                                        foreach ($doctors as $doctor) {
-                                            $spec = htmlspecialchars($doctor->specialization);
-                                            if (!in_array($spec, $uniqueSpecializations)) {
-                                                $uniqueSpecializations[] = $spec;
-                                                echo "<option value=\"$spec\"></option>";
-                                            }
+                                <datalist id="specializations">
+                                    <?php
+                                    $uniqueSpecializations = [];
+                                    foreach ($doctors as $doctor) {
+                                        $spec = htmlspecialchars($doctor->specialization);
+                                        if (!in_array($spec, $uniqueSpecializations)) {
+                                            $uniqueSpecializations[] = $spec;
+                                            echo "<option value=\"$spec\"></option>";
                                         }
-                                        ?>
-                                    </datalist>
+                                    }
+                                    ?>
+                                </datalist>
                             </div>
 
                             <button type="submit" class="find-doctor-btn">Search</button>
@@ -116,105 +119,125 @@
         </div>
     </div>
 
+    <div id="successModal2" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <p>Appointment successfully rescheduled!</p>
+            <div class="modal-buttons">
+                <button style="background-color: green;" onclick="closeSuccessModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <form id="rescheduleForm" method="POST" action="">
         <input type="hidden" name="doc_id" id="hiddenDocId">
         <input type="hidden" name="appointment_id" id="hiddenAppointmentId">
         <input type="hidden" name="day" id="hiddenDay">
     </form>
 
+    <script>
+        console.log("Schedule Appointment script loaded - version 2025-04-20");
 
-</body>
+        const doctors = <?= json_encode($data['doctors']) ?>;
+        const doctorInput = document.getElementById('doctor');
+        const specializationInput = document.getElementById('specialization');
+        const doctorsDatalist = document.getElementById('doctors');
+        const specializationsDatalist = document.getElementById('specializations');
 
-<script>
-
-    const doctors = <?= json_encode($data['doctors']) ?>;
-
-    const doctorInput = document.getElementById('doctor');
-    const specializationInput = document.getElementById('specialization');
-    const doctorsDatalist = document.getElementById('doctors');
-    const specializationsDatalist = document.getElementById('specializations');
-
-    // Helper to update datalist options
-    function updateDatalist(datalistElement, values) {
-        datalistElement.innerHTML = ''; // Clear current options
-        const uniqueValues = [...new Set(values)]; // Remove duplicates using Set
-        uniqueValues.forEach(value => {
-            const option = document.createElement('option');
-            option.value = value;
-            datalistElement.appendChild(option);
-        });
-    }
-
-    // When specialization changes, update doctor suggestions
-    specializationInput.addEventListener('input', function () {
-        const selectedSpecialization = this.value.trim().toLowerCase();
-
-        // Filter doctors by selected specialization
-        const filteredDoctors = doctors
-            .filter(doc => doc.specialization.toLowerCase() === selectedSpecialization)
-            .map(doc => doc.name);
-
-        // Update the doctor datalist with unique names
-        updateDatalist(doctorsDatalist, filteredDoctors);
-    });
-
-    // When doctor changes, update specialization suggestion
-    doctorInput.addEventListener('input', function () {
-        const selectedDoctor = this.value.trim().toLowerCase();
-
-        // Find the selected doctor and auto-fill specialization
-        const foundDoctor = doctors.find(doc => doc.name.toLowerCase() === selectedDoctor);
-
-        if (foundDoctor) {
-            // Auto-fill specialization field
-            specializationInput.value = foundDoctor.specialization;
-
-            // Filter specializations to only this one (showing it only once)
-            updateDatalist(specializationsDatalist, [foundDoctor.specialization]);
-        } else {
-            // Reset specialization list if doctor doesn't match
-            const allSpecs = doctors.map(doc => doc.specialization);
-            updateDatalist(specializationsDatalist, allSpecs);
+        // Helper to update datalist options
+        function updateDatalist(datalistElement, values) {
+            datalistElement.innerHTML = ''; // Clear current options
+            const uniqueValues = [...new Set(values)]; // Remove duplicates using Set
+            uniqueValues.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                datalistElement.appendChild(option);
+            });
         }
-    });
 
-    function storeSelection(button) {
-        const docName = button.dataset.doctor;
-        const day = button.dataset.day;
-        const appointmentId = button.dataset.appointmentId;
+        // When specialization changes, update doctor suggestions
+        specializationInput.addEventListener('input', function () {
+            const selectedSpecialization = this.value.trim().toLowerCase();
+            const filteredDoctors = doctors
+                .filter(doc => doc.specialization.toLowerCase() === selectedSpecialization)
+                .map(doc => doc.name);
+            updateDatalist(doctorsDatalist, filteredDoctors);
+        });
 
-        // Show confirmation message
-        const message = `Do you want to confirm rescheduling the appointment to <strong>${docName}</strong> on <strong>${day}</strong>, appointment number <strong>${appointmentId}</strong>?`;
-        document.getElementById('confirmationMessage').innerHTML = message;
+        // When doctor changes, update specialization suggestion
+        doctorInput.addEventListener('input', function () {
+            const selectedDoctor = this.value.trim().toLowerCase();
+            const foundDoctor = doctors.find(doc => doc.name.toLowerCase() === selectedDoctor);
+            if (foundDoctor) {
+                specializationInput.value = foundDoctor.specialization;
+                updateDatalist(specializationsDatalist, [foundDoctor.specialization]);
+            } else {
+                const allSpecs = doctors.map(doc => doc.specialization);
+                updateDatalist(specializationsDatalist, allSpecs);
+            }
+        });
 
-        // Show the modal
-        const modal = document.getElementById('confirmationModal2');
-        modal.style.display = 'flex';
+        function storeSelection(button) {
+            const docName = button.dataset.doctor;
+            const day = button.dataset.day;
+            const appointmentId = button.dataset.appointmentId;
 
-        // When user confirms
-        document.getElementById('confirmBtn').onclick = function () {
-            // Save to session storage
-            sessionStorage.setItem('doc_id', button.dataset.docId);
-            sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);
-            sessionStorage.setItem('doctor', docName);
-            sessionStorage.setItem('specialization', button.dataset.specialization);
-            sessionStorage.setItem('appointment_id', appointmentId);
-            sessionStorage.setItem('start_time', button.dataset.startTime);
-            sessionStorage.setItem('day', day);
+            // Show confirmation message
+            const message = `Do you want to confirm rescheduling the appointment to <strong>${docName}</strong> on <strong>${day}</strong>, appointment number <strong>${appointmentId}</strong>?`;
+            document.getElementById('confirmationMessage').innerHTML = message;
 
-            document.getElementById('hiddenDocId').value = sessionStorage.getItem('doc_id');
-            document.getElementById('hiddenAppointmentId').value = sessionStorage.getItem('appointment_id');
-            document.getElementById('hiddenDay').value = sessionStorage.getItem('day');
+            // Show the confirmation modal
+            const modal = document.getElementById('confirmationModal2');
+            modal.style.display = 'flex';
 
-            modal.style.display = 'none';
-            document.getElementById('rescheduleForm').submit();
-        };
-    }
+            // When user confirms
+            document.getElementById('confirmBtn').onclick = function () {
+                // Store data in sessionStorage
+                sessionStorage.setItem('doc_id', button.dataset.docId);
+                sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);
+                sessionStorage.setItem('doctor', docName);
+                sessionStorage.setItem('specialization', button.dataset.specialization);
+                sessionStorage.setItem('appointment_id', appointmentId);
+                sessionStorage.setItem('start_time', button.dataset.startTime);
+                sessionStorage.setItem('day', day);
 
-    function closeModal() {
-        document.getElementById('confirmationModal2').style.display = 'none';
-    }
+                // Update hidden form fields
+                document.getElementById('hiddenDocId').value = sessionStorage.getItem('doc_id');
+                document.getElementById('hiddenAppointmentId').value = sessionStorage.getItem('appointment_id');
+                document.getElementById('hiddenDay').value = sessionStorage.getItem('day');
 
-</script>
+                // Hide confirmation modal
+                document.getElementById('confirmationModal2').style.display = 'none';
 
+                // Show success modal
+                document.getElementById('successModal2').style.display = 'flex';
+            };
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal2').style.display = 'none';
+
+            // Send form data via fetch instead of submitting the form
+            const formData = new FormData(document.getElementById('rescheduleForm'));
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    //alert('aaa')
+                    // After successful POST, redirect
+                    window.location.href = 'http://localhost/wellbe/public/patient/';
+                } else {
+                    alert('Something went wrong!');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal2').style.display = 'none';
+        }
+    </script>
+</body>
 </html>

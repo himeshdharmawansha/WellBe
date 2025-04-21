@@ -218,10 +218,23 @@ class Appointments extends Model
         $this->query($query,[$newDocId, $newAppointId, $newDateId, $id]);
     }
 
+    public function getRescheduledApppointments($patientId){
+
+        $query = "SELECT a.id , CONCAT(d.first_name , ' ' , d.last_name) as doctor_name,d.specialization,t.date  FROM appointment a
+            JOIN doctor d ON a.doctor_id = d.id
+            JOIN timeslot t ON a.date = t.slot_id
+            WHERE a.patient_id = $patientId AND a.scheduled = 'Rescheduled';";
+        $rescheduledAppointments = $this->query($query);
+
+        return $rescheduledAppointments;
+    }
+
     public function deleteAppointment($appointmentId){
 
         $query = "DELETE FROM appointment WHERE id = ? ;";
         $this->query($query,[$appointmentId]);
+
+        header("Location: http://localhost/wellbe/public/patient/");
     }
 
     public function updatePaymentStatus($appointment_id, $doctor_id, $patient_id, $date, $status)

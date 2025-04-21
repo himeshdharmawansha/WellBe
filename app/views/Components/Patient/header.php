@@ -191,17 +191,20 @@
    function handleReschedule() {
       const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       document.getElementById('notificationModal').style.display = 'none';
-      window.location.href = `http://localhost/WellBe/public/patient/doc_appointment`;
+      //window.location.href = `http://localhost/WellBe/public/patient/doc_appointment`;
+
+      window.location.href = `http://localhost/wellbe/public/patient/reschedule_doc_appointment/${appointmentPrimaryId}`;
 
    }
 
    function handleCancel() {
       const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
+      console.log(appointmentPrimaryId);
       document.getElementById('notificationModal').style.display = 'none';
       alert('Appointment canceled.');
       const userId = <?php echo json_encode($_SESSION['USER']->id); ?>;
-      window.location.href = `http://localhost/WellBe/public/patient/refund`;
-
+      
+      window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentPrimaryId}`;
    }
 </script>
 

@@ -1,69 +1,135 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Patient Medication Details</title>
-    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Medication_Details.css">
+    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Medication_Details.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+            position: relative;
+        }
+
+        /* Report Modal Specific Styles */
+        #reportModal {
+            z-index: 9999;
+            background: rgba(0,0,0,0.8);
+        }
+
+        #modalContent {
+            max-width: 90%; /* Slightly smaller to ensure close button is visible */
+            max-height: 90%;
+            padding: 40px 20px 20px 20px; /* Extra padding-top for close button */
+        }
+
+        #modalContent iframe {
+            width: 100%;
+            height: 70vh; /* Fixed height to prevent overflow issues */
+            border: none;
+        }
+
+        /* Shared Close Button Styles */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.2s;
+            z-index: 10000; /* Ensure it's above the iframe */
+        }
+
+        .close:hover {
+            color: #007bff;
+        }
+
+        .view-record, .view-pdf-report {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .view-record:hover, .view-pdf-report:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
-    <?php
+        <?php
         $this->renderComponent('navbar', $active);
         ?>
-     
 
         <!-- Main Content -->
         <div class="main-content">
-
             <?php
             $pageTitle = "Medical Records";
-            require '../app/views/Components/Doctor/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
-           
+
             <!-- Dashboard Content -->
             <div class="dashboard-content" style="position:relative">
-
-                 <div class="dashboard-header">
+                <div class="dashboard-header">
                     <div class="button-container">
                         <a href="<?= ROOT ?>/doctor/medication_Details/<?= $_SESSION['appointment_id']; ?>/<?= $_SESSION['patient_id']; ?>" class="btn btn-green">
                             Create New Record
                         </a>
                     </div>
-                  </div>
+                </div>
 
-                  <div class="record-navigation">
-                        <?php if (count($data['past_records']) <= 1): ?>
-                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftMedication(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftMedication(1)">&#8250;</button>
-                        <?php else: ?>
-                            <button id="prev-btn" class="nav-btn" onclick="shiftMedication(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn" onclick="shiftMedication(1)">&#8250;</button>
-                        <?php endif; ?>
-                    </div>
-                  
-                  <div style="display: flex; justify-content: space-between; gap: 30px;margin-top:2%;margin-bottom:3%">
+                <!-- Medication Records -->
+                <div class="record-navigation">
+                    <?php if (empty($data['past_records'])): ?>
+                        <button id="prev-btn" class="nav-btn-inactive" disabled>‹</button>
+                        <button id="next-btn" class="nav-btn-inactive" disabled>›</button>
+                    <?php else: ?>
+                        <button id="prev-btn" class="nav-btn" onclick="shiftMedication(-1)">‹</button>
+                        <button id="next-btn" class="nav-btn" onclick="shiftMedication(1)">›</button>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (!empty($data['past_records'])): ?>
+                    <div style="display: flex; justify-content: space-between; gap: 30px; margin-top:2%; margin-bottom:3%">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="dr-name">Doctor's Name:</label>
                             <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data['past_records'][0]->doctor); ?></p>
                         </div>
-
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="diagnosis">Diagnosis:</label>
                             <p id="diagnosis" style="width: 17vw; font-weight: bold;"><?= htmlspecialchars($data['past_records'][0]->diagnosis); ?></p>
                         </div>
-
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="date">Date:</label>
-                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_records'][0]->date))); ?></p>
+                            <p id="record-date" style="width: 17vw;"><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_records'][0]->date))); ?></p>
                         </div>
                     </div>
 
-
                     <h2>MEDICINES NEED TO BE GIVEN:</h2>
-                    <!-- Medication Table -->
                     <table class="medication-table">
                         <thead>
                             <tr>
@@ -84,10 +150,11 @@
                         </thead>
                         <tbody id="medication-body">
                             <?php 
-                                $medications = json_decode($data['past_records'][0]->medications, true);
+                            $medications = json_decode($data['past_records'][0]->medications, true);
+                            if (!empty($medications)):
                                 foreach ($medications as $medication):
                                     list($morning, $noon, $night, $if_needed) = explode(' ', $medication['taken_time']);
-                                ?>
+                            ?>
                                 <tr>
                                     <td><?= htmlspecialchars($medication['medication_name']); ?></td>
                                     <td><?= htmlspecialchars($medication['dosage']); ?></td>
@@ -97,41 +164,72 @@
                                     <td><?= htmlspecialchars($if_needed); ?></td>
                                     <td><input type="checkbox" disabled <?= $medication['substitution'] == "1" ? 'checked' : ''; ?>></td>
                                 </tr>
-                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">No medications recorded</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
 
-                    <!-- Remarks Section -->
                     <div class="remarks-section" style="margin-bottom: 3%;">
                         <h3>Remarks</h3>
                         <textarea id="additionalRemarks" readonly>
-                            Please continue the medicine for 7 days, if you do not see a change please consult again
+                            <?= htmlspecialchars($data['past_records'][0]->remarks ?? 'Please continue the medicine for 7 days, if you do not see a change please consult again'); ?>
                         </textarea>
                     </div>
+                <?php else: ?>
+                    <h2>MEDICINES NEED TO BE GIVEN:</h2>
+                    <table class="medication-table">
+                        <thead>
+                            <tr>
+                                <th>Name of the Medication</th>
+                                <th>Dosage of the Medication(mg)</th>
+                                <th colspan="4">Number taken at a time</th>
+                                <th>Do not substitute</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Morning</th>
+                                <th>Noon</th>
+                                <th>Night</th>
+                                <th>If Needed</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="medication-body">
+                            <tr>
+                                <td colspan="7" style="text-align: center;">No past records</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
 
-                    <!-- Lab Tests -->
-                    <div class="record-navigation">
-                        <?php if (count($data) <= 1): ?>
-                            <button id="prev-btn" class="nav-btn-inactive" onclick="shiftLabTest(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn-inactive" onclick="shiftLabTest(1)">&#8250;</button>
-                        <?php else: ?>
-                            <button id="prev-btn" class="nav-btn" onclick="shiftLabTest(-1)">&#8249;</button>
-                            <button id="next_btn" class="nav-btn" onclick="shiftLabTest(1)">&#8250;</button>
-                        <?php endif; ?>
-                    </div>
-                  
-                  <div style="display: flex; justify-content: space-between; gap: 30px;margin-top:2%;margin-bottom:3%">
+                <!-- Lab Tests -->
+                <div class="record-navigation">
+                    <?php if (empty($data['past_tests'])): ?>
+                        <button id="prev-lab-btn" class="nav-btn-inactive" disabled>‹</button>
+                        <button id="next-lab-btn" class="nav-btn-inactive" disabled>›</button>
+                    <?php else: ?>
+                        <button id="prev-lab-btn" class="nav-btn" onclick="shiftLabTest(-1)">‹</button>
+                        <button id="next-lab-btn" class="nav-btn" onclick="shiftLabTest(1)">›</button>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (!empty($data['past_tests'])): ?>
+                    <div style="display: flex; justify-content: space-between; gap: 30px; margin-top:2%; margin-bottom:3%">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="dr-name">Doctor's Name:</label>
-                            <p id="doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data['past_tests'][0]->doctor); ?></p>
+                            <p id="lab-doctor-name" style="width: 20vw; font-weight: bold;">Dr. <?= htmlspecialchars($data['past_tests'][0]->doctor); ?></p>
                         </div>
-                        
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="date">Date:</label>
-                            <p id="record-date" style="width: 17vw;"; ><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_tests'][0]->date))); ?></p>
+                            <p id="lab-record-date" style="width: 17vw;"><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_tests'][0]->date))); ?></p>
                         </div>
                     </div>
-                    
+
                     <table>
                         <thead>
                             <tr>
@@ -142,93 +240,186 @@
                         </thead>
                         <tbody id="labtest-body">
                             <?php 
-                                $labTests = json_decode($data['past_tests'][0]->tests, true);
-                                foreach ($labTests as $test):
+                            $labTestsData = json_decode($data['past_tests'][0]->tests, true);
+                            if (!empty($labTestsData)):
+                                foreach ($labTestsData as $test):
                             ?>
                                 <tr>
                                     <td><?= htmlspecialchars($test['test_name']); ?></td>
                                     <td><?= htmlspecialchars($test['priority']); ?></td>
-                                    <td>Not available</td> <!-- Update if you plan to link reports later -->
+                                    <td>Not available</td>
                                 </tr>
                             <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" style="text-align: center">No tests recorded</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
-               
-               </div>
-         </div>
-   
-      </div>
-                 
+                <?php else: ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name of the Test</th>
+                                <th>Priority Level</th>
+                                <th>Report</th>
+                            </tr>
+                        </thead>
+                        <tbody id="labtest-body">
+                            <tr>
+                                <td colspan="3" style="text-align: center">No past lab tests</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 
+    <div id="reportModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999;">
+        <div id="modalContent" style="background: #fff; padding: 0px; max-width: 100%; max-height: 100%; overflow: auto; border-radius: 8px; position: relative;">
+            <!-- The PDF iframe will be injected here -->
+            <span id="closeReportModal" class="close" style="position: absolute; top: 10px; right: 20px; font-size: 24px; cursor: pointer; color: #333;">×</span>
+        </div>
+    </div>
+
+
     <script>
+        console.log("Patient Details script loaded - version 2025-04-20");
+
         const records = <?= json_encode($data['past_records']); ?>;
         const labTests = <?= json_encode($data['past_tests']); ?>;
 
         let medicationIndex = 0;
         let labTestIndex = 0;
 
-        // --- Update Medication Section ---
+        // Update Medication Section
         function updateMedicationsView(index) {
-            const record = records[index];
-            document.getElementById('doctor-name').innerText = `Dr. ${record.doctor}`;
-            document.getElementById('record-date').innerText = new Date(record.date).toLocaleDateString('en-GB');
-            document.getElementById('diagnosis').innerText = record.diagnosis;
-
             const medicationBody = document.getElementById('medication-body');
             medicationBody.innerHTML = '';
 
+            // Check if records is empty
+            if (!records || records.length === 0) {
+                medicationBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No past records</td></tr>';
+                document.getElementById('prev-btn').disabled = true;
+                document.getElementById('next-btn').disabled = true;
+                // Clear header fields if they exist
+                if (document.getElementById('doctor-name')) document.getElementById('doctor-name').innerText = 'N/A';
+                if (document.getElementById('record-date')) document.getElementById('record-date').innerText = 'N/A';
+                if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = 'N/A';
+                if (document.getElementById('additionalRemarks')) document.getElementById('additionalRemarks').value = '';
+                return;
+            }
+
+            const record = records[index];
+            if (document.getElementById('doctor-name')) document.getElementById('doctor-name').innerText = `Dr. ${record.doctor}`;
+            if (document.getElementById('record-date')) document.getElementById('record-date').innerText = new Date(record.date).toLocaleDateString('en-GB');
+            if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = record.diagnosis;
+            if (document.getElementById('additionalRemarks')) {
+                document.getElementById('additionalRemarks').value = record.remarks || 'Please continue the medicine for 7 days, if you do not see a change please consult again';
+            }
+
             try {
                 const medications = JSON.parse(record.medications);
-                medications.forEach(med => {
-                    const [morning, noon, night, ifNeeded] = med.taken_time.split(' ');
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${med.medication_name}</td>
-                        <td>${med.dosage}</td>
-                        <td>${morning}</td>
-                        <td>${noon}</td>
-                        <td>${night}</td>
-                        <td>${ifNeeded}</td>
-                        <td><input type="checkbox" disabled ${med.substitution === "1" ? 'checked' : ''}></td>
-                    `;
-                    medicationBody.appendChild(row);
-                });
+                if (medications && medications.length > 0) {
+                    medications.forEach(med => {
+                        const [morning, noon, night, ifNeeded] = med.taken_time.split(' ');
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${med.medication_name}</td>
+                            <td>${med.dosage}</td>
+                            <td>${morning}</td>
+                            <td>${noon}</td>
+                            <td>${night}</td>
+                            <td>${ifNeeded}</td>
+                            <td><input type="checkbox" disabled ${med.substitution === "1" ? 'checked' : ''}></td>
+                        `;
+                        medicationBody.appendChild(row);
+                    });
+                } else {
+                    medicationBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No medications recorded</td></tr>';
+                }
             } catch (error) {
                 console.error('Failed to parse medications:', error);
+                medicationBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Error loading medications</td></tr>';
             }
 
             document.getElementById('prev-btn').disabled = index === 0;
-            document.getElementById('next_btn').disabled = index === records.length - 1;
+            document.getElementById('next-btn').disabled = index === records.length - 1;
         }
 
-        // --- Update Lab Tests Section ---
+        // Update Lab Tests Section
         function updateLabTestsView(index) {
-            console.log(labTests);
-            // Parse the tests string into an array, or use an empty array if undefined
-            const tests = labTests[index] && labTests[index].tests
-                ? JSON.parse(labTests[index].tests)
-                : [];
             const labTestBody = document.getElementById('labtest-body');
             labTestBody.innerHTML = '';
 
-            // Iterate over the tests array and display the test name and priority
-            tests.forEach(test => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${test.test_name}</td>
-                    <td>${test.priority}</td>
-                    <td>Not available</td> <!-- Placeholder for report status -->
-                `;
-                labTestBody.appendChild(row);
-            });
+            // Check if labTests is empty
+            if (!labTests || labTests.length === 0) {
+                labTestBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No past lab tests</td></tr>';
+                document.getElementById('prev-lab-btn').disabled = true;
+                document.getElementById('next-lab-btn').disabled = true;
+                // Clear header fields
+                if (document.getElementById('lab-doctor-name')) document.getElementById('lab-doctor-name').innerText = 'N/A';
+                if (document.getElementById('lab-record-date')) document.getElementById('lab-record-date').innerText = 'N/A';
+                return;
+            }
 
-            // Navigation buttons for lab tests
+            const test = labTests[index];
+            if (document.getElementById('lab-doctor-name')) document.getElementById('lab-doctor-name').innerText = `Dr. ${test.doctor}`;
+            if (document.getElementById('lab-record-date')) document.getElementById('lab-record-date').innerText = new Date(test.date).toLocaleDateString('en-GB');
+
+            try {
+                const tests = JSON.parse(test.tests);
+                if (tests && tests.length > 0) {
+                    tests.forEach(test => {
+                        const row = document.createElement('tr');
+
+                        let reportCell;
+                        if (test.file && test.file.trim() !== "") {
+                            reportCell = `<a href="#" class="view-report" data-file="${test.file}">View Report</a>`;
+                        } else {
+                            reportCell = `<span style="color: red;">No Report Available</span>`;
+                        }
+
+                        row.innerHTML = `
+                            <td>${test.test_name}</td>
+                            <td>${test.priority}</td>
+                            <td>${reportCell}</td>
+                        `;
+                        labTestBody.appendChild(row);
+                    });
+
+                    // Add event listeners to report links
+                    document.querySelectorAll('.view-report').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const file = this.getAttribute('data-file');
+                            const modal = document.getElementById('reportModal');
+                            const container = document.getElementById('modalContent');
+
+                            container.innerHTML = `
+                                <iframe src="http://localhost/WellBe/public/assets/files/${file}.pdf" width="100%" height="600px" style="border: none;"></iframe>
+                            `;
+
+                            modal.style.display = 'flex';
+                        });
+
+                    });
+                } else {
+                    labTestBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No tests recorded</td></tr>';
+                }
+            } catch (error) {
+                console.error('Failed to parse lab tests:', error);
+                labTestBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Error loading lab tests</td></tr>';
+            }
+
             document.getElementById('prev-lab-btn').disabled = index === 0;
             document.getElementById('next-lab-btn').disabled = index === labTests.length - 1;
         }
 
-        // --- Navigation Functions ---
+
+        // Navigation Functions
         function shiftMedication(direction) {
             const newIndex = medicationIndex + direction;
             if (newIndex >= 0 && newIndex < records.length) {
@@ -245,16 +436,52 @@
             }
         }
 
-        // --- On Page Load ---
+        // On Page Load
         window.onload = function () {
+            console.log("Records:", records);
+            console.log("Lab Tests:", labTests);
             updateMedicationsView(medicationIndex);
             updateLabTestsView(labTestIndex);
         };
+
+        document.getElementById('closeModal').addEventListener('click', function () {
+            document.getElementById('reportModal').style.display = 'none';
+        });
+
+        document.getElementById('reportModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        const reportModal = document.getElementById('reportModal');
+        const closeReportModal = document.getElementById('closeReportModal');
+
+        // Close the modal when the close button is clicked
+        closeReportModal.addEventListener('click', function() {
+            console.log('Closing report modal');
+            reportModal.style.display = 'none';
+            // Optional: Clear the modal content (e.g., remove the iframe) to free memory
+            const modalContent = document.getElementById('modalContent');
+            const iframe = modalContent.querySelector('iframe');
+            if (iframe) {
+                iframe.remove();
+            }
+        });
+
+        // Close the modal when clicking outside the modal content
+        window.addEventListener('click', function(event) {
+            if (event.target === reportModal) {
+                console.log('Closing report modal (clicked outside)');
+                reportModal.style.display = 'none';
+                // Optional: Clear the modal content
+                const modalContent = document.getElementById('modalContent');
+                const iframe = modalContent.querySelector('iframe');
+                if (iframe) {
+                    iframe.remove();
+                }
+            }
+        });
     </script>
-
-
-
-
 </body>
 </html>
-              

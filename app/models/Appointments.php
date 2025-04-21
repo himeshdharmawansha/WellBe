@@ -303,8 +303,59 @@ class Appointments extends Model
             a.patient_id = ?
         ORDER BY 
             a.date ASC
-    ";
+        ";
         return $this->query($query, [$patient_id]);
+    }
+
+    public function getAppointmentsForSession($slot_id, $doctor_id){
+        $query = "
+        SELECT 
+            a.appointment_id,
+            CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+            a.state AS patient_status,
+            a.payment_status
+        FROM 
+            appointment a
+        JOIN 
+            patient p ON a.patient_id = p.id
+        JOIN 
+            timeslot t ON a.date = t.slot_id
+        JOIN 
+            timeslot_doctor td ON td.slot_id = t.slot_id AND td.doctor_id = a.doctor_id
+        WHERE 
+            a.date = :slot_id AND a.doctor_id = :doctor_id
+        ORDER BY 
+            a.appointment_id ASC
+        ";
+
+        return $this->query($query, [
+            'slot_id' => $slot_id,
+            'doctor_id' => $doctor_id
+        ]);
+    }
+
+    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id) {
+        $query = "
+        UPDATE `appointment` SET 
+            `state` = ?, 
+            `payment_status` = ?
+
+        WHERE `appointment_id` = ?
+            AND `date` = ? 
+            AND `doctor_id` = ?
+        ";
+
+        $params = [
+            $patient_status,
+            $payment_status,
+            $appointment_id,
+            $slot_id,
+            $doctor_id,
+        ];
+
+        error_log("Generated Query: <pre>$query</pre>");
+        error_log(print_r($params, true));
+        return $this->query($query, $params);
     }
 
 }

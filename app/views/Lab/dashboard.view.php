@@ -31,19 +31,19 @@
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
                             </span>
-                            <p>000<br>New_Requests</p>
+                            <p><?= htmlspecialchars($data['counts']['pending']) ?><br>New_Requests</p>
                         </div>
                         <div class="card ongoing" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-microscope"></i>
                             </span>
-                            <p>000<br>In_progress</p>
+                            <p><?= htmlspecialchars($data['counts']['ongoing']) ?><br>In_progress</p>
                         </div>
                         <div class="card completed" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fas icon fa-tasks"></i>
                             </span>
-                            <p>000<br> Completed</p>
+                            <p><?= htmlspecialchars($data['counts']['completed']) ?><br>Completed</p>
                         </div>
                     </div>
                 </div>
@@ -129,22 +129,6 @@
             }
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            function updateRequestCounts() {
-                fetch('<?= ROOT ?>/Lab/getRequestCounts')
-                    .then(response => response.json())
-                    .then(data => {
-                        document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
-                        document.querySelector('.ongoing p').innerHTML = `${data.ongoing} <br> In_progress`;
-                        document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
-                    })
-                    .catch(error => console.error('Error fetching request counts:', error));
-            }
-
-            updateRequestCounts();
-            setInterval(updateRequestCounts, 1000);
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('.request-table tbody');
 
@@ -180,6 +164,7 @@
                 hour12: true
             });
         }
+
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('.message-table tbody');
             const noMessagesRow = `
@@ -226,11 +211,11 @@
         setInterval(updateState, 3000);
 
         function updateReceivedState(receiverId) {
-         fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
-            .catch(error => console.error("Error updating timestamps:", error));
-      }
+            fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
+                .catch(error => console.error("Error updating timestamps:", error));
+        }
 
-      setInterval(updateReceivedState(<?php echo $user['id']; ?>), 3000);
+        setInterval(() => updateReceivedState(<?php echo $_SESSION['USER']->id; ?>), 3000);
     </script>
 </body>
 

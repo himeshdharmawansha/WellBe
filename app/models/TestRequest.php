@@ -9,7 +9,7 @@ class TestRequest extends Model
 
    public function getAll()
    {
-      return $this->read("SELECT * FROM test_requests");
+      return $this->read("SELECT tr.*, t.date as date_t,d.first_name FROM test_requests tr, timeslot t, doctor d where tr.date = t.slot_id AND tr.date = t.slot_id AND d.id = tr.doctor_id");
    }
 
    public function getPendingRequests()
@@ -29,7 +29,7 @@ class TestRequest extends Model
 
    public function searchByPatientId($patientId)
    {
-      $query = "SELECT * FROM test_requests WHERE patient_id LIKE :patient_id ORDER BY id DESC";
+      $query = "SELECT tr.*, tr.patient_id, d.first_name, t.date as date_t FROM test_requests tr, doctor d, timeslot t WHERE d.id = tr.doctor_id AND patient_id LIKE :patient_id ORDER BY id DESC";
       $params = [':patient_id' => '%' . $patientId . '%'];
       return $this->read($query, $params);
    }

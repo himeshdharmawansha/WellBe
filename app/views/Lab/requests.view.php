@@ -33,10 +33,10 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
@@ -51,10 +51,10 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="ongoing-requests-body">
@@ -69,10 +69,10 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
@@ -227,10 +227,10 @@
 
                         const row = `
                            <tr data-id="${request.id}">
-                              <td>${formattedTime}</td>
-                              <td>${request.date}</td>
                               <td>${request.patient_id}</td>
-                              <td>${request.doctor_id}</td>
+                              <td>${request.first_name}</td>
+                              <td>${request.date_t}</td>
+                              <td>${formattedTime}</td>
                            </tr>`;
 
                         if (request.state === 'pending' || request.state === 'ongoing') pending.innerHTML += row;
@@ -268,10 +268,10 @@
 
                               const row = `
                                  <tr data-id="${request.id}">
-                                    <td>${formattedTime}</td>
-                                    <td>${request.date}</td>
                                     <td>${request.patient_id}</td>
-                                    <td>${request.doctor_id}</td>
+                                    <td>${request.first_name}</td>
+                                    <td>${request.date_t}</td>
+                                    <td>${formattedTime}</td>
                                  </tr>`;
 
                               if (request.state === 'pending' || request.state === 'ongoing') {
@@ -320,8 +320,8 @@
             const row = e.target.closest('tr[data-id]');
             if (row) {
                const requestID = row.getAttribute('data-id');
-               const doctorID = row.querySelector('td:nth-child(4)').textContent.trim();
-               const patientID = row.querySelector('td:nth-child(3)').textContent.trim();
+               const doctorID = row.querySelector('td:nth-child(2)').textContent.trim();
+               const patientID = row.querySelector('td:nth-child(1)').textContent.trim();
 
                window.location.href = `labTestDetails?ID=${encodeURIComponent(requestID)}&patient_id=${encodeURIComponent(patientID)}`;
             }

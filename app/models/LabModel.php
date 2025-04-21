@@ -28,12 +28,12 @@ class LabModel extends Model
    {
       $query = "
         SELECT 
-            DAYNAME(date) as day, 
+            DAYNAME(t.date) as day, 
             COUNT(*) as count
-        FROM test_requests
-        WHERE date >= NOW() - INTERVAL 7 DAY
-        GROUP BY DAYNAME(date)
-        ORDER BY FIELD(DAYNAME(date), 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+        FROM test_requests tr, timeslot t
+        WHERE t.date >= NOW() - INTERVAL 7 DAY AND tr.date = t.slot_id
+        GROUP BY DAYNAME(t.date)
+        ORDER BY FIELD(DAYNAME(t.date), 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
     ";
 
       $results = $this->read($query);
@@ -51,7 +51,6 @@ class LabModel extends Model
       $query = "
            SELECT state, COUNT(*) as count 
            FROM test_requests 
-           WHERE date >= NOW() - INTERVAL 14 DAY
            GROUP BY state
        ";
 

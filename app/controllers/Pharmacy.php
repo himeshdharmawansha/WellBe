@@ -3,6 +3,7 @@
 class Pharmacy extends Controller
 {
     protected $pharmacyModel;
+    protected $medicationRequestModel;
 
     private $data = [
         'elements' => [
@@ -11,8 +12,7 @@ class Pharmacy extends Controller
             'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'chat' => ["fa-solid fa-comment-dots", "Chat"],
             'report' => ["fa-solid fa-chart-simple", "Report"],
-            'logout' => ["fas fa-sign-out-alt", "Logout"],
-            'sms' => ["fas fa-sign-out-alt", "Sms"]
+            'logout' => ["fas fa-sign-out-alt", "Logout"]
         ],
         'userType' => 'pharmacy'
     ];
@@ -20,6 +20,7 @@ class Pharmacy extends Controller
     public function __construct()
     {
         $this->pharmacyModel = new PharmacyModel();
+        $this->medicationRequestModel = new MedicationRequest();
 
         if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
             redirect('login');
@@ -30,19 +31,38 @@ class Pharmacy extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Dashboard Page',
-            'username' => 'John Doe',
+            'requestCounts' => $this->pharmacyModel->getRequestCounts(), // Fetch request counts
         ];
         $this->view('Pharmacy/dashboard', 'dashboard', $data);
     }
 
     public function requests()
     {
-        $this->view('Pharmacy/requests', 'requests');
+        // Fetch all requests
+        $requests = $this->medicationRequestModel->getAll();
+
+        // Separate pending and completed requests
+        $pendingRequests = array_filter($requests, function ($request) {
+            return $request['state'] === 'pending';
+        });
+        $completedRequests = array_filter($requests, function ($request) {
+            return $request['state'] === 'completed';
+        });
+
+        $data = [
+            'pendingRequests' => array_values($pendingRequests),
+            'completedRequests' => array_values($completedRequests)
+        ];
+
+        $this->view('Pharmacy/requests', 'requests', $data);
     }
-    public function sms()
+
+    public function getRequestsJson()
     {
-        $this->view('Pharmacy/sms', 'sms');
+        $requests = $this->medicationRequestModel->getAll();
+        header('Content-Type: application/json');
+        echo json_encode($requests);
+        exit;
     }
 
     public function chat()
@@ -82,11 +102,11 @@ class Pharmacy extends Controller
         require $filename;
     }
 
-    public function getRequestCounts()
-    {
-        $counts = $this->pharmacyModel->getRequestCounts();
-        echo json_encode($counts);
-    }
+    // public function getRequestCounts()
+    // {
+    //     $counts = $this->pharmacyModel->getRequestCounts();
+    //     echo json_encode($counts);
+    // }
 
     public function getRequestsByDay()
     {

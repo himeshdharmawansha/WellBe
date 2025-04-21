@@ -29,14 +29,27 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
-                     <tr><td colspan="4">Loading...</td></tr>
+                     <?php if (empty($data['pendingRequests'])) : ?>
+                        <tr>
+                           <td colspan="4" style="text-align: center;">No pending requests found.</td>
+                        </tr>
+                     <?php else : ?>
+                        <?php foreach ($data['pendingRequests'] as $request) : ?>
+                           <tr data-id="<?= htmlspecialchars($request['id']) ?>" data-doctor-id="<?= htmlspecialchars($request['doctor_id']) ?>">
+                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
+                              <td><?= htmlspecialchars($request['first_name']) ?></td>
+                              <td><?= htmlspecialchars($request['date']) ?></td>
+                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
+                           </tr>
+                        <?php endforeach; ?>
+                     <?php endif; ?>
                   </tbody>
                </table>
             </div>
@@ -44,14 +57,27 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
-                     <tr><td colspan="4">Loading...</td></tr>
+                     <?php if (empty($data['completedRequests'])) : ?>
+                        <tr>
+                           <td colspan="4" style="text-align: center;">No completed requests found.</td>
+                        </tr>
+                     <?php else : ?>
+                        <?php foreach ($data['completedRequests'] as $request) : ?>
+                           <tr data-id="<?= htmlspecialchars($request['id']) ?>" data-doctor-id="<?= htmlspecialchars($request['doctor_id']) ?>">
+                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
+                              <td><?= htmlspecialchars($request['first_name']) ?></td>
+                              <td><?= htmlspecialchars($request['date']) ?></td>
+                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
+                           </tr>
+                        <?php endforeach; ?>
+                     <?php endif; ?>
                   </tbody>
                </table>
             </div>
@@ -62,220 +88,219 @@
             </div>
          </div>
       </div>
-      <script src="<?= ROOT ?>/assets/js/Pharmacy/medicationRequestList.js"></script>
-      <script>
-         document.addEventListener('DOMContentLoaded', function() {
-            const rowsPerPage = 9;
-            let currentPage = 1;
-            let totalPages = 0;
-            let currentTable = null;
+   </div>
+   <script src="<?= ROOT ?>/assets/js/Pharmacy/medicationRequestList.js"></script>
+   <script>
+      document.addEventListener('DOMContentLoaded', function() {
+         const rowsPerPage = 9;
+         let currentPage = 1;
+         let totalPages = 0;
+         let currentTable = null;
 
-            function setupPagination(table) {
-               if (!table) return;
+         function setupPagination(table) {
+            if (!table) return;
 
-               const rows = table.querySelectorAll('tbody tr');
-               totalPages = Math.ceil(rows.length / rowsPerPage);
+            const rows = table.querySelectorAll('tbody tr');
+            totalPages = Math.ceil(rows.length / rowsPerPage);
 
-               const paginationContainer = document.querySelector('.pagination');
-               paginationContainer.innerHTML = '';
+            const paginationContainer = document.querySelector('.pagination');
+            paginationContainer.innerHTML = '';
 
-               const createButton = (text, className, onClick, disabled = false) => {
-                  const button = document.createElement('button');
-                  button.textContent = text;
-                  button.className = className;
-                  button.disabled = disabled;
-                  button.addEventListener('click', onClick);
-                  return button;
-               };
-
-               const prevButton = createButton('Previous', 'pagination-btn', () => {
-                  if (currentPage > 1) {
-                     currentPage--;
-                     displayPage(currentPage);
-                  }
-               }, currentPage === 1);
-
-               paginationContainer.appendChild(prevButton);
-
-               for (let i = 1; i <= totalPages; i++) {
-                  const pageButton = createButton(i, `pagination-page ${i === currentPage ? 'active' : ''}`, () => {
-                     currentPage = i;
-                     displayPage(currentPage);
-                  });
-                  paginationContainer.appendChild(pageButton);
-               }
-
-               const nextButton = createButton('Next', 'pagination-btn', () => {
-                  if (currentPage < totalPages) {
-                     currentPage++;
-                     displayPage(currentPage);
-                  }
-               }, currentPage === totalPages);
-
-               paginationContainer.appendChild(nextButton);
-            }
-
-            function displayPage(page) {
-               if (!currentTable) return;
-
-               const rows = currentTable.querySelectorAll('tbody tr');
-               const start = (page - 1) * rowsPerPage;
-               const end = start + rowsPerPage;
-
-               rows.forEach((row, index) => {
-                  row.style.display = index >= start && index < end ? '' : 'none';
-               });
-
-               const pageButtons = document.querySelectorAll('.pagination-page');
-               pageButtons.forEach(button => {
-                  button.classList.toggle('active', parseInt(button.textContent) === page);
-               });
-            }
-
-            window.showTab = function(tabId) {
-               document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-               document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
-
-               document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
-               const selectedSection = document.getElementById(tabId);
-               selectedSection.classList.add('active');
-
-               currentTable = selectedSection.querySelector('.requests-table');
-               currentPage = 1;
-               setupPagination(currentTable);
-               displayPage(currentPage);
+            const createButton = (text, className, onClick, disabled = false) => {
+               const button = document.createElement('button');
+               button.textContent = text;
+               button.className = className;
+               button.disabled = disabled;
+               button.addEventListener('click', onClick);
+               return button;
             };
 
-            window.showTab('pending-requests');
-
-            let isSearching = false;
-
-            setInterval(() => {
-               if (!isSearching) {
-                  fetch('<?= ROOT ?>/MedicationRequests/getRequestsJson')
-                     .then(response => response.json())
-                     .then(data => {
-                        const pending = document.getElementById('pending-requests-body');
-                        const completed = document.getElementById('completed-requests-body');
-
-                        pending.innerHTML = '';
-                        completed.innerHTML = '';
-
-                        data.forEach(request => {
-                           const [hours, minutes, seconds] = request.time.split(':');
-                           const date = new Date();
-                           date.setHours(hours, minutes, seconds || 0);
-
-                           const formattedTime = date.toLocaleTimeString('en-US', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: true
-                           });
-
-                           const row = `
-                                    <tr data-id="${request.id}">
-                                       <td>${formattedTime}</td>
-                                       <td>${request.date}</td>
-                                       <td>${request.patient_id}</td>
-                                       <td>${request.doctor_id}</td>
-                                    </tr>`;
-
-                           if (request.state == 'pending') pending.innerHTML += row;
-                           if (request.state == 'completed') completed.innerHTML += row;
-                        });
-                        setupPagination(currentTable);
-                        displayPage(currentPage);
-                     })
-                     .catch(console.error);
+            const prevButton = createButton('Previous', 'pagination-btn', () => {
+               if (currentPage > 1) {
+                  currentPage--;
+                  displayPage(currentPage);
                }
-            }, 500);
+            }, currentPage === 1);
 
-            function formatTimeToAmPm(time) {
-               const [hours, minutes, seconds] = time.split(':');
-               const date = new Date();
-               date.setHours(hours, minutes, seconds || 0);
-               return date.toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
+            paginationContainer.appendChild(prevButton);
+
+            for (let i = 1; i <= totalPages; i++) {
+               const pageButton = createButton(i, `pagination-page ${i === currentPage ? 'active' : ''}`, () => {
+                  currentPage = i;
+                  displayPage(currentPage);
                });
+               paginationContainer.appendChild(pageButton);
             }
 
-            let debounceTimeout;
-            document.querySelector('.search-input').addEventListener('input', function(e) {
-               clearTimeout(debounceTimeout);
-               debounceTimeout = setTimeout(() => {
-                  const searchTerm = e.target.value.trim();
-                  if (searchTerm) {
-                     isSearching = true;
+            const nextButton = createButton('Next', 'pagination-btn', () => {
+               if (currentPage < totalPages) {
+                  currentPage++;
+                  displayPage(currentPage);
+               }
+            }, currentPage === totalPages);
 
-                     fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
-                        .then(response => response.json())
-                        .then(data => {
-                           const requestBodies = document.querySelectorAll('.requests-section tbody');
-                           requestBodies.forEach(body => body.innerHTML = '');
+            paginationContainer.appendChild(nextButton);
+         }
 
-                           if (data.length) {
-                              data.forEach(request => {
-                                 const formattedTime = formatTimeToAmPm(request.time);
+         function displayPage(page) {
+            if (!currentTable) return;
 
-                                 const row = `
-                                    <tr data-id="${request.id}">
-                                       <td>${formattedTime}</td>
-                                       <td>${request.date}</td>
-                                       <td>${request.patient_id}</td>
-                                       <td>${request.doctor_id}</td>
-                                    </tr>`;
-                                 if (request.state == "completed") {
-                                    document.querySelector("#completed-requests-body").innerHTML += row;
-                                 } else {
-                                    document.querySelector("#pending-requests-body").innerHTML += row;
-                                 }
-                              });
-                           } else {
-                              requestBodies.forEach(body => {
-                                 body.innerHTML = `
-                                    <tr>
-                                       <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
-                                    </tr>`;
-                              });
-                           }
+            const rows = currentTable.querySelectorAll('tbody tr');
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
 
-                           currentPage = 1;
-                           setupPagination(currentTable);
-                           displayPage(currentPage);
-                        })
-                        .catch(error => {
-                           console.error("Search error:", error);
-                           const requestBodies = document.querySelectorAll('.requests-section tbody');
+            rows.forEach((row, index) => {
+               row.style.display = index >= start && index < end ? '' : 'none';
+            });
+
+            const pageButtons = document.querySelectorAll('.pagination-page');
+            pageButtons.forEach(button => {
+               button.classList.toggle('active', parseInt(button.textContent) === page);
+            });
+         }
+
+         window.showTab = function(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.requests-section').forEach(section => section.classList.remove('active'));
+
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+            const selectedSection = document.getElementById(tabId);
+            selectedSection.classList.add('active');
+
+            currentTable = selectedSection.querySelector('.requests-table');
+            currentPage = 1;
+            setupPagination(currentTable);
+            displayPage(currentPage);
+         };
+
+         window.showTab('pending-requests');
+
+         let isSearching = false;
+
+         setInterval(() => {
+            if (!isSearching) {
+               fetch('<?= ROOT ?>/Pharmacy/getRequestsJson')
+                  .then(response => response.json())
+                  .then(data => {
+                     const pending = document.getElementById('pending-requests-body');
+                     const completed = document.getElementById('completed-requests-body');
+
+                     pending.innerHTML = '';
+                     completed.innerHTML = '';
+
+                     data.forEach(request => {
+                        const formattedTime = formatTimeToAmPm(request.time);
+                        const row = `
+                           <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                              <td>${request.patient_id}</td>
+                              <td>${request.first_name}</td>
+                              <td>${request.date}</td>
+                              <td>${formattedTime}</td>
+                           </tr>`;
+
+                        if (request.state === 'pending') pending.innerHTML += row;
+                        if (request.state === 'completed') completed.innerHTML += row;
+                     });
+
+                     setupPagination(currentTable);
+                     displayPage(currentPage);
+                  })
+                  .catch(error => {
+                     console.error('Error fetching requests:', error);
+                     const pending = document.getElementById('pending-requests-body');
+                     const completed = document.getElementById('completed-requests-body');
+                     pending.innerHTML = '<tr><td colspan="4" style="text-align: center;">Error loading requests.</td></tr>';
+                     completed.innerHTML = '<tr><td colspan="4" style="text-align: center;">Error loading requests.</td></tr>';
+                  });
+            }
+         }, 3000);
+
+         function formatTimeToAmPm(time) {
+            const [hours, minutes, seconds] = time.split(':');
+            const date = new Date();
+            date.setHours(hours, minutes, seconds || 0);
+            return date.toLocaleTimeString('en-US', {
+               hour: '2-digit',
+               minute: '2-digit',
+               hour12: true
+            });
+         }
+
+         let debounceTimeout;
+         document.querySelector('.search-input').addEventListener('input', function(e) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+               const searchTerm = e.target.value.trim();
+               if (searchTerm) {
+                  isSearching = true;
+
+                  fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
+                     .then(response => response.json())
+                     .then(data => {
+                        const requestBodies = document.querySelectorAll('.requests-section tbody');
+                        requestBodies.forEach(body => body.innerHTML = '');
+
+                        if (data.length) {
+                           data.forEach(request => {
+                              const formattedTime = formatTimeToAmPm(request.time);
+                              const row = `
+                                 <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                                    <td>${request.patient_id}</td>
+                                    <td>${request.first_name}</td>
+                                    <td>${request.date}</td>
+                                    <td>${formattedTime}</td>
+                                 </tr>`;
+                              if (request.state === "completed") {
+                                 document.querySelector("#completed-requests-body").innerHTML += row;
+                              } else {
+                                 document.querySelector("#pending-requests-body").innerHTML += row;
+                              }
+                           });
+                        } else {
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
-                                    <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                                    <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
                                  </tr>`;
                            });
-                           currentPage = 1;
-                           setupPagination(currentTable);
-                           displayPage(currentPage);
+                        }
+
+                        currentPage = 1;
+                        setupPagination(currentTable);
+                        displayPage(currentPage);
+                     })
+                     .catch(error => {
+                        console.error("Search error:", error);
+                        const requestBodies = document.querySelectorAll('.requests-section tbody');
+                        requestBodies.forEach(body => {
+                           body.innerHTML = `
+                              <tr>
+                                 <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                              </tr>`;
                         });
-                  } else {
-                     isSearching = false;
-                  }
-               }, 300);
-            });
-
-            document.addEventListener('click', e => {
-               const row = e.target.closest('tr[data-id]');
-               if (row) {
-                  const requestID = row.getAttribute('data-id');
-                  const doctorID = row.querySelector('td:nth-child(4)').textContent.trim();
-                  const patientID = row.querySelector('td:nth-child(3)').textContent.trim();
-
-                  window.location.href = `medicationDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
+                        currentPage = 1;
+                        setupPagination(currentTable);
+                        displayPage(currentPage);
+                     });
+               } else {
+                  isSearching = false;
+                  updatePage();
                }
-            });
+            }, 300);
          });
-      </script>
+
+         document.addEventListener('click', e => {
+            const row = e.target.closest('tr[data-id]');
+            if (row) {
+               const requestID = row.getAttribute('data-id');
+               const doctorID = row.getAttribute('data-doctor-id');
+               const patientID = row.querySelector('td:nth-child(1)').textContent.trim();
+
+               window.location.href = `medicationDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
+            }
+         });
+      });
+   </script>
 </body>
 
 </html>

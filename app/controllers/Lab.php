@@ -25,7 +25,18 @@ class Lab extends Controller
 
    public function index()
    {
-      $this->view('Lab/dashboard', 'dashboard');
+      // Fetch request counts from the model
+      $counts = $this->labModel->getRequestCounts();
+
+      $data = [
+         'counts' => [
+            'pending' => $counts['pending'] ?? 0,
+            'ongoing' => $counts['ongoing'] ?? 0,
+            'completed' => $counts['completed'] ?? 0
+         ]
+      ];
+
+      $this->view('Lab/dashboard', 'dashboard', $data);
    }
 
    public function requests()

@@ -64,6 +64,7 @@ class Appointments extends Model
         $appointment_fee = $data['appointment_fee'] ?? null;
         $contact_number = $data['contact_number'] ?? null;
         $patientType = $data['patient_type'] ?? null;
+        $payment_method = ($data['payment_method'] == 'wallet') ? 'Paid' : null;
 
         if (!$doctorId || !$date || !$patientId) {
             return false; // Basic validation
@@ -76,6 +77,7 @@ class Appointments extends Model
             date,
             payment_fee,
             state,
+            payment_status,
             patient_type,
             scheduled
         ) VALUES (
@@ -85,6 +87,7 @@ class Appointments extends Model
             :date,
             :appointment_fee,
             :state,
+            :payment_status,
             :patient_type,
             :scheduled
         )";
@@ -96,6 +99,7 @@ class Appointments extends Model
             'date' => $date,
             'appointment_fee' => $appointment_fee,
             'state' => "NOT PRESENT",
+            'payment_status' => $payment_method,
             'patient_type' => $patientType,
             'scheduled' => "SCHEDULED"
         ];

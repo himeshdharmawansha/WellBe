@@ -198,4 +198,36 @@ class Timeslot extends Model
 
         return $dateDetails;
     }
+
+    public function getTodaySessions(){
+
+        $query = "
+        SELECT 
+            t.slot_id,
+            t.date AS date,
+            td.start_time AS start_time,
+            td.end_time AS end_time,
+            d.id AS doctor_id,
+            CONCAT(d.first_name, ' ', d.last_name) AS doctor_name,
+            COUNT(a.appointment_id) AS booked_slots
+        FROM 
+            timeslot_doctor td
+        JOIN 
+            timeslot t ON td.slot_id = t.slot_id
+        JOIN 
+            doctor d ON td.doctor_id = d.id
+        LEFT JOIN 
+            appointment a 
+            ON a.doctor_id = td.doctor_id 
+            AND a.date = t.slot_id 
+            AND a.scheduled IN ('Scheduled', 'Rescheduled')  -- count only actual booked appointments
+        WHERE 
+            t.date = CURDATE() AND td.session = 'SET'
+        GROUP BY 
+            t.slot_id, t.date, td.start_time, td.end_time, d.id, d.first_name, d.last_name
+        ";
+        
+
+        return $this->query($query);
+    }
 }

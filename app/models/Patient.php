@@ -24,6 +24,7 @@ class Patient extends Model
         'emergency_contact_name',
         'emergency_contact_no',
         'emergency_contact_relationship',
+        'e_wallet',
     ];
 
     public function validate_first_form($data)

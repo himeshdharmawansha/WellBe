@@ -1,5 +1,5 @@
 <?php
-  //print_r($rescheduledAppointments);
+//print_r($rescheduledAppointments);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,6 +56,12 @@
                 <p><strong>Medical History: <?= $_SESSION['USER']->medical_history; ?></strong> </p>
                 <p><strong>Allergies: <?= $_SESSION['USER']->allergies; ?></strong></p>
               </div>
+              <div style="background-color: #fff3cd; color: #856404; padding: 10px 20px; border: 1px solid #ffeeba; border-radius: 5px; display: inline-block; margin-top: 10px;">
+   <span title="E-Wallet is your digital balance used for paying doctor appointment fees." style="text-decoration: underline dotted; cursor: help;">Your E-Wallet Balance:</span>  
+  <strong>Rs. <?= $_SESSION['USER']->e_wallet; ?></strong>
+</div>
+
+
             </div>
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>
@@ -210,12 +216,12 @@
               <p style="color: black;">Would you like to reschedule or cancel your appointment?</p>
             </div>
             <div class="modal-footer">
-                <button style="margin-bottom: 10px;" class="submit-btn" onclick="window.location.href = 'http://localhost/wellbe/public/patient/reschedule_doc_appointment/<?= $last->id ?>'">
-                    Reschedule Appointment
-                </button>
-                <button style="background-color: red;" class="submit-btn" onclick="window.location.href='http://localhost/wellbe/public/patient/refund/<?= $last->id ?>'">
-                  Cancel Appointment
-                </button>
+              <button style="margin-bottom: 10px;" class="submit-btn" onclick="window.location.href = 'http://localhost/wellbe/public/patient/reschedule_doc_appointment/<?= $last->id ?>'">
+                Reschedule Appointment
+              </button>
+              <button style="background-color: red;" class="submit-btn" onclick="window.location.href='http://localhost/wellbe/public/patient/refund/<?= $last->id ?>'">
+                Cancel Appointment
+              </button>
             </div>
           </div>
         </div>

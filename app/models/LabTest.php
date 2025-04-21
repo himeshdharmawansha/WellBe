@@ -43,25 +43,65 @@ class LabTest extends Model
         $this->query($query, [$lab_id, $test_name, $priority, $state]);
     }
 
+    // public function getTest($patient_id)
+    // {
+    //     $query = "SELECT 
+    //                     tr.id,
+    //                     d.first_name AS doctor_first_name,
+    //                     d.last_name AS doctor_last_name,
+    //                     t.date,
+    //                     td.start_time,
+    //                     tr.state,
+    //                     d.specialization,
+    //                     trd.test_name,
+    //                     trd.priority
+
+    //     FROM test_requests tr
+    //     JOIN test_request_details trd ON tr.id = trd.test_request_id
+    //      JOIN doctor d ON tr.doctor_id = d.id
+    //      JOIN timeslot t ON tr.date = t.slot_id
+    //      JOIN timeslot_doctor td ON tr.date = td.slot_id
+    //       WHERE patient_id = ?";
+    //     $result = $this->query($query, [$patient_id]);
+    //     return $result;
+    // }
+
     public function getTest($patient_id)
     {
         $query = "SELECT 
-                        tr.id,
-                        d.first_name AS doctor_first_name,
-                        d.last_name AS doctor_last_name,
-                        t.date,
-                        td.start_time,
-                        tr.state,
-                        d.specialization,
-                        trd.test_name,
-                        trd.priority
- 
-        FROM test_requests tr
-        JOIN test_request_details trd ON tr.id = trd.test_request_id
-         JOIN doctor d ON tr.doctor_id = d.id
-         JOIN timeslot t ON tr.date = t.slot_id
-         JOIN timeslot_doctor td ON tr.date = td.slot_id
-          WHERE patient_id = ?";
+                    tr.id,
+                    d.first_name AS doctor_first_name,
+                    d.last_name AS doctor_last_name,
+                    t.date,
+                    td.start_time,
+                    trd.state,
+                    d.specialization,
+                    trd.test_name,
+                    trd.priority,
+                    trd.file
+    FROM test_requests tr
+    JOIN test_request_details trd ON tr.id = trd.test_request_id  
+    JOIN doctor d ON tr.doctor_id = d.id
+    JOIN timeslot t ON tr.date = t.slot_id
+    JOIN timeslot_doctor td ON tr.date = td.slot_id
+    WHERE patient_id = ?";
+        $result = $this->query($query, [$patient_id]);
+        return $result;
+    }
+
+    public function getRequest($patient_id)
+    {
+        $query = "SELECT  
+                    tr.id,
+                    d.first_name AS doctor_first_name,
+                    t.date,
+                    td.start_time
+    FROM test_requests tr
+    JOIN test_request_details trd ON tr.id = trd.test_request_id  
+    JOIN doctor d ON tr.doctor_id = d.id
+    JOIN timeslot t ON tr.date = t.slot_id
+    JOIN timeslot_doctor td ON tr.date = td.slot_id
+    WHERE patient_id = ?";
         $result = $this->query($query, [$patient_id]);
         return $result;
     }

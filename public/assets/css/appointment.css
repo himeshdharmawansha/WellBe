@@ -4,13 +4,14 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    height: auto;
 }
 
 /* Dashboard Container */
 .dashboard-container {
     display: flex;
     flex-direction: row;
-    height: 100vh;
+    height: auto;
     background-color: #f7f7f7;
 }
 

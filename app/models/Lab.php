@@ -10,7 +10,6 @@ class Lab extends Model
 
    protected $allowedColumns = [
 
-      'id',
       'nic',
       'password',
       'first_name',
@@ -122,14 +121,14 @@ class Lab extends Model
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
       $lab_pw = 'lab123';
+      $id = $data['nic'] . 'l';
 
       // Build the SQL query using the provided data
       $query = "
          INSERT INTO `lab_technician` 
-         (`id`, `nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact_no`, `medical_license_no`, `specialization`, `experience`, `qualifications`, `prev_employment_history`) 
+         (`nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `emergency_contact_no`, `medical_license_no`, `specialization`, `experience`, `qualifications`, `prev_employment_history`, `user_id`) 
             VALUES (
-               '{$data['nic']}', 
-               '{$data['nic']}',
+               '{$id}',
                '{$lab_pw}', 
                '{$data['first_name']}', 
                '{$data['last_name']}', 
@@ -144,12 +143,13 @@ class Lab extends Model
                '{$data['specialization']}', 
                '{$data['experience']}', 
                '{$data['qualifications']}', 
-               '{$data['prev_employment_history']}'
+               '{$data['prev_employment_history']}',
+               '{$id}'
             )
          ";
 
       // Debug the query
-      echo("Generated Query: <pre>$query</pre>");
+      //echo("Generated Query: <pre>$query</pre>");
 
       // Execute the query
       return $this->query($query);
@@ -235,8 +235,6 @@ class Lab extends Model
         // SQL query with positional placeholders
         $query = "
         UPDATE `lab_technician` SET
-            `id` = ?,
-            `nic` = ?, 
             `first_name` = ?, 
             `last_name` = ?, 
             `dob` = ?,
@@ -255,8 +253,6 @@ class Lab extends Model
 
         // Parameters array
         $params = [
-            $data['nic'],
-            $data['nic'],
             $data['first_name'],
             $data['last_name'],
             $data['dob'],

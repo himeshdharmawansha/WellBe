@@ -59,9 +59,20 @@ class Patient extends Controller
    {
        $labTest = new LabTest();
        $patientId = $_SESSION['USER']->id;
-       $labReports = $labTest->getTest($patientId);
-       $data['labReports'] = $labReports;
-       $this->view('Patient/labreports','labreports' ,$data);
+       $labRequests = $labTest->getRequest($patientId);
+
+       // Filter unique requests based on id
+       $uniqueRequests = [];
+       $seenIds = [];
+       foreach ($labRequests as $request) {
+           if (!in_array($request->id, $seenIds)) {
+               $seenIds[] = $request->id;
+               $uniqueRequests[] = $request;
+           }
+       }
+
+       $data['labRequests'] = $uniqueRequests;
+       $this->view('Patient/labreports', 'labreports', $data);
    }
    
 
@@ -272,9 +283,26 @@ class Patient extends Controller
    
    
 
-   public function Lab_download()
+   public function Lab_download($request_id = null)
    {
-      $this->view('Patient/Lab_download', 'Lab_download');
+       $labTest = new LabTest();
+       $patientId = $_SESSION['USER']->id;
+
+       if ($request_id) {
+           // Fetch test details for the specific request_id
+           $labReports = $labTest->getTest($patientId);
+           // Filter reports to include only those matching the request_id
+           $filteredReports = array_filter($labReports, function($report) use ($request_id) {
+               return $report->id == $request_id;
+           });
+           $data['labReports'] = $filteredReports;
+           $data['request_id'] = $request_id;
+       } else {
+           $data['labReports'] = [];
+           $data['error'] = "No test request selected.";
+       }
+
+       $this->view('Patient/lab_download', 'Lab_download', $data);
    }
 
    public function hello()

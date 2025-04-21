@@ -70,7 +70,7 @@
             <div class="cards-container">
               <div class="card med-rep">
                 <div class="circle-background">
-                  <i class="fas fa-user icon"></i>
+                  <i class="fas fa-notes-medical icon"></i>
                 </div>
 
                 <div class="label" onclick="window.location.href='medicalreports'">View Medical Reports</div>
@@ -79,7 +79,7 @@
 
               <div class="card lab-rep">
                 <div class="circle-background">
-                  <i class="fas fa-user icon"></i>
+                  <i class="fas fa-flask icon"></i>
                 </div>
 
                 <div class="label" onclick="window.location.href='labreports'">View Lab Reports</div>
@@ -88,7 +88,7 @@
 
               <div class="card app">
                 <div class="circle-background">
-                  <i class="fas fa-flask icon"></i>
+                  <i class="fas fa-user-md icon"></i>
                 </div>
                 <div class="label" onclick="window.location.href='doc_appointment'">Book an Appointment</div>
 
@@ -122,13 +122,16 @@
                   <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
                     <?php foreach ($appointments as $appt) : ?>
                       <div class="mini-wrapper">
-                        <div class="mini">
+                        <div class="mini" onclick="window.location.href='appointments'">
                           <div class="mini-part part1">
                             <h4><?= htmlspecialchars($appt->doctor_first_name . " " . $appt->doctor_last_name) ?>
                               (<?= htmlspecialchars($appt->specialization) ?>)</h4>
                           </div>
                           <div class="mini-part part2">
                             <span>Date: <span><?= date('Y-m-d', strtotime($appt->date)) ?></span></span>
+                          </div>
+                          <div class="mini-part part3">
+                            <span>Appointment Time: <span><?= htmlspecialchars($appt->start_time) ?></span></span>
                           </div>
                           <div class="mini-part part3">
                             <span>Appointment No: <span><?= htmlspecialchars($appt->appointment_id) ?></span></span>

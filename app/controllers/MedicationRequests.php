@@ -72,4 +72,5 @@ class MedicationRequests extends Controller
          echo json_encode(['success' => false, 'error' => 'Invalid input.']);
       }
    }
+
 }

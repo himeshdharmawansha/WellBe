@@ -63,4 +63,6 @@ class MedicationRequest extends Model
       ];
       $this->write($query, $params);
    }
+
+   
 }

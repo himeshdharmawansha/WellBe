@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,7 @@
             color: #444;
             width: 100%;
         }
+
         .view-button {
             background-color: #118015;
             color: white;
@@ -25,19 +26,21 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .view-button:hover {
             background-color: #1b6d15;
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
 
-    <!-- Sidebar -->
-    <?php
+        <!-- Sidebar -->
+        <?php
         $this->renderComponent('navbar', $active);
         ?>
-      
+
 
         <!-- Main Content -->
         <div class="main-content">
@@ -51,10 +54,13 @@
             <div class="dashboard-content">
 
                 <div class="container">
-                   
+
                     <div class="table-container">
+
                         <table>
+
                             <thead>
+
                                 <tr>
                                     <th>Report_Id</th>
                                     <th>Date</th>
@@ -65,49 +71,45 @@
                                     <th>Report</th>
                                 </tr>
                             </thead>
+
                             <tbody>
-                                <tr>
-                                    <td onclick="window.location.href='Lab_download'">Lab_Rep_001</td>
-                                    <td>12/08/2024</td>
-                                    <td>7:00 - 10:00</td>
-                                    <td>Dr. K. G. Gunawardana</td>
-                                    <td>FBC</td>
-                                    <td><select class="status-dropdown">
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="in-progress">In-Progress</option>
-                                        <option value="completed">Completed</option>
-                                    </select></td>
-                                    <td class="report-cell"></td>
-                                </tr>
-                                <tr>
-                                    <td>Lab_Rep_001</td>
-                                    <td>12/08/2024</td>
-                                    <td>7:00 - 10:00</td>
-                                    <td>Dr. K. G. Gunawardana</td>
-                                    <td>FBC</td>
-                                    <td><select class="status-dropdown">
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="in-progress">In-Progress</option>
-                                        <option value="completed">Completed</option>
-                                    </select></td>
-                                    <td class="report-cell"></td>
-                                </tr>
-                                <tr>
-                                    <td>Lab_Rep_001</td>
-                                    <td>12/08/2024</td>
-                                    <td>7:00 - 10:00</td>
-                                    <td>Dr. K. G. Gunawardana</td>
-                                    <td>ESR</td>
-                                    <td><select class="status-dropdown">
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="in-progress">In-Progress</option>
-                                        <option value="completed">Completed</option>
-                                    </select></td>
-                                    <td class="report-cell"></td>
-                                </tr>
-                                <!-- More rows here -->
+                                <?php if (!empty($labReports)) : ?>
+                                    <?php foreach ($labReports as $reports) : ?>
+                                        <tr>
+                                            <td onclick="window.location.href='Lab_download'">Lab_Rep_<?= htmlspecialchars($reports->id) ?></td>
+                                            <td><?= date('Y-m-d', strtotime($reports->date)) ?></td>
+                                            <td><?= htmlspecialchars($reports->start_time) ?></td>
+                                            <td><?= htmlspecialchars($reports->doctor_first_name . " " . $reports->doctor_last_name) ?></td>
+                                            <td><?= htmlspecialchars($reports->test_name) ?></td>
+                                            <td>
+                                                <?php
+                                                $state = strtolower(trim($reports->state));
+                                                ?>
+
+                                                <?php if ($state === 'pending'): ?>
+                                                    <span style="background-color: #fdd835; color: #000; padding: 5px 10px; border-radius: 5px;">
+                                                        Pending
+                                                    </span>
+                                                <?php elseif ($state === 'view'): ?>
+                                                    <button class="view-button">View</button>
+                                                <?php else: ?>
+                                                    <?= htmlspecialchars($reports->state) ?>
+                                                <?php endif; ?>
+
+
+                                            </td>
+                                            <td class="report-cell"></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr>
+                                        <td colspan="7">No Lab reports available.</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
+
                         </table>
+
                     </div>
                     <div class="pagination">
                         <span>Previous</span>
@@ -119,34 +121,35 @@
                         </div>
                         <span>Next</span>
                     </div>
-                    
-                </div>     
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function updateReportCells() {
-                const rows = document.querySelectorAll('tbody tr');
+                </div>
+            </div>
 
-                rows.forEach(row => {
-                    const statusSelect = row.querySelector('.status-dropdown');
-                    const reportCell = row.querySelector('.report-cell');
+            <!-- <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    function updateReportCells() {
+                        const rows = document.querySelectorAll('tbody tr');
 
-                    statusSelect.addEventListener('change', function() {
-                        const status = this.value;
-                        if (status === 'completed') {
-                            reportCell.innerHTML = '<button class="view-button">View</button>';
-                        } else {
-                            reportCell.innerHTML = '';
-                        }
-                    });
+                        rows.forEach(row => {
+                            const statusSelect = row.querySelector('.status-dropdown');
+                            const reportCell = row.querySelector('.report-cell');
 
-                    statusSelect.dispatchEvent(new Event('change'));
+                            statusSelect.addEventListener('change', function() {
+                                const status = this.value;
+                                if (status === 'completed') {
+                                    reportCell.innerHTML = '<button class="view-button">View</button>';
+                                } else {
+                                    reportCell.innerHTML = '';
+                                }
+                            });
+
+                            statusSelect.dispatchEvent(new Event('change'));
+                        });
+                    }
+
+                    updateReportCells();
                 });
-            }
-
-            updateReportCells();
-        });
-    </script>
+            </script> -->
 </body>
+
 </html>

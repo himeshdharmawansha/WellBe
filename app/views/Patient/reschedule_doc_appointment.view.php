@@ -24,8 +24,10 @@
         <div class="main-content">
             <!-- Top Header -->
             <?php
-            $pageTitle = "Appointments";
-            include $_SERVER['DOCUMENT_ROOT'] . '/newWellBe/wellbe/app/views/Components/Patient/header.php';
+
+            $pageTitle = "Appointments"; // Set the text you want to display
+            include $_SERVER['DOCUMENT_ROOT'] . '/Wellbe/app/views/Components/Patient/header.php';
+
             ?>
 
             <!-- Dashboard Content -->

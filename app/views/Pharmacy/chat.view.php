@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../../models/ProfileModel.php");
 $he = new ChatController();
 $profileModel = new ProfileModel();
 
-$unseenCounts = $he->UnseenCounts([1, 2, 3, 4]);
+$unseenCounts = $he->UnseenCounts([3, 5]);
 $user_profile = $unseenCounts;
 if (!is_array($user_profile)) {
    $user_profile = [];
@@ -249,7 +249,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                })
                .then(data => {
                   if (data.status === "success") {
-                     refreshUnseenCounts([1, 2, 3, 4]);
+                     refreshUnseenCounts([3, 5]);
                      pullMessages();
                      hidePopupMenu();
                   } else {
@@ -291,7 +291,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([1, 2, 3, 4]);
+                  refreshUnseenCounts([3, 5]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -331,7 +331,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([1, 2, 3, 4]);
+                  refreshUnseenCounts([3, 5]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -621,7 +621,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([1, 2, 3, 4]);
+                  refreshUnseenCounts([3, 5]);
                } else {
                   console.error('Server responded with failure:', data);
                   alert(data.message || 'Error sending message');
@@ -934,7 +934,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([1, 2, 3, 4]);
+                  refreshUnseenCounts([3, 5]);
                   document.removeEventListener('click', handleOutsideClick);
                   isNotificationDismissed = false;
                } else {
@@ -1071,7 +1071,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([1, 2, 3, 4]);
+            refreshUnseenCounts([3, 5]);
          }
       }, 1000);
 
@@ -1080,7 +1080,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
          if (!query.trim()) {
             isSearching = false;
-            refreshUnseenCounts([1, 2, 3, 4]);
+            refreshUnseenCounts([3, 5]);
             return;
          }
 

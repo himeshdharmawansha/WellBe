@@ -29,7 +29,7 @@
                 <div class="header">
                     <button class="btn" onclick="window.location.href='doc_appointment'">Schedule an Appointment</button>
                     <span>
-                        <button class="btn1">Reschedule/ Cancellation Policy</button>
+                        <button class="btn1">Cancellation Policy</button>
                     </span>
                 </div>
                 <hr>
@@ -37,20 +37,45 @@
                     <?php if (!empty($appointments)) : ?>
                         <?php foreach ($appointments as $appointment) : ?>
                             <div class="card">
-                                <p>Hi <?= htmlspecialchars($_SESSION['USER']->first_name ?? 'Patient') ?>,</p>
+                                <p>Hi <span><?= htmlspecialchars($_SESSION['USER']->first_name ?? 'Patient') ?></span>,</p>
                                 <p>You have an appointment with:</p>
                                 <p class="doc_name">
-                                    Dr. <?= htmlspecialchars($appointment->doctor_first_name . " " . $appointment->doctor_last_name) ?>
-                                    (<?= htmlspecialchars($appointment->specialization) ?>)
+                                    <span>Dr. <?= htmlspecialchars($appointment->doctor_first_name . " " . $appointment->doctor_last_name) ?>
+                                        (<?= htmlspecialchars($appointment->specialization) ?>)</span>
                                 </p>
-                                <p>Appointment Number: <?= htmlspecialchars($appointment->appointment_id) ?></p>
+                                <p>Appointment Number: <span><strong><?= htmlspecialchars($appointment->appointment_id) ?></strong></span></p>
+                                <p>Appointment Date: <span><strong><?= date('Y-m-d', strtotime($appointment->date)) ?></strong></span></p>
+                                <p>Appointment Time: <span><strong><?= htmlspecialchars($appointment->start_time) ?></strong></span></p>
 
-                                <p>Appointment Date: <?= date('Y-m-d', strtotime($appointment->date)) ?></p>
+                                <?php
+                                $status = htmlspecialchars($appointment->state);
+                                ?>
+                                <p>Appointment Status: <span style="font-weight:bold;"><?= $status ?></span></p>
+
+                                <?php
+                                $rawStatus = $appointment->payment_status;
+                                $paymentStatus = htmlspecialchars($rawStatus);
+
+                                if ($paymentStatus === 'Paid') {
+                                    $color = 'green';
+                                    $label = 'Paid';
+                                } else {
+                                    $color = 'orange';
+                                    $label = 'Payment Pending';
+                                }
+                                ?>
+                                <p>
+                                    Payment Status:
+                                    <span style="color: <?= $color ?>; font-weight: bold; padding: 4px 8px; border-radius: 4px;">
+                                        <?= $label ?>
+                                    </span>
+                                </p>
+
                                 <div class="buttons">
-                                    <button class="reschedule">Reschedule</button>
                                     <button class="cancel" onclick="showModal()">Cancel</button>
                                 </div>
                             </div>
+
                         <?php endforeach; ?>
                     <?php else : ?>
                         <p>No appointments found.</p>

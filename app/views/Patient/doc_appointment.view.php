@@ -52,18 +52,18 @@
                                 <input list="specializations" id="specialization" name="specialization"
                                     placeholder="Type specialization"
                                     value="<?= isset($_POST['specialization']) ? htmlspecialchars($_POST['specialization']) : '' ?>">
-                                    <datalist id="specializations">
-                                        <?php
-                                        $uniqueSpecializations = [];
-                                        foreach ($doctors as $doctor) {
-                                            $spec = htmlspecialchars($doctor->specialization);
-                                            if (!in_array($spec, $uniqueSpecializations)) {
-                                                $uniqueSpecializations[] = $spec;
-                                                echo "<option value=\"$spec\"></option>";
-                                            }
+                                <datalist id="specializations">
+                                    <?php
+                                    $uniqueSpecializations = [];
+                                    foreach ($doctors as $doctor) {
+                                        $spec = htmlspecialchars($doctor->specialization);
+                                        if (!in_array($spec, $uniqueSpecializations)) {
+                                            $uniqueSpecializations[] = $spec;
+                                            echo "<option value=\"$spec\"></option>";
                                         }
-                                        ?>
-                                    </datalist>
+                                    }
+                                    ?>
+                                </datalist>
                             </div>
 
                             <button type="submit" class="find-doctor-btn">Search</button>
@@ -111,7 +111,6 @@
 </body>
 
 <script>
-
     const doctors = <?= json_encode($data['doctors']) ?>;
 
     const doctorInput = document.getElementById('doctor');
@@ -131,7 +130,7 @@
     }
 
     // When specialization changes, update doctor suggestions
-    specializationInput.addEventListener('input', function () {
+    specializationInput.addEventListener('input', function() {
         const selectedSpecialization = this.value.trim().toLowerCase();
 
         // Filter doctors by selected specialization
@@ -144,7 +143,7 @@
     });
 
     // When doctor changes, update specialization suggestion
-    doctorInput.addEventListener('input', function () {
+    doctorInput.addEventListener('input', function() {
         const selectedDoctor = this.value.trim().toLowerCase();
 
         // Find the selected doctor and auto-fill specialization

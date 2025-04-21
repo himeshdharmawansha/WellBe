@@ -10,7 +10,7 @@ class Patient extends Controller
          'labreports' => ["fas fa-flask", "View Lab Reports"],
          'doc_appointment' => ["fas fa-user-md", "Search for a Doctor"],
          'appointments' => ["fas fa-calendar-alt", "Appointments"],
-         'chat' => ["fas fa-comments", "Chat with the Doctor"],
+         'chat' => ["fas fa-comments", "Chat"],
          'logout' => ["fas fa-sign-out-alt", "Logout"]
       ],
       'userType' => 'patient'
@@ -41,12 +41,29 @@ class Patient extends Controller
 
    public function medicalreports()
    {
-      $this->view('Patient/medicalreports', 'medicalreports');
+      $medicalRecord = new MedicalRecord();
+      $patientId = $_SESSION['USER']->id;
+      $pastRecords = $medicalRecord->getRequest($patientId);
+      //print_r($pastRecords);
+      $data['pastRecords'] = $pastRecords;
+      $this->view('Patient/medicalreports', 'medicalreports', $data);
    }
+
+
+   public function reschedule()
+   {
+      $this->view('Patient/reschedule', 'reschedule');
+   }
+
    public function labreports()
    {
-      $this->view('Patient/labreports', 'labreports');
+       $labTest = new LabTest();
+       $patientId = $_SESSION['USER']->id;
+       $labReports = $labTest->getTest($patientId);
+       $data['labReports'] = $labReports;
+       $this->view('Patient/labreports','labreports' ,$data);
    }
+   
 
    public function reschedule_doc_appointment($id){
 
@@ -221,10 +238,39 @@ class Patient extends Controller
    {
       $this->view('Patient/edit_profile', 'edit_profile');
    }
+   
    public function medical_rec()
    {
-      $this->view('Patient/medical_rec', 'medical_rec');
+       $patient = $_SESSION['USER'] ?? null;
+   
+       if ($patient && isset($patient->id)) {
+           $patient_id = $patient->id;
+   
+           $medicalRecord = new MedicalRecord();
+   
+           // Get all requests made by the patient
+           $requests = $medicalRecord->getRequest($patient_id);
+   
+           // Load details of the first request by default (if exists)
+           $medDetails = null;
+           if (!empty($requests)) {
+               $firstReqId = $requests[0]->id;
+               $medDetails = $medicalRecord->getMed($firstReqId);
+           }
+   
+           // Pass data to the view
+           $this->view('Patient/medical_rec', 'medical_rec', [
+               'requests' => $requests,
+               'medDetails' => $medDetails
+           ]);
+       } else {
+           $this->view('Patient/medical_rec', 'medical_rec', ['error' => 'User not logged in.']);
+       }
    }
+   
+   
+   
+   
 
    public function Lab_download()
    {

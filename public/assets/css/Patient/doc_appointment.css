@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Arial', sans-serif;
+    font-size: 14px;
 }
 
 /* General Body Styling */
@@ -125,6 +126,7 @@ header {
 .input-box {
     margin-bottom: 20px;
 }
+
 
 label {
     display: block;

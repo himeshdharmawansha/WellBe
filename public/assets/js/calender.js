@@ -154,7 +154,7 @@ function generateCalendar(month, year) {
                   
                            try {
                               // Send the scheduled date to the PHP file
-                              const response = await fetch('http://localhost/newWellBe2/WellBe/public/doctor', {
+                              const response = await fetch('http://localhost/WellBe/public/doctor', {
                                  method: 'POST',
                                  headers: {
                                        'Content-Type': 'application/json'

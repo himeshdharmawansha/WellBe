@@ -26,110 +26,9 @@
    border-radius: 15px;
 }
 
-.welcome-message {
-   display: flex;
-   margin-bottom: 20px;
-}
-
-.cards-container {
-   margin-top: 15px;
-   display: inline-flex;
-   gap: 10px;
-   justify-content: space-between;
-   margin-bottom: 20px;
-}
-
-.card {
-   flex: 1;
-   justify-content: space-between;
-   display: flex;
-   background-color: #f0f8ff;
-   padding: 20px;
-   margin-right: 10px;
-   text-align: center;
-   border-radius: 10px;
-   font-size: 22px;
-   font-weight: bold;
-   flex-wrap: wrap;
-   height: 109px;
-   gap: 10px;
-   flex-wrap: nowrap;
-}
-
-.card p {
-   color: white;
-   padding: 0;
-   margin: 0;
-}
-
-.card:last-child {
-   margin-right: 0;
-}
-
-.circle-background {
-   position: relative;
-   display: inline-block;
-   background-color: #f0f8ff;
-   border-radius: 50%;
-   box-shadow: 5px 5px 20px rgba(7, 7, 7, 0.1);
-   margin-bottom: 10px;
-   width: 65px;
-   height: 65px;
-   flex-shrink: 0;
-}
-
-.icon {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   font-size: 24px;
-   color: rgb(16, 16, 16);
-}
-
-.requests-container {
-   width: 100%;
-   max-width: 1200px;
-   margin: 20px auto;
-   padding: 20px;
-   background-color: #ffffff;
-   border-radius: 10px;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.tabs {
-   display: flex;
-   justify-content: flex-start;
-   border-bottom: 2px solid #d1d5db;
-}
-
-.tab {
-   padding: 10px 20px;
-   cursor: pointer;
-   background-color: transparent;
-   border: none;
-   border-bottom: 3px solid transparent;
-   color: #6b7280;
-   font-size: 16px;
-   transition: color 0.3s, border-bottom-color 0.3s;
-}
-
-.tab.active {
-   color: #2563eb;
-   border-bottom-color: #2563eb;
-}
-
-.requests-section {
-   display: none;
-}
-
-.requests-section.active {
-   display: block;
-}
-
 .search-container {
    display: flex;
-   justify-content: flex-start;
+   justify-content: space-between;
    align-items: center;
    margin-top: 20px;
    margin-bottom: 20px;
@@ -144,35 +43,36 @@
    color: #6b7280;
 }
 
-.requests-table {
-   width: 70%;
+.right-controls {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+}
+
+.medicine-table {
+   width: 100%;
    border-collapse: collapse;
-   margin-bottom: 20px;
+   margin-top: 20px;
 }
 
-.requests-table th,
-.requests-table td {
-   text-align: left;
-   padding: 12px;
-   border-bottom: 1px solid #e5e7eb;
-   color: #374151;
+.medicine-table th,
+.medicine-table td {
+   border: 1px solid #ddd;
+   padding: 8px;
+   text-align: center;
    font-size: 14px;
+   color: #374151;
 }
 
-.requests-table th {
-   background-color: #f9fafb;
-   color: #6b7280;
+.medicine-table th {
+   background-color: #f4f4f4;
    font-weight: 500;
+   text-transform: uppercase;
+   color: #6b7280;
 }
 
-.requests-table tbody tr:hover {
-   background-color: #f3f4f6;
-}
-
-.active-row {
-   background-color: #e0e7ff;
-   color: #1d4ed8;
-   font-weight: bold;
+.out-of-stock {
+   background-color: #ffcccc;
 }
 
 .pagination {
@@ -216,6 +116,7 @@
 .pagination-page.active {
    background-color: #2563eb;
    color: #ffffff;
+   border-color: #2563eb;
 }
 
 .pagination-page:hover,
@@ -223,21 +124,61 @@
    background-color: #e5e7eb;
 }
 
-.medicine-table {
-   width: 100%;
-   border-collapse: collapse;
-   margin-top: 20px;
+.switch {
+   position: relative;
+   display: inline-block;
+   width: 40px;
+   height: 20px;
 }
 
-.medicine-table th,
-.medicine-table td {
-   border: 1px solid #ddd;
-   padding: 8px;
-   text-align: center;
+.switch input {
+   opacity: 0;
+   width: 0;
+   height: 0;
 }
 
-.medicine-table th {
-   background-color: #f4f4f4;
+.slider {
+   position: absolute;
+   cursor: pointer;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: #ccc;
+   transition: 0.4s;
+   border-radius: 20px;
+}
+
+.slider:before {
+   position: absolute;
+   content: "";
+   height: 16px;
+   width: 16px;
+   left: 2px;
+   bottom: 2px;
+   background-color: white;
+   transition: 0.4s;
+   border-radius: 50%;
+}
+
+input:checked + .slider {
+   background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+   transform: translateX(20px);
+}
+
+.edit-btn, .delete-btn, .sav-btn {
+   background: none;
+   border: none;
+   cursor: pointer;
+   font-size: 16px;
+   margin: 0 5px;
+}
+
+.edit-btn i {
+   color: #2563eb;
 }
 
 .out-of-stock {
@@ -247,4 +188,21 @@
 a {
    text-decoration: none;
    color: inherit;
+}
+
+.add-btn {
+   background-color: transparent;
+   color: #4CAF50; /* Changed to red */
+   border: none;
+   font-size: 20px;
+   cursor: pointer;
+   padding: 5px;
+}
+
+.add-btn:hover {
+   color: #2c732f; /* Darker red on hover */
+}
+
+.delete-btn i {
+   color: #ff0000; /* Already red in the original CSS */
 }

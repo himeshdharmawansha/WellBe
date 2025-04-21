@@ -19,7 +19,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments";
-            require '../app/views/Components/Doctor/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
             
             <!-- Dashboard Content -->

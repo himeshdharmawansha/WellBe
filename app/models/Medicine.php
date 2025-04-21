@@ -3,12 +3,10 @@
 //medicine class
 class Medicine extends Model
 {
-
    protected $table = 'medicines';
    private $db;
 
    protected $allowedColumns = [
-
       'medicine_id',
       'generic_name',
       'brand_name',
@@ -28,7 +26,7 @@ class Medicine extends Model
       $offset = ($page - 1) * $rowsPerPage;
 
       // Use direct variable substitution instead of named parameters for LIMIT & OFFSET
-      $query = "SELECT generic_name, brand_name, category, expiry_date, 
+      $query = "SELECT medicine_id, generic_name, brand_name, category, expiry_date, 
                         IF(expiry_date < CURDATE(), 0, quantity_in_stock) AS quantity_in_stock, unit 
                  FROM medicines
                  LIMIT $rowsPerPage OFFSET $offset";
@@ -41,16 +39,15 @@ class Medicine extends Model
       $offset = ($page - 1) * $limit;
 
       // Corrected SQL Query (No named parameters for LIMIT and OFFSET)
-      $query = "SELECT generic_name, brand_name, category, expiry_date, 
+      $query = "SELECT medicine_id, generic_name, brand_name, category, expiry_date, 
                         IF(expiry_date < CURDATE(), 0, quantity_in_stock) AS quantity_in_stock, unit 
                  FROM medicines
-              WHERE generic_name LIKE :searchTerm 
-              LIMIT $limit OFFSET $offset"; // Directly inserting limit and offset
+                 WHERE generic_name LIKE :searchTerm
+                 LIMIT $limit OFFSET $offset";
 
       $params = [':searchTerm' => '%' . $searchTerm . '%'];
       $medicines = $this->db->read($query, $params);
 
-      // Get total count
       $countQuery = "SELECT COUNT(*) as total FROM medicines WHERE generic_name LIKE :searchTerm";
       $totalRecords = $this->db->read($countQuery, [':searchTerm' => '%' . $searchTerm . '%'])[0]['total'];
       $totalPages = ceil($totalRecords / $limit);
@@ -60,10 +57,38 @@ class Medicine extends Model
 
    public function getTotalMedicineCount()
    {
-      $sql = "SELECT COUNT(*) AS total FROM medicines";  // Adjust this query to your table and column names
+      $sql = "SELECT COUNT(*) AS total FROM medicines";
       $result = $this->db->read($sql);
 
-      // Check if the result is not empty and return the total count
       return isset($result[0]['total']) ? $result[0]['total'] : 0;
+   }
+
+   public function updateMedicine($data)
+   {
+      $query = "UPDATE medicines SET ";
+      $params = [];
+      foreach ($data as $key => $value) {
+         if ($key !== 'medicine_id') {
+            $query .= "$key = :$key, ";
+            $params[":$key"] = $value;
+         }
+      }
+      $query = rtrim($query, ', ');
+      $query .= " WHERE medicine_id = :medicine_id";
+      $params[':medicine_id'] = $data['medicine_id'];
+      return $this->db->write($query, $params);
+   }
+
+   public function deleteMedicine($id)
+   {
+      $query = "DELETE FROM medicines WHERE medicine_id = :medicine_id";
+      return $this->db->write($query, [':medicine_id' => $id]);
+   }
+
+   public function addMedicine($data)
+   {
+      $query = "INSERT INTO medicines (generic_name, brand_name, category, expiry_date, quantity_in_stock, unit) 
+                VALUES (:generic_name, :brand_name, :category, :expiry_date, :quantity_in_stock, :unit)";
+      return $this->db->write($query, $data);
    }
 }

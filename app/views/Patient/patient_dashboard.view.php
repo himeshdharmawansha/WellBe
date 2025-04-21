@@ -1,3 +1,6 @@
+<?php
+  //print_r($rescheduledAppointments);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -178,6 +181,46 @@
         </div>
       </div>
 
+      <?php if (!empty($rescheduledAppointments)) :
+        $last = end($rescheduledAppointments);
+      ?>
+        <div id="reschedulePopup" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Rescheduled Appointment</h2>
+            </div>
+            <div class="modal-body">
+              <p style="color:black">
+                Your appointment with Dr.<?= htmlspecialchars($last->doctor_name) ?> (<?= htmlspecialchars($last->specialization) ?>)
+                on <?= date('Y-m-d', strtotime($last->date)) ?> has been rescheduled.
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button id="manageBtn" class="submit-btn" style="background-color: blue;">Manage Appointment</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="managePopup" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Manage Appointment</h2>
+            </div>
+            <div class="modal-body">
+              <p style="color: black;">Would you like to reschedule or cancel your appointment?</p>
+            </div>
+            <div class="modal-footer">
+                <button style="margin-bottom: 10px;" class="submit-btn" onclick="window.location.href = 'http://localhost/wellbe/public/patient/reschedule_doc_appointment/<?= $last->id ?>'">
+                    Reschedule Appointment
+                </button>
+                <button style="background-color: red;" class="submit-btn" onclick="window.location.href='http://localhost/wellbe/public/patient/refund/<?= $last->id ?>'">
+                  Cancel Appointment
+                </button>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
 
       <script src="./script.js"></script>
       <script>
@@ -202,6 +245,22 @@
               modal.classList.add("hidden"); // Hide the modal on button click
             });
           }
+        });
+      </script>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const reschedulePopup = document.getElementById("reschedulePopup");
+          const managePopup = document.getElementById("managePopup");
+
+          <?php if (!empty($rescheduledAppointments)) : ?>
+            reschedulePopup.classList.remove("hidden");
+
+            document.getElementById("manageBtn").addEventListener("click", () => {
+              reschedulePopup.classList.add("hidden");
+              managePopup.classList.remove("hidden");
+            });
+          <?php endif; ?>
         });
       </script>
 

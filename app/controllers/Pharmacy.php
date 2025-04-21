@@ -11,7 +11,8 @@ class Pharmacy extends Controller
             'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'chat' => ["fa-solid fa-comment-dots", "Chat"],
             'report' => ["fa-solid fa-chart-simple", "Report"],
-            'logout' => ["fas fa-sign-out-alt", "Logout"]
+            'logout' => ["fas fa-sign-out-alt", "Logout"],
+            'sms' => ["fas fa-sign-out-alt", "Sms"]
         ],
         'userType' => 'pharmacy'
     ];
@@ -38,6 +39,10 @@ class Pharmacy extends Controller
     public function requests()
     {
         $this->view('Pharmacy/requests', 'requests');
+    }
+    public function sms()
+    {
+        $this->view('Pharmacy/sms', 'sms');
     }
 
     public function chat()
@@ -137,6 +142,30 @@ class Pharmacy extends Controller
         $searchTerm = $_GET['query'] ?? '';
         $results = $this->pharmacyModel->searchMedicine($searchTerm);
         echo json_encode($results);
+    }
+
+    public function updateMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->updateMedicine($data);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function deleteMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->deleteMedicine($data['medicine_id']);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function addMedicine()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $medicineModel = new Medicine();
+        $success = $medicineModel->addMedicine($data);
+        echo json_encode(['success' => $success]);
     }
 
     public function generateReport()

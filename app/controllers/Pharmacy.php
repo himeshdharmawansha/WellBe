@@ -11,7 +11,8 @@ class Pharmacy extends Controller
             'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'chat' => ["fa-solid fa-comment-dots", "Chat"],
             'report' => ["fa-solid fa-chart-simple", "Report"],
-            'logout' => ["fas fa-sign-out-alt", "Logout"]
+            'logout' => ["fas fa-sign-out-alt", "Logout"],
+            'sms' => ["fas fa-sign-out-alt", "Sms"]
         ],
         'userType' => 'pharmacy'
     ];
@@ -38,6 +39,10 @@ class Pharmacy extends Controller
     public function requests()
     {
         $this->view('Pharmacy/requests', 'requests');
+    }
+    public function sms()
+    {
+        $this->view('Pharmacy/sms', 'sms');
     }
 
     public function chat()

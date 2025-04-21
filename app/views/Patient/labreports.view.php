@@ -54,6 +54,9 @@
             <div class="dashboard-content">
 
                 <div class="container">
+                    <div class="search-bar-container" style="margin-bottom: 20px; text-align: right;">
+                        <input type="text" id="searchInput" placeholder="Search reports..." style="padding: 8px; width: 250px; border-radius: 5px; border: 1px solid #ccc;">
+                    </div>
 
                     <div class="table-container">
 
@@ -124,32 +127,36 @@
 
                 </div>
             </div>
-
-            <!-- <script>
+            <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    function updateReportCells() {
-                        const rows = document.querySelectorAll('tbody tr');
+                    // Get the search input field
+                    const searchInput = document.getElementById('searchInput');
 
-                        rows.forEach(row => {
-                            const statusSelect = row.querySelector('.status-dropdown');
-                            const reportCell = row.querySelector('.report-cell');
+                    // Get all the table rows inside the tbody
+                    const tableRows = document.querySelectorAll('tbody tr');
 
-                            statusSelect.addEventListener('change', function() {
-                                const status = this.value;
-                                if (status === 'completed') {
-                                    reportCell.innerHTML = '<button class="view-button">View</button>';
-                                } else {
-                                    reportCell.innerHTML = '';
-                                }
-                            });
+                    // Add an event listener to trigger whenever a key is released in the search input
+                    searchInput.addEventListener('keyup', function() {
+                        // Convert the input value to lowercase for case-insensitive comparison
+                        const filter = searchInput.value.toLowerCase();
+                        // Loop through each row in the table
+                        tableRows.forEach(row => {
+                            // Get the text content of the current row and convert it to lowercase
+                            const rowText = row.textContent.toLowerCase();
 
-                            statusSelect.dispatchEvent(new Event('change'));
+                            // Check if the row contains the search term
+                            if (rowText.includes(filter)) {
+                                row.style.display = ''; // Show the row if it matches
+                            } else {
+                                row.style.display = 'none'; // Hide the row if it doesn't match
+                            }
                         });
-                    }
-
-                    updateReportCells();
+                    });
                 });
-            </script> -->
+            </script>
+
+
+
 </body>
 
 </html>

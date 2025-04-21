@@ -121,6 +121,16 @@
 
                   <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
                     <?php foreach ($appointments as $appt) : ?>
+                      <?php
+                      // Get the appointment date and time
+                      $appointmentDateTime = strtotime($appt->date . ' ' . $appt->start_time);
+                      $currentDateTime = time(); // Get the current timestamp
+
+                      // Check if the appointment has already passed
+                      if ($appointmentDateTime < $currentDateTime) {
+                        continue; // Skip the rendering of this card if the appointment has passed
+                      }
+                      ?>
                       <div class="mini-wrapper">
                         <div class="mini" onclick="window.location.href='appointments'">
                           <div class="mini-part part1">
@@ -139,6 +149,7 @@
                         </div>
                       </div>
                     <?php endforeach; ?>
+
                   </div>
 
                 <?php else : ?>

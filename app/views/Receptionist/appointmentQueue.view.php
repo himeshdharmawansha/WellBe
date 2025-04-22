@@ -41,120 +41,61 @@
                     <span class="ongoing active">Patient List</span>
                 </div>
 
-                <div class="table-container">
-                    <table class="queue-table">
-                        <tr class="header-row" >
-                            <th>Appointment No</th>
-                            <th>Patient Name</th>
-                            <th>Booked Date</th>
-                            <th>Booked Time</th>
-                            <th>Patient Status</th>
-                        </tr>
-                        <tr class="data-row">
-                            <td>01</td>
-                            <td>John Doe</td>
-                            <td>25/11/2024</td>
-                            <td>15:00</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>02</td>
-                            <td>Sandaruwani Peiris</td>
-                            <td>25/11/2024</td>
-                            <td>17:00</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>03</td>
-                            <td>Dave Franco</td>
-                            <td>26/11/2024</td>
-                            <td>11:00</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>04</td>
-                            <td>Lisa Perera</td>
-                            <td>27/11/2024</td>
-                            <td>12:30</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>05</td>
-                            <td>Jane Fernando</td>
-                            <td>28/11/2024</td>
-                            <td>09:00</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>06</td>
-                            <td>Hailey Silva</td>
-                            <td>28/11/2024</td>
-                            <td>13:20</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>07</td>
-                            <td>Niall Perera</td>
-                            <td>28/11/2024</td>
-                            <td>14:10</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="data-row">
-                            <td>08</td>
-                            <td>Liam Payne</td>
-                            <td>28/11/2024</td>
-                            <td>17:00</td>
-                            <td>
-                                <select name="patient_status" class="patient-status-dropdown" onchange="changeDropdownColor(this)">
-                                    <option value="Not Present" selected>Not Present</option>
-                                    <option value="Present">Present</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                <form method="POST" action="<?php echo ROOT; ?>/Receptionist/appointmentQueue">
+                    <div class="table-container">
+                        <table class="queue-table">
+                            <tr class="header-row" >
+                                <th>Appointment No</th>
+                                <th>Patient Name</th>
+                                <th>Patient Status</th>
+                                <th>Payment Status</th>
+                            </tr>
+
+                            <?php if (!empty($appointments)): ?>
+                                <?php foreach ($appointments as $index => $app): ?>
+                                    <tr class="data-row">
+                                        <td><?= htmlspecialchars($app->appointment_id) ?></td>
+                                        <td><?= htmlspecialchars($app->patient_name) ?></td>
+
+                                        <!-- Hidden inputs to track appointment ID and original statuses -->
+                                        <input type="hidden" name="slot_id" value="<?= htmlspecialchars($_GET['slot_id'] ?? '') ?>">
+                                        <input type="hidden" name="doctor_id" value="<?= htmlspecialchars($_GET['doctor_id'] ?? '') ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][appointment_id]" value="<?= $app->appointment_id ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][original_patient_status]" value="<?= $app->patient_status ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][original_payment_status]" value="<?= $app->payment_status ?>">
+
+                                        <td>
+                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][patient_status]" onchange="changeDropdownColor(this)" style="<?= $app->patient_status === 'Present' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>">
+                                                <option value="Not Present" <?= $app->patient_status === 'Not Present' ? 'selected' : '' ?>>Not Present</option>
+                                                <option value="Present" <?= $app->patient_status === 'Present' ? 'selected' : '' ?>>Present</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][payment_status]" onchange="changeDropdownColor(this)" style="<?= $app->payment_status === 'Paid' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>">
+                                                <option value="Not Paid" <?= $app->payment_status === 'Not Paid' ? 'selected' : '' ?>>Not Paid</option>
+                                                <option value="Paid" <?= $app->payment_status === 'Paid' ? 'selected' : '' ?>>Paid</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4">No appointments found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </table>
+                    </div>
+                    <div class = "button-bar">
+                        <button type = "submit" class = "update-button">Update</button>
+                    </div>
+                </form>
             </div>        
         </div>
     </div>
 
     <script>
         function changeDropdownColor(dropdown) {
-            if (dropdown.value === "Present") {
+            if (dropdown.value === "Present" || dropdown.value === "Paid") {
                 dropdown.style.backgroundColor = "#24FF3A";
                 dropdown.style.color = "black"; // Optional, to make the text readable
             } else {

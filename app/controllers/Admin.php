@@ -282,7 +282,7 @@ class Admin extends Controller
                $doctor = new Doctor();
 
                // Debugging: Check submitted data
-               echo(print_r($doctorData, true));
+               //echo(print_r($doctorData, true));
 
                // Validate the input data
                if ($doctor->validateDoctor($doctorData)) {

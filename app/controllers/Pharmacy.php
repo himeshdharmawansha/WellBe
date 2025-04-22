@@ -4,6 +4,8 @@ class Pharmacy extends Controller
 {
     protected $pharmacyModel;
     protected $medicationRequestModel;
+    private $profileModel;
+    private $chatModel;
 
     private $data = [
         'elements' => [
@@ -19,13 +21,15 @@ class Pharmacy extends Controller
 
     public function __construct()
     {
-        $this->pharmacyModel = new PharmacyModel();
-        $this->medicationRequestModel = new MedicationRequest();
-
+        
         if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
             redirect('login');
             exit;
         }
+        $this->pharmacyModel = new PharmacyModel();
+        $this->medicationRequestModel = new MedicationRequest();
+        $this->profileModel = new ProfileModel();
+        $this->chatModel = new Chat();
     }
 
     public function index()
@@ -65,11 +69,49 @@ class Pharmacy extends Controller
         exit;
     }
 
+    private function UnseenCounts($roles)
+    {
+        if (empty($roles)) {
+            return ['error' => 'Invalid or missing roles parameter'];
+        }
+
+        try {
+            $result = $this->chatModel->getUnseenCounts($roles);
+            return $result;
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
     public function chat()
     {
+        // Fetch unseen counts using the local UnseenCounts method
+        $unseenCounts = $this->UnseenCounts([3, 5]);
+        $user_profile = $unseenCounts;
+        if (!is_array($user_profile)) {
+            $user_profile = [];
+        }
+
+        // Fetch all profiles
+        $profiles = $this->profileModel->getAll();
+        if (!empty($profiles) && !isset($profiles['error'])) {
+            $profileMap = [];
+            foreach ($profiles as $profile) {
+                $profileMap[$profile->id] = $profile;
+            }
+            foreach ($user_profile as &$user) {
+                if (isset($user['id']) && isset($profileMap[$user['id']])) {
+                    $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
+                } else {
+                    $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
+                }
+            }
+            unset($user);
+        }
+
+        // Pass data to the view
         $data = [
-            'title' => 'Dashboard Page',
-            'username' => 'John Doe',
+            'user_profile' => $user_profile
         ];
         $this->view('Pharmacy/chat', 'chat', $data);
     }

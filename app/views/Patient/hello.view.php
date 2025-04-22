@@ -277,7 +277,7 @@
                 patient_name: "<?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?>",
                 contact_number: "<?= $_SESSION['USER']->contact; ?>",
                 emergency_contact: "<?= $_SESSION['USER']->emergency_contact_no; ?>"
-                e_wallet: <?= $amount ?>,
+                // e_wallet: <?= $amount ?>,
             };
 
             try {

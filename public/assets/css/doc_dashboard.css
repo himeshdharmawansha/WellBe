@@ -1,3 +1,112 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    background-color: #E0EBFF;
+    overflow-y: hidden;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    width: 450px;
+    margin: 20px auto;
+    font-family: 'Poppins', sans-serif;
+    height: 70vh;
+}
+
+.welcome-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.welcome-info img {
+    width: 100px;
+    min-width: 80px;
+}
+
+.welcome-text {
+    font-weight: 600;
+    font-size: 23px;
+    margin-bottom: 5px;
+}
+
+.doctor-name {
+    font-weight: 700;
+    font-size: 30px;
+    margin-top: 0;
+    max-width: 400px;
+    line-height: 1.1;
+}
+
+.appointment-summary {
+    background-color: #E0EBFF;
+    border-left: 6px solid rgb(44, 34, 119);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 500;
+    color: #000;
+}
+
+.patient-counts {
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+}
+
+.checkup-section {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+    gap: 15px;
+    
+}
+
+.checkup-title {
+    font-size: 23px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.start-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: rgb(44, 34, 119);
+    color: #E0EBFF;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.start-btn:hover {
+    background-color: rgb(30, 23, 90);
+}
+
+.blue-bar {
+    display: flex;
+    align-items: center;
+    background-color: #dce9ff;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-top: 20px;
+}
+
+.my-element {
+    width: 10px;
+    height: 30px;
+    background-color: #2c2277;
+    border-radius: 10px;
+    margin-right: 15px;
+}
+
 
 
 .items{
@@ -7,6 +116,7 @@
 .graph{
     display: flex;
     gap: 60px;
+    
 }
 
 .dashboard-content{
@@ -29,6 +139,14 @@
 
 .container2{
     display: block;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    width: 900px;
+    margin: 20px auto;
+    height: 70vh;
+    
 }
 
 .error-message {
@@ -143,6 +261,7 @@
     font-family: sans-serif;
     font-size: 20px;
 }
+
 
 @media only screen and (max-width:1400px){
     .checkUp{

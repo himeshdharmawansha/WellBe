@@ -38,6 +38,6 @@
     </script>
   </head>
   <body>
-    <div id="curve_chart" style="width: 400px; height: 500px"></div>
+    <div id="curve_chart" style="width: 400px; height: 400px"></div>
   </body>
 </html>

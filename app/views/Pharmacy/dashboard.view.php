@@ -37,13 +37,13 @@
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
                             </span>
-                            <p>000 <br>New_Requests</p>
+                            <p><?= $data['requestCounts']['pending'] ?> <br>New_Requests</p>
                         </div>
                         <div class="card completed" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fas icon fa-tasks"></i>
                             </span>
-                            <p>000 <br> Completed</p>
+                            <p><?= $data['requestCounts']['completed'] ?> <br>Completed</p>
                         </div>
                     </div>
                 </div>
@@ -95,66 +95,42 @@
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
             google.charts.load('current', {
-            packages: ['corechart']
+                packages: ['corechart']
             });
             google.charts.setOnLoadCallback(drawChart);
 
             function drawChart() {
-            // Set default date range (last 30 days)
-            const today = new Date();
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(today.getDate() - 30);
-            const startDate = `${thirtyDaysAgo.getFullYear()}-${String(thirtyDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(thirtyDaysAgo.getDate()).padStart(2, '0')}`;
-            const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                const today = new Date();
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(today.getDate() - 30);
+                const startDate = `${thirtyDaysAgo.getFullYear()}-${String(thirtyDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(thirtyDaysAgo.getDate()).padStart(2, '0')}`;
+                const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-            // Fetch medication usage data
-            fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
-                .then(response => response.json())
-                .then(data => {
-                const chartData = [
-                    ['Medication', 'Usage', { role: 'tooltip', p: { html: true } }]
-                ];
-                // Assuming data.medications contains medication_name and count
-                data.medications.forEach(med => {
-                    const truncatedName = med.medication_name.substring(0, 3);
-                    const tooltip = `<div style="width:90px;"><strong>${med.medication_name}</strong><br>Usage: ${med.count}</div>`;
-                    chartData.push([truncatedName, parseInt(med.count), tooltip]);
-                });
-
-                const options = {
-                    title: 'Medication Usage',
-                    vAxis: {
-                    title: 'Usage'
-                    },
-                    colors: ['#1a73e8'],
-                    legend: {
-                    position: 'bottom'
-                    },
-                    tooltip: {
-                    isHtml: true
-                    }
-                };
-
-                const chart = new google.visualization.ColumnChart(document.getElementById('curve_chart'));
-                chart.draw(google.visualization.arrayToDataTable(chartData), options);
-                })
-                .catch(error => console.error('Error fetching medication usage data:', error));
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            function updateRequestCounts() {
-                fetch('<?= ROOT ?>/Pharmacy/getRequestCounts')
+                fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
                     .then(response => response.json())
                     .then(data => {
-                        document.querySelector('.new-request p').innerHTML = `${data.pending} <br> New_Requests`;
-                        document.querySelector('.completed p').innerHTML = `${data.completed} <br> Completed`;
-                    })
-                    .catch(error => console.error('Error fetching request counts:', error));
-            }
+                        const chartData = [
+                            ['Medication', 'Usage', { role: 'tooltip', p: { html: true } }]
+                        ];
+                        data.medications.forEach(med => {
+                            const truncatedName = med.medication_name.substring(0, 3);
+                            const tooltip = `<div style="width:90px;"><strong>${med.medication_name}</strong><br>Usage: ${med.count}</div>`;
+                            chartData.push([truncatedName, parseInt(med.count), tooltip]);
+                        });
 
-            updateRequestCounts();
-            setInterval(updateRequestCounts, 1000);
+                        const options = {
+                            title: 'Medication Usage',
+                            vAxis: {},
+                            colors: ['#1a73e8'],
+                            legend: { position: 'bottom' },
+                            tooltip: { isHtml: true }
+                        };
+
+                        const chart = new google.visualization.ColumnChart(document.getElementById('curve_chart'));
+                        chart.draw(google.visualization.arrayToDataTable(chartData), options);
+                    })
+                    .catch(error => console.error('Error fetching medication usage data:', error));
+            }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -167,11 +143,11 @@
                         let html = '';
                         data.forEach(request => {
                             html += `
-                        <tr>
-                            <td>${request.patient_id}</td>
-                            <td><span class="status ${request.state}">${request.state}</span></td>
-                        </tr>
-                    `;
+                                <tr>
+                                    <td>${request.patient_id}</td>
+                                    <td><span class="status ${request.state}">${request.state}</span></td>
+                                </tr>
+                            `;
                         });
                         tableBody.innerHTML = html;
                     })
@@ -228,9 +204,9 @@
                                 const row = document.createElement('tr');
                                 const stateClass = med.state === 'In Stock' ? 'in-stock' : 'out-of-stock';
                                 row.innerHTML = `
-                            <td>${med.generic_name}</td>
-                            <td><span class="stock-status ${stateClass}">${med.state}</span></td>
-                        `;
+                                    <td>${med.generic_name}</td>
+                                    <td><span class="stock-status ${stateClass}">${med.state}</span></td>
+                                `;
                                 tableBody.appendChild(row);
                             });
                         } else {
@@ -272,9 +248,9 @@
                                 const row = document.createElement('tr');
                                 const stateClass = med.state === 'In Stock' ? 'in-stock' : 'out-of-stock';
                                 row.innerHTML = `
-                            <td>${med.generic_name}</td>
-                            <td><span class="stock-status ${stateClass}">${med.state}</span></td>
-                        `;
+                                    <td>${med.generic_name}</td>
+                                    <td><span class="stock-status ${stateClass}">${med.state}</span></td>
+                                `;
                                 tableBody.appendChild(row);
                             });
                         } else {

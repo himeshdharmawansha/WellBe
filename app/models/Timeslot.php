@@ -106,12 +106,25 @@ class Timeslot extends Model
         $this->query($query,[$date,$_SESSION['USER']->id]);
 
         //get patient ids for resheduled date
-        $query = "SELECT a.id,a.appointment_id, p.nic FROM appointment a 
+        $query = "SELECT a.id,a.appointment_id, p.nic, p.email FROM appointment a 
                 JOIN patient p ON a.patient_id = p.id
                 JOIN timeslot ts ON a.date = ts.slot_id
                 WHERE a.doctor_id = ? AND ts.date = ?;";
 
         $patientIds = $this->query($query,[$_SESSION['USER']->id,$date]);
+        //print_r($patientIds);
+
+        $message = "Your appointment with Dr. " . $_SESSION['USER']->first_name . " " . $_SESSION['USER']->last_name . " on " . $date . " has been rescheduled. Kindly review and manage your appointment at your earliest convenience.";
+
+        $email = new Email();
+        foreach ($patientIds as $patient) {
+            $email->send(
+                "Wellbe",                    
+                "wellbe@gmail.com",            
+                $message,                  
+                $patient->email,               
+            );
+        }
 
         //var_dump($date);
         //var_dump($patientIds);

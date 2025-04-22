@@ -32,6 +32,10 @@ class Login extends Controller
                     $user = new Admin;
                     $_SESSION['user_type'] = "admin";
                 }
+                elseif (strpos($id, 'r') !== false) {
+                    $user = new Receptionist;
+                    $_SESSION['user_type'] = "receptionist";
+                }
 
                 //password_verify($_POST['password'], $row->password
                 $arr['nic'] = $_POST['nic'];

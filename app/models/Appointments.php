@@ -64,6 +64,7 @@ class Appointments extends Model
         $appointment_fee = $data['appointment_fee'] ?? null;
         $contact_number = $data['contact_number'] ?? null;
         $patientType = $data['patient_type'] ?? null;
+        $payment_method = ($data['payment_method'] == 'wallet') ? 'Paid' : null;
 
         if (!$doctorId || !$date || !$patientId) {
             return false; // Basic validation
@@ -76,6 +77,7 @@ class Appointments extends Model
             date,
             payment_fee,
             state,
+            payment_status,
             patient_type,
             scheduled
         ) VALUES (
@@ -85,6 +87,7 @@ class Appointments extends Model
             :date,
             :appointment_fee,
             :state,
+            :payment_status,
             :patient_type,
             :scheduled
         )";
@@ -96,6 +99,7 @@ class Appointments extends Model
             'date' => $date,
             'appointment_fee' => $appointment_fee,
             'state' => "NOT PRESENT",
+            'payment_status' => $payment_method,
             'patient_type' => $patientType,
             'scheduled' => "SCHEDULED"
         ];
@@ -139,6 +143,27 @@ class Appointments extends Model
         $data = $this->query($query, [$appointment_id, $doc_id, date('Y-m-d')]);
 
         return $data;
+    }
+
+    public function getAppointmentCount(){
+
+        $query = "SELECT d.date, COUNT(a.id) AS appointment_count
+                    FROM (
+                        SELECT CURDATE() AS date
+                        UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
+                        UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
+                    ) d
+                    LEFT JOIN timeslot t ON t.date = d.date
+                    LEFT JOIN appointment a ON a.date = t.slot_id AND a.doctor_id = ?
+                    GROUP BY d.date
+                    ORDER BY d.date ASC;";
+
+        $appointmentCount = $this->query($query,[$_SESSION['USER']->id]);
+        return $appointmentCount;
     }
 
 
@@ -252,6 +277,7 @@ class Appointments extends Model
     {
         $query = "
         SELECT 
+            a.id,
             a.patient_id,
             a.doctor_id,
             a.appointment_id,
@@ -277,8 +303,59 @@ class Appointments extends Model
             a.patient_id = ?
         ORDER BY 
             a.date ASC
-    ";
+        ";
         return $this->query($query, [$patient_id]);
+    }
+
+    public function getAppointmentsForSession($slot_id, $doctor_id){
+        $query = "
+        SELECT 
+            a.appointment_id,
+            CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+            a.state AS patient_status,
+            a.payment_status
+        FROM 
+            appointment a
+        JOIN 
+            patient p ON a.patient_id = p.id
+        JOIN 
+            timeslot t ON a.date = t.slot_id
+        JOIN 
+            timeslot_doctor td ON td.slot_id = t.slot_id AND td.doctor_id = a.doctor_id
+        WHERE 
+            a.date = :slot_id AND a.doctor_id = :doctor_id
+        ORDER BY 
+            a.appointment_id ASC
+        ";
+
+        return $this->query($query, [
+            'slot_id' => $slot_id,
+            'doctor_id' => $doctor_id
+        ]);
+    }
+
+    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id) {
+        $query = "
+        UPDATE `appointment` SET 
+            `state` = ?, 
+            `payment_status` = ?
+
+        WHERE `appointment_id` = ?
+            AND `date` = ? 
+            AND `doctor_id` = ?
+        ";
+
+        $params = [
+            $patient_status,
+            $payment_status,
+            $appointment_id,
+            $slot_id,
+            $doctor_id,
+        ];
+
+        error_log("Generated Query: <pre>$query</pre>");
+        error_log(print_r($params, true));
+        return $this->query($query, $params);
     }
 
 }

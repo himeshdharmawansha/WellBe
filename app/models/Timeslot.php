@@ -106,12 +106,25 @@ class Timeslot extends Model
         $this->query($query,[$date,$_SESSION['USER']->id]);
 
         //get patient ids for resheduled date
-        $query = "SELECT a.id,a.appointment_id, p.nic FROM appointment a 
+        $query = "SELECT a.id,a.appointment_id, p.nic, p.email FROM appointment a 
                 JOIN patient p ON a.patient_id = p.id
                 JOIN timeslot ts ON a.date = ts.slot_id
                 WHERE a.doctor_id = ? AND ts.date = ?;";
 
         $patientIds = $this->query($query,[$_SESSION['USER']->id,$date]);
+        //print_r($patientIds);
+
+        $message = "Your appointment with Dr. " . $_SESSION['USER']->first_name . " " . $_SESSION['USER']->last_name . " on " . $date . " has been rescheduled. Kindly review and manage your appointment at your earliest convenience.";
+
+        $email = new Email();
+        foreach ($patientIds as $patient) {
+            $email->send(
+                "Wellbe",                    
+                "wellbe@gmail.com",            
+                $message,                  
+                $patient->email,               
+            );
+        }
 
         //var_dump($date);
         //var_dump($patientIds);
@@ -197,5 +210,37 @@ class Timeslot extends Model
         $dateDetails = ['matchedDates'=>$matchedDates,'todayId'=>$todayId];
 
         return $dateDetails;
+    }
+
+    public function getTodaySessions(){
+
+        $query = "
+        SELECT 
+            t.slot_id,
+            t.date AS date,
+            td.start_time AS start_time,
+            td.end_time AS end_time,
+            d.id AS doctor_id,
+            CONCAT(d.first_name, ' ', d.last_name) AS doctor_name,
+            COUNT(a.appointment_id) AS booked_slots
+        FROM 
+            timeslot_doctor td
+        JOIN 
+            timeslot t ON td.slot_id = t.slot_id
+        JOIN 
+            doctor d ON td.doctor_id = d.id
+        LEFT JOIN 
+            appointment a 
+            ON a.doctor_id = td.doctor_id 
+            AND a.date = t.slot_id 
+            AND a.scheduled IN ('Scheduled', 'Rescheduled')  -- count only actual booked appointments
+        WHERE 
+            t.date = CURDATE() AND td.session = 'SET'
+        GROUP BY 
+            t.slot_id, t.date, td.start_time, td.end_time, d.id, d.first_name, d.last_name
+        ";
+        
+
+        return $this->query($query);
     }
 }

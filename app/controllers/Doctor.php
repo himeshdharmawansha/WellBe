@@ -25,7 +25,10 @@ use Random\Engine\Mt19937;
 
         public function index(){
 
-            $this->view('Doctor/dashboard','dashboard');
+            $appointment = new Appointments();
+            $today_appointments = $appointment->getTodayAppointments();
+
+            $this->view('Doctor/dashboard','dashboard',['today_appointments' => $today_appointments]);
         }
 
 
@@ -144,6 +147,21 @@ use Random\Engine\Mt19937;
 
         public function renderChart($component)
         {
+            $appointment = new Appointments();
+            $appointments = $appointment->getAppointmentCount();
+
+            $chartData = [["Date", "Appointments"]]; // header row
+
+            foreach ($appointments as $entry) {
+                // Convert date format from YYYY-MM-DD to M/D (e.g., 4/15)
+                $formattedDate = date('n/j', strtotime($entry->date));
+                $chartData[] = [$formattedDate, (int)$entry->appointment_count];
+            }
+
+            // Convert to JSON to be used in JS
+            $jsonData = json_encode($chartData);
+            //print_r($jsonData);
+            
             $filename = "../app/views/Components/Doctor/{$component}.php";
             require $filename;
         }

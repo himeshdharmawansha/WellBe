@@ -47,8 +47,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td onclick="window.location.href='medical_rec'">Medi_Rec_<?= htmlspecialchars($request->id) ?></td>
+                                        <tr  onclick="window.location.href='medical_rec'">
+                                            <td>Medi_Rec_<?= htmlspecialchars($request->id) ?></td>
                                             <td><?= date('Y-m-d', strtotime($request->date)) ?></td>
                                             <td><?= htmlspecialchars($request->start_time) ?></td>
                                             <td><?= htmlspecialchars($request->doctor_first_name . " " . $request->doctor_last_name) ?></td>

@@ -1,3 +1,7 @@
+<?php
+    //print_r($appointments);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -72,7 +76,7 @@
                                 </p>
 
                                 <div class="buttons">
-                                    <button class="cancel" onclick="showModal()">Cancel</button>
+                                    <button class="cancel" onclick="showModal(<?= $appointment->id ?>)">Cancel</button>
                                 </div>
                             </div>
 
@@ -106,7 +110,8 @@
     <!-- JavaScript for Modal -->
     <script>
         // Function to show the modal
-        function showModal() {
+        function showModal(appointmentId) {
+            appointmentIdToCancel = appointmentId;
             document.getElementById("cancelModal").style.display = "block";
         }
 
@@ -117,8 +122,13 @@
 
         // Function to handle cancellation
         function cancelAppointment() {
-            alert("Appointment Cancelled."); // Replace this with actual cancellation logic
-            closeModal(); // Close the modal after the action is confirmed
+            //alert("Appointment Cancelled."); // Replace this with actual cancellation logic
+            if (appointmentIdToCancel) {
+            // Redirect to refund route with appointment ID
+            window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentIdToCancel}`;
+            }
+            closeModal();
+            alert("Appointment Cancelled.");
         }
 
         // Close the modal if clicked outside of it

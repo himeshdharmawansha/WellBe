@@ -164,17 +164,17 @@
    });
 
    socket.addEventListener('message', (event) => {
-   try {
-      const data = JSON.parse(event.data);
-      document.getElementById('appointmentMessage').innerText = data.text;
-      document.getElementById('appointmentPrimaryId').innerText = data.id;
-      //console.log("Notification ID:", data.id);
+      try {
+         const data = JSON.parse(event.data);
+         document.getElementById('appointmentMessage').innerText = data.text;
+         document.getElementById('appointmentPrimaryId').innerText = data.id;
+         //console.log("Notification ID:", data.id);
 
-      showModal();
-   } catch (err) {
-      console.error('Failed to parse WebSocket message:', err);
-   }
-});
+         showModal();
+      } catch (err) {
+         console.error('Failed to parse WebSocket message:', err);
+      }
+   });
 
 
    function showModal() {

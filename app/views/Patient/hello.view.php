@@ -301,7 +301,7 @@
                             }
 
                             alert("Payment initiated successfully!");
-                //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
+                            //  window.location.href = `http://localhost/wellbe/public/patient/patient_dashboard.php`
 
                         } else {
                             alert("Payment failed. Please try again.");

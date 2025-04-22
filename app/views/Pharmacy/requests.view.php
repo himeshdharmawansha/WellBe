@@ -42,10 +42,10 @@
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
-                           <tr data-id="<?= htmlspecialchars($request['id']) ?>" data-doctor-id="<?= htmlspecialchars($request['doctor_id']) ?>">
-                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
-                              <td><?= htmlspecialchars($request['first_name']) ?></td>
-                              <td><?= htmlspecialchars($request['date']) ?></td>
+                           <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['date']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
@@ -70,10 +70,10 @@
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
-                           <tr data-id="<?= htmlspecialchars($request['id']) ?>" data-doctor-id="<?= htmlspecialchars($request['doctor_id']) ?>">
-                              <td><?= htmlspecialchars($request['patient_id']) ?></td>
-                              <td><?= htmlspecialchars($request['first_name']) ?></td>
-                              <td><?= htmlspecialchars($request['date']) ?></td>
+                           <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['date']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>

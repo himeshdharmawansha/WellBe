@@ -22,9 +22,9 @@
          <div class="dashboard-content">
             <h2>MEDICINES NEED TO BE GIVEN:</h2>
             <?php
-            $requestID = isset($_GET['ID']) ? htmlspecialchars($_GET['ID']) : null;
-            $doctorID = isset($_GET['doctor_id']) ? htmlspecialchars($_GET['doctor_id']) : null;
-            $patientID = isset($_GET['patient_id']) ? htmlspecialchars($_GET['patient_id']) : null;
+            $requestID = isset($_GET['ID']) ? esc($_GET['ID']) : null;
+            $doctorID = isset($_GET['doctor_id']) ? esc($_GET['doctor_id']) : null;
+            $patientID = isset($_GET['patient_id']) ? esc($_GET['patient_id']) : null;
 
             if ($requestID && $doctorID && $patientID) {
                $db = new Database();
@@ -68,7 +68,7 @@
                      $ifNeeded = $takenTimeArray[3] ?? 0;
                      $substitution = $medication['substitution'] == 0 ? "can't" : "can";
 
-                     $currentState = htmlspecialchars($medication['state']);
+                     $currentState = esc($medication['state']);
 
                      echo "<tr>
                                <td>{$medication['medication_name']}</td>

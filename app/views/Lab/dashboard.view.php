@@ -31,19 +31,19 @@
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-hourglass-start"></i>
                             </span>
-                            <p><?= htmlspecialchars($data['counts']['pending']) ?><br>New_Requests</p>
+                            <p><?= esc($data['counts']['pending']) ?><br>New_Requests</p>
                         </div>
                         <div class="card ongoing" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fa-solid icon fa-microscope"></i>
                             </span>
-                            <p><?= htmlspecialchars($data['counts']['ongoing']) ?><br>In_progress</p>
+                            <p><?= esc($data['counts']['ongoing']) ?><br>In_progress</p>
                         </div>
                         <div class="card completed" onclick="window.location.href='requests'">
                             <span class="circle-background">
                                 <i class="fas icon fa-tasks"></i>
                             </span>
-                            <p><?= htmlspecialchars($data['counts']['completed']) ?><br>Completed</p>
+                            <p><?= esc($data['counts']['completed']) ?><br>Completed</p>
                         </div>
                     </div>
                 </div>

@@ -42,9 +42,9 @@ $currentUserId = $_SESSION['userid'];
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
                               onclick="selectChat(this, '<?php echo $user['id']; ?>')">
-                              <img src="<?php echo htmlspecialchars($user['image']); ?>" alt="Avatar" class="avatar">
+                              <img src="<?php echo esc($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
-                                 <h4><?php echo htmlspecialchars($user['username']); ?></h4>
+                                 <h4><?php echo esc($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
                               </div>
                               <div class="chat-side">

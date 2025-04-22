@@ -11,8 +11,6 @@ class Login extends Controller
             if (isset($_POST['nic'])) {
 
                 $id = $_POST['nic'];
-                $_SESSION['userid'] = $id;
-
                 
 
                 // Check if 'd' exists in the string
@@ -32,20 +30,17 @@ class Login extends Controller
                     $user = new Admin;
                     $_SESSION['user_type'] = "admin";
                 }
-                elseif (strpos($id, 'r') !== false) {
-                    $user = new Receptionist;
-                    $_SESSION['user_type'] = "receptionist";
-                }
 
                 //password_verify($_POST['password'], $row->password
                 $arr['nic'] = $_POST['nic'];
                 $row = $user->first($arr);
 
                 if ($row) {
-                    if (password_verify($_POST['password'], $row->password)) {
+                    if ($_POST['password'] == $row->password) {
                 
                         $_SESSION['USER'] = $row; // Save user details in the session
                         $model->loggedin();
+                        $_SESSION['userid'] = $row->id;
                         redirect($_SESSION['user_type']);
                     } else {
                         $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password

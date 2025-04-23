@@ -107,9 +107,20 @@ h1 {
     font-size: 16px;
 }
 
-.loginsignup-login span {
-    color: #4141ff;
+/* .loginsignup-login span {
+    color: #729fcf;
     font-weight: 600;
+   
+} */
+.loginsignup-login span a {
+    color: #007BFF;
+    font-weight: 300;
+    text-decoration: none;
+     
+}
+
+.loginsignup-login span a:hover {
+    text-decoration: underline;
 }
 
 .loginsignup-agree {
@@ -145,6 +156,30 @@ h1 {
 .password-wrapper {
     position: relative;
     width: 100%;
+    margin-bottom: -10px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.forgot-password {
+    align-self: flex-end;
+    margin-top: 1px;
+}
+
+.forgot-password a {
+    font-size: 0.9rem;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
 }
 
 .password-wrapper input {
@@ -152,6 +187,7 @@ h1 {
     padding-right: 40px; /* reserve space for the icon inside the input */
     box-sizing: border-box;
 }
+
 
 .toggle-password {
     position: absolute;

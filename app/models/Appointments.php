@@ -398,4 +398,11 @@ class Appointments extends Model
         return $this->query($query, $params);
     }
 
+    public function getEWallet($id){
+        $query = "SELECT e_wallet FROM patient WHERE id = ?";
+
+        return $this->readn($query, [$id]);
+
+    }
+
 }

@@ -1,5 +1,5 @@
 <?php
-    //print_r($appointments);
+//print_r($appointments);
 ?>
 
 <!DOCTYPE html>
@@ -41,24 +41,24 @@
                     <?php if (!empty($appointments)) : ?>
                         <?php foreach ($appointments as $appointment) : ?>
                             <div class="card">
-                                <p>Hi <span><?= htmlspecialchars($_SESSION['USER']->first_name ?? 'Patient') ?></span>,</p>
+                                <p>Hi <span><?= htmlspecialchars((string)($_SESSION['USER']->first_name ?? 'Patient')) ?></span>,</p>
                                 <p>You have an appointment with:</p>
                                 <p class="doc_name">
-                                    <span>Dr. <?= htmlspecialchars($appointment->doctor_first_name . " " . $appointment->doctor_last_name) ?>
-                                        (<?= htmlspecialchars($appointment->specialization) ?>)</span>
+                                    <span>Dr. <?= htmlspecialchars((string)($appointment->doctor_first_name ?? '')) . ' ' . htmlspecialchars((string)($appointment->doctor_last_name ?? '')) ?>
+                                        (<?= htmlspecialchars((string)($appointment->specialization ?? '')) ?>)</span>
                                 </p>
-                                <p>Appointment Number: <span><strong><?= htmlspecialchars($appointment->appointment_id) ?></strong></span></p>
-                                <p>Appointment Date: <span><strong><?= date('Y-m-d', strtotime($appointment->date)) ?></strong></span></p>
-                                <p>Appointment Time: <span><strong><?= htmlspecialchars($appointment->start_time) ?></strong></span></p>
+                                <p>Appointment Number: <span><strong><?= htmlspecialchars((string)($appointment->appointment_id ?? '')) ?></strong></span></p>
+                                <p>Appointment Date: <span><strong><?= htmlspecialchars((string)(date('Y-m-d', strtotime($appointment->date ?? 'now')))) ?></strong></span></p>
+                                <p>Appointment Time: <span><strong><?= htmlspecialchars((string)($appointment->start_time ?? '')) ?></strong></span></p>
 
                                 <?php
-                                $status = htmlspecialchars($appointment->state);
+                                $status = htmlspecialchars((string)($appointment->state ?? ''));
                                 ?>
                                 <p>Appointment Status: <span style="font-weight:bold;"><?= $status ?></span></p>
 
                                 <?php
-                                $rawStatus = $appointment->payment_status;
-                                $paymentStatus = htmlspecialchars($rawStatus);
+                                $rawStatus = $appointment->payment_status ?? '';
+                                $paymentStatus = htmlspecialchars((string)$rawStatus);
 
                                 if ($paymentStatus === 'Paid') {
                                     $color = 'green';
@@ -74,6 +74,7 @@
                                         <?= $label ?>
                                     </span>
                                 </p>
+
 
                                 <div class="buttons">
                                     <button class="cancel" onclick="showModal(<?= $appointment->id ?>)">Cancel</button>
@@ -124,8 +125,8 @@
         function cancelAppointment() {
             //alert("Appointment Cancelled."); // Replace this with actual cancellation logic
             if (appointmentIdToCancel) {
-            // Redirect to refund route with appointment ID
-            window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentIdToCancel}`;
+                // Redirect to refund route with appointment ID
+                window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentIdToCancel}`;
             }
             closeModal();
             alert("Appointment Cancelled.");

@@ -1,3 +1,6 @@
+<?php
+    print_r($data);
+?>
 <html lang="en">
 
 <head>
@@ -50,7 +53,7 @@
                                 </button>
                                 <?php if ($appointment->patient_type == "Returning"): ?>
                                     <button class="returning_patient">
-                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
+                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>
                             </div>

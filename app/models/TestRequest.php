@@ -7,6 +7,7 @@ class TestRequest extends Model
    protected $table = 'test_requests';
    protected $allowedColumns = ['date', 'patient_id', 'doctor_id', 'state'];
 
+   
    public function getAll()
    {
       return $this->read("SELECT tr.*, t.date as date_t,d.first_name FROM test_requests tr, timeslot t, doctor d where tr.date = t.slot_id AND d.id = tr.doctor_id");
@@ -33,6 +34,12 @@ class TestRequest extends Model
       $params = [':patient_id' => '%' . $patientId . '%'];
       return $this->read($query, $params);
    }
+
+   public function getPatientDetails($patientID) {
+      $query = "SELECT first_name, email FROM patient WHERE id = :patientID";
+      $params = [':patientID' => $patientID];
+      return $this->read($query, $params);
+  }
 
    public function updateState($requestID, $newState, $testName)
    {

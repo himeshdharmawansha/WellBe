@@ -385,5 +385,22 @@ class Patient extends Model
     }
 
 
+    public function totalPatients(){
+        $query = "
+        SELECT 
+            COUNT(id) as totalPatients
+        FROM 
+            patient 
+        WHERE 
+            account_state = 'Active'
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalPatients ?? 0;
+        //return $this->query($query);
+    }
+
+
+
 
 }

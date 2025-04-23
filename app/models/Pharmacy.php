@@ -283,4 +283,19 @@ class Pharmacy extends Model
         return $this->query($query, $data);
     }
 
+    public function totalPharmacists(){
+        $query = "
+        SELECT 
+            COUNT(id) as totalPharmacists
+        FROM 
+            pharmacist 
+        WHERE 
+            account_state = 'Active'
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalPharmacists ?? 0;
+        //return $this->query($query);
+    }
+
 }

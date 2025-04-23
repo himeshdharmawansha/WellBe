@@ -410,4 +410,23 @@ class Appointments extends Model
         $query = "SELECT e_wallet FROM patient WHERE id = ?";
         return $this->readn($query, [$patient_id]);
     }
+
+
+    public function totalTodayAppointments(){
+        $query = "
+        SELECT 
+            COUNT(a.id) as totalAppointments
+        FROM 
+            appointment a
+        JOIN 
+            timeslot t ON a.date = t.slot_id
+        WHERE 
+            t.date = CURDATE()
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalAppointments ?? 0;
+        return $this->query($query);
+    }
+
 }

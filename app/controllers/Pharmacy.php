@@ -3,6 +3,9 @@
 class Pharmacy extends Controller
 {
     protected $pharmacyModel;
+    protected $medicationRequestModel;
+    private $profileModel;
+    private $chatModel;
 
     private $data = [
         'elements' => [
@@ -11,45 +14,104 @@ class Pharmacy extends Controller
             'medicines' => ["fa-solid fa-tablets", "Medicines"],
             'chat' => ["fa-solid fa-comment-dots", "Chat"],
             'report' => ["fa-solid fa-chart-simple", "Report"],
-            'logout' => ["fas fa-sign-out-alt", "Logout"],
-            'sms' => ["fas fa-sign-out-alt", "Sms"]
+            'logout' => ["fas fa-sign-out-alt", "Logout"]
         ],
         'userType' => 'pharmacy'
     ];
 
     public function __construct()
     {
-        $this->pharmacyModel = new PharmacyModel();
-
+        
         if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
             redirect('login');
             exit;
         }
+        $this->pharmacyModel = new PharmacyModel();
+        $this->medicationRequestModel = new MedicationRequest();
+        $this->profileModel = new ProfileModel();
+        $this->chatModel = new Chat();
     }
 
     public function index()
     {
         $data = [
-            'title' => 'Dashboard Page',
-            'username' => 'John Doe',
+            'requestCounts' => $this->pharmacyModel->getRequestCounts(), // Fetch request counts
         ];
         $this->view('Pharmacy/dashboard', 'dashboard', $data);
     }
 
     public function requests()
     {
-        $this->view('Pharmacy/requests', 'requests');
+        // Fetch all requests
+        $requests = $this->medicationRequestModel->getAll();
+
+        // Separate pending and completed requests
+        $pendingRequests = array_filter($requests, function ($request) {
+            return $request['state'] === 'pending';
+        });
+        $completedRequests = array_filter($requests, function ($request) {
+            return $request['state'] === 'completed';
+        });
+
+        $data = [
+            'pendingRequests' => array_values($pendingRequests),
+            'completedRequests' => array_values($completedRequests)
+        ];
+
+        $this->view('Pharmacy/requests', 'requests', $data);
     }
-    public function sms()
+
+    public function getRequestsJson()
     {
-        $this->view('Pharmacy/sms', 'sms');
+        $requests = $this->medicationRequestModel->getAll();
+        header('Content-Type: application/json');
+        echo json_encode($requests);
+        exit;
+    }
+
+    private function UnseenCounts($roles)
+    {
+        if (empty($roles)) {
+            return ['error' => 'Invalid or missing roles parameter'];
+        }
+
+        try {
+            $result = $this->chatModel->getUnseenCounts($roles);
+            return $result;
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 
     public function chat()
     {
+        // Fetch unseen counts using the local UnseenCounts method
+        $unseenCounts = $this->UnseenCounts([3, 5]);
+        $user_profile = $unseenCounts;
+        if (!is_array($user_profile)) {
+            $user_profile = [];
+        }
+
+        // Fetch all profiles
+        $profiles = $this->profileModel->getAll();
+        if (!empty($profiles) && !isset($profiles['error'])) {
+            $profileMap = [];
+            foreach ($profiles as $profile) {
+                $profileMap[$profile->id] = $profile;
+            }
+            foreach ($user_profile as &$user) {
+                if (isset($user['id']) && isset($profileMap[$user['id']])) {
+                    $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
+                } else {
+                    $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
+                }
+            }
+            unset($user);
+        }
+
+        // Pass data to the view
         $data = [
-            'title' => 'Dashboard Page',
-            'username' => 'John Doe',
+            'user_profile' => $user_profile
         ];
         $this->view('Pharmacy/chat', 'chat', $data);
     }
@@ -82,11 +144,11 @@ class Pharmacy extends Controller
         require $filename;
     }
 
-    public function getRequestCounts()
-    {
-        $counts = $this->pharmacyModel->getRequestCounts();
-        echo json_encode($counts);
-    }
+    // public function getRequestCounts()
+    // {
+    //     $counts = $this->pharmacyModel->getRequestCounts();
+    //     echo json_encode($counts);
+    // }
 
     public function getRequestsByDay()
     {

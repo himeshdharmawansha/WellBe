@@ -1,32 +1,5 @@
 <?php
-require_once(__DIR__ . "/../../controllers/ChatController.php");
-require_once(__DIR__ . "/../../models/ProfileModel.php");
-
-$he = new ChatController();
-$profileModel = new ProfileModel();
-
-$unseenCounts = $he->UnseenCounts([3, 5]);
-$user_profile = $unseenCounts;
-if (!is_array($user_profile)) {
-   $user_profile = [];
-}
 $currentUserId = $_SESSION['userid'];
-
-$profiles = $profileModel->getAll();
-if (!empty($profiles) && !isset($profiles['error'])) {
-   $profileMap = [];
-   foreach ($profiles as $profile) {
-      $profileMap[$profile->id] = $profile;
-   }
-   foreach ($user_profile as &$user) {
-      if (isset($user['id']) && isset($profileMap[$user['id']])) {
-         $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
-      } else {
-         $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
-      }
-   }
-   unset($user);
-}
 ?>
 
 <!DOCTYPE html>
@@ -69,9 +42,9 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
                               onclick="selectChat(this, '<?php echo $user['id']; ?>')">
-                              <img src="<?php echo htmlspecialchars($user['image']); ?>" alt="Avatar" class="avatar">
+                              <img src="<?php echo esc($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
-                                 <h4><?php echo htmlspecialchars($user['username']); ?></h4>
+                                 <h4><?php echo esc($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
                               </div>
                               <div class="chat-side">
@@ -155,17 +128,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       </ul>
    </div>
 
-   <!-- Add this just before the discard-notification div -->
+   <!-- Dim overlay -->
    <div id="dim-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 99;"></div>
-
-   <div id="discard-notification" style="display: none; position: fixed; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; z-index: 100;">
-      <h4>Discard unsent message?</h4>
-      <p>Your message, including attached media, will not be sent if you leave this screen.</p>
-      <div class="notification-actions">
-         <button onclick="discardFile()" class="discard-btn">Discard</button>
-         <button onclick="returnToMedia()" class="return-btn">Return to media</button>
-      </div>
-   </div>
 
    <div id="discard-notification" style="display: none; position: fixed; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; z-index: 100;">
       <h4>Discard unsent message?</h4>
@@ -601,10 +565,6 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                body: formData
             })
             .then(response => {
-               // Log the response status and headers for debugging
-               console.log('Response Status:', response.status);
-               console.log('Response Headers:', response.headers);
-               // Check if the response is OK (status 200-299)
                if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
                }
@@ -613,12 +573,10 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             .then(data => {
                if (data.status === "success") {
                   messageInput.value = '';
-                  // Remove the unseen messages line
                   const unseenLine = document.querySelector('.unseen-line');
                   if (unseenLine) {
                      unseenLine.remove();
                   }
-                  // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
                   refreshUnseenCounts([3, 5]);
@@ -675,15 +633,15 @@ if (!empty($profiles) && !isset($profiles['error'])) {
             return;
          } else if (selectedFileType === 'document') {
             const allowedDocumentTypes = [
-               'application/pdf', // PDF
-               'application/msword', // Word (.doc)
-               'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word (.docx)
-               'application/vnd.ms-excel', // Excel (.xls)
-               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel (.xlsx)
-               'text/plain', // Text (.txt)
-               'text/csv', // CSV (.csv)
-               'application/rtf', // RTF (.rtf)
-               'application/zip' // ZIP (.zip)
+               'application/pdf',
+               'application/msword',
+               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+               'application/vnd.ms-excel',
+               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+               'text/plain',
+               'text/csv',
+               'application/rtf',
+               'application/zip'
             ];
             if (!allowedDocumentTypes.includes(fileType)) {
                alert("Invalid document format. Only PDF, Word, Excel, TXT, CSV, RTF, and ZIP files are allowed.");
@@ -704,15 +662,12 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          } else if (selectedFileType === 'document') {
             const div = document.createElement('div');
             div.classList.add('document-preview');
-            // Truncate file name to 40 characters and append "..."
             const maxLength = 40;
             let displayName = file.name;
             if (displayName.length > maxLength) {
                displayName = displayName.substring(0, maxLength - 3) + '...';
             }
-            // Calculate file size in MB
             const fileSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-            // Determine file type and icon
             let fileTypeDisplay = 'Document';
             let iconClass;
             if (fileType === 'application/pdf') {
@@ -751,18 +706,14 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          }
 
          previewArea.style.display = 'block';
-
-         // Reset the flag when a new file is selected
          isNotificationDismissed = false;
-
-         // Add click event listener to detect clicks outside the preview area
          setTimeout(() => {
             document.addEventListener('click', handleOutsideClick);
          }, 0);
       }
 
-      let isNotificationDismissed = false; // This should already be at the top of your <script> tag
-      let ignoreNextOutsideClick = false; // Add this new flag to prevent immediate re-triggering
+      let isNotificationDismissed = false;
+      let ignoreNextOutsideClick = false;
 
       function handleOutsideClick(event) {
          const previewArea = document.getElementById('preview-area');
@@ -770,18 +721,15 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          const uploadIcon = document.querySelector('.upload');
          const notification = document.getElementById('discard-notification');
 
-         // If we should ignore this click (e.g., right after clicking "Return to media"), skip processing
          if (ignoreNextOutsideClick) {
-            ignoreNextOutsideClick = false; // Reset the flag after ignoring the click
+            ignoreNextOutsideClick = false;
             return;
          }
 
-         // If the notification is already visible, don't show it again
          if (notification.style.display === 'block') {
             return;
          }
 
-         // Check if the click is outside the preview area, upload popup, and upload icon
          if (
             !previewArea.contains(event.target) &&
             !uploadPopup.contains(event.target) &&
@@ -795,98 +743,53 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       function showDiscardNotification() {
          const notification = document.getElementById('discard-notification');
          const chatWindow = document.getElementById('chat-window');
-         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
+         const dimOverlay = document.getElementById('dim-overlay');
 
-         // Get the dimensions and position of the chat window
          const chatWindowRect = chatWindow.getBoundingClientRect();
-
-         // Calculate the center position
          const centerX = chatWindowRect.left + (chatWindowRect.width / 2);
          const centerY = chatWindowRect.top + (chatWindowRect.height / 2);
 
-         // Get the dimensions of the notification to offset it so it's centered
          const notificationRect = notification.getBoundingClientRect();
          const notificationWidth = notificationRect.width;
          const notificationHeight = notificationRect.height;
 
-         // Custom position: adjust these offsets to position the notification
-         const verticalOffset = -140; // Moves the notification 50px above the center (negative = up, positive = down)
-         const horizontalOffset = -330; // Moves the notification horizontally (negative = left, positive = right)
+         const verticalOffset = -140;
+         const horizontalOffset = -330;
          const adjustedX = centerX - (notificationWidth / 2) + horizontalOffset;
          const adjustedY = centerY - (notificationHeight / 2) + verticalOffset;
 
-         // Position the notification
          notification.style.left = `${adjustedX}px`;
          notification.style.top = `${adjustedY}px`;
          notification.style.display = 'block';
-
-         // Show the dim overlay
          dimOverlay.style.display = 'block';
-
-         // Reset the dismissed flag when showing the notification
          isNotificationDismissed = false;
       }
 
       function discardFile() {
-         console.log("discardFile called");
          const previewArea = document.getElementById('preview-area');
          const fileInput = document.getElementById('file-upload');
          const notification = document.getElementById('discard-notification');
-         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
+         const dimOverlay = document.getElementById('dim-overlay');
 
-         if (!previewArea || !fileInput || !notification || !dimOverlay) {
-            console.error("One or more elements not found:", {
-               previewArea,
-               fileInput,
-               notification,
-               dimOverlay
-            });
-            return;
-         }
-
-         // Clear the preview and reset the file input
          previewArea.style.display = 'none';
          fileInput.value = '';
          document.getElementById('caption-input').value = '';
          selectedFile = null;
          selectedFileType = null;
          notification.style.display = 'none';
-
-         // Hide the dim overlay
          dimOverlay.style.display = 'none';
-
-         // Reset the flag since the preview area is closed
          isNotificationDismissed = false;
-
-         // Remove the outside click listener
          document.removeEventListener('click', handleOutsideClick);
       }
 
       function returnToMedia() {
-         console.log("returnToMedia called");
          const notification = document.getElementById('discard-notification');
          const previewArea = document.getElementById('preview-area');
-         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
+         const dimOverlay = document.getElementById('dim-overlay');
 
-         if (!notification || !previewArea || !dimOverlay) {
-            console.error("Elements not found:", {
-               notification,
-               previewArea,
-               dimOverlay
-            });
-            return;
-         }
-
-         // Hide the notification
          notification.style.display = 'none';
-
-         // Hide the dim overlay
          dimOverlay.style.display = 'none';
-
-         // Ensure the preview area remains visible
          previewArea.style.display = 'block';
-
-         // Prevent the next outside click from re-showing the notification
          ignoreNextOutsideClick = true;
       }
 
@@ -910,10 +813,6 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                body: formData
             })
             .then(response => {
-               // Log the response status and headers for debugging
-               console.log('Response Status:', response.status);
-               console.log('Response Headers:', response.headers);
-               // Check if the response is OK (status 200-299)
                if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
                }
@@ -926,12 +825,10 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   document.getElementById('preview-area').style.display = 'none';
                   selectedFile = null;
                   selectedFileType = null;
-                  // Remove the unseen messages line
                   const unseenLine = document.querySelector('.unseen-line');
                   if (unseenLine) {
                      unseenLine.remove();
                   }
-                  // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
                   refreshUnseenCounts([3, 5]);
@@ -953,11 +850,10 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       }
 
       function downloadFile(url, fileName) {
-         // Clean the file name to remove any unwanted characters or paths
          const cleanFileName = fileName.replace(/[^a-zA-Z0-9\.\-_]/g, '_');
          const a = document.createElement('a');
          a.href = url;
-         a.download = cleanFileName; // Use the cleaned file name for the "Save As" dialog
+         a.download = cleanFileName;
          document.body.appendChild(a);
          a.click();
          document.body.removeChild(a);
@@ -1023,7 +919,6 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                   return;
                }
 
-               // Update the unseenCountsMap
                unseenCountsMap = {};
                users.forEach(user => {
                   unseenCountsMap[user.id] = user.unseen_count || 0;

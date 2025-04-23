@@ -42,9 +42,9 @@ $testDetails = $he->getTestDetails($requestID);
                      <tbody>
                         <?php if (!empty($testDetails)): ?>
                            <?php foreach ($testDetails as $detail): ?>
-                              <tr data-request-id="<?= htmlspecialchars($requestID) ?>">
-                                 <td><?= htmlspecialchars($detail['test_name']) ?></td>
-                                 <td><?= htmlspecialchars($detail['priority']) ?></td>
+                              <tr data-request-id="<?= esc($requestID) ?>">
+                                 <td><?= esc($detail['test_name']) ?></td>
+                                 <td><?= esc($detail['priority']) ?></td>
                                  <td>
                                     <select name="state" data-test-name="<?= $detail['test_name'] ?>" class="state-selector">
                                        <option value="pending" <?= $detail['state'] == 'pending' ? 'selected' : '' ?>>Pending</option>

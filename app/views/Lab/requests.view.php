@@ -26,23 +26,34 @@
             </div>
 
             <div class="search-container">
-               <input type="text" class="search-input" placeholder="Search">
+               <input type="text" class="search-input" placeholder="Search Patient ID" id="searchPatientId">
             </div>
 
             <div id="pending-requests" class="requests-section active">
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
-                     <tr>
-                        <td colspan="4">Loading...</td>
-                     </tr>
+                     <?php if (empty($data['pendingRequests'])) : ?>
+                        <tr>
+                           <td colspan="4" style="text-align: center;">No pending requests found.</td>
+                        </tr>
+                     <?php else : ?>
+                        <?php foreach ($data['pendingRequests'] as $request) : ?>
+                           <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['date_t']) ?></td>
+                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
+                           </tr>
+                        <?php endforeach; ?>
+                     <?php endif; ?>
                   </tbody>
                </table>
             </div>
@@ -51,16 +62,27 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="ongoing-requests-body">
-                     <tr>
-                        <td colspan="4">Loading...</td>
-                     </tr>
+                     <?php if (empty($data['ongoingRequests'])) : ?>
+                        <tr>
+                           <td colspan="4" style="text-align: center;">No ongoing requests found.</td>
+                        </tr>
+                     <?php else : ?>
+                        <?php foreach ($data['ongoingRequests'] as $request) : ?>
+                           <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['date_t']) ?></td>
+                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
+                           </tr>
+                        <?php endforeach; ?>
+                     <?php endif; ?>
                   </tbody>
                </table>
             </div>
@@ -69,16 +91,27 @@
                <table class="requests-table">
                   <thead>
                      <tr>
-                        <th>Time</th>
-                        <th>Date</th>
                         <th>Patient ID</th>
-                        <th>Doctor ID</th>
+                        <th>Doctor's Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
-                     <tr>
-                        <td colspan="4">Loading...</td>
-                     </tr>
+                     <?php if (empty($data['completedRequests'])) : ?>
+                        <tr>
+                           <td colspan="4" style="text-align: center;">No completed requests found.</td>
+                        </tr>
+                     <?php else : ?>
+                        <?php foreach ($data['completedRequests'] as $request) : ?>
+                           <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['date_t']) ?></td>
+                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
+                           </tr>
+                        <?php endforeach; ?>
+                     <?php endif; ?>
                   </tbody>
                </table>
             </div>
@@ -107,7 +140,7 @@
             if (row && pendingRequestsSection.contains(row)) {
                const requestID = row.getAttribute('data-id');
 
-               fetch('<?= ROOT ?>/TestRequests/updateState', {
+               fetch('<?= ROOT ?>/Lab/updateState', {
                      method: 'POST',
                      headers: { 'Content-Type': 'application/json' },
                      body: JSON.stringify({ requestID, state: 'ongoing' }),
@@ -121,7 +154,7 @@
                         alert('Failed to update state: ' + data.error);
                      }
                   })
-                  .catch(console.error);
+                  .catch(error => console.error('Error updating state:', error));
             }
          });
 
@@ -207,7 +240,7 @@
 
          setInterval(() => {
             if (!isSearching) {
-               fetch('<?= ROOT ?>/TestRequests/getRequestsJson')
+               fetch('<?= ROOT ?>/Lab/getRequestsJson')
                   .then(response => response.json())
                   .then(data => {
                      const pending = document.getElementById('pending-requests-body');
@@ -226,23 +259,24 @@
                         });
 
                         const row = `
-                           <tr data-id="${request.id}">
-                              <td>${formattedTime}</td>
-                              <td>${request.date}</td>
+                           <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                               <td>${request.patient_id}</td>
-                              <td>${request.doctor_id}</td>
+                              <td>${request.first_name}</td>
+                              <td>${request.date_t}</td>
+                              <td>${formattedTime}</td>
                            </tr>`;
 
-                        if (request.state === 'pending' || request.state === 'ongoing') pending.innerHTML += row;
+                        if (request.state === 'pending') pending.innerHTML += row;
                         if (request.state === 'ongoing') ongoing.innerHTML += row;
                         if (request.state === 'completed') completed.innerHTML += row;
                      });
+
                      setupPagination(currentTable);
                      displayPage(currentPage);
                   })
-                  .catch(console.error);
+                  .catch(error => console.error('Error fetching requests:', error));
             }
-         }, 500);
+         }, 3000);
 
          let debounceTimeout;
          document.querySelector('.search-input').addEventListener('input', function(e) {
@@ -252,7 +286,7 @@
                if (searchTerm) {
                   isSearching = true;
 
-                  fetch(`<?= ROOT ?>/TestRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
+                  fetch(`<?= ROOT ?>/Lab/searchRequestsByPatientId?patient_id=${searchTerm}`)
                      .then(response => response.json())
                      .then(data => {
                         const requestBodies = document.querySelectorAll('.requests-section tbody');
@@ -267,14 +301,14 @@
                               });
 
                               const row = `
-                                 <tr data-id="${request.id}">
-                                    <td>${formattedTime}</td>
-                                    <td>${request.date}</td>
+                                 <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                     <td>${request.patient_id}</td>
-                                    <td>${request.doctor_id}</td>
+                                    <td>${request.first_name}</td>
+                                    <td>${request.date_t}</td>
+                                    <td>${formattedTime}</td>
                                  </tr>`;
 
-                              if (request.state === 'pending' || request.state === 'ongoing') {
+                              if (request.state === 'pending') {
                                  document.querySelector("#pending-requests-body").innerHTML += row;
                               }
                               if (request.state === 'ongoing') {
@@ -320,10 +354,10 @@
             const row = e.target.closest('tr[data-id]');
             if (row) {
                const requestID = row.getAttribute('data-id');
-               const doctorID = row.querySelector('td:nth-child(4)').textContent.trim();
-               const patientID = row.querySelector('td:nth-child(3)').textContent.trim();
+               const doctorID = row.getAttribute('data-doctor-id');
+               const patientID = row.querySelector('td:nth-child(1)').textContent.trim();
 
-               window.location.href = `labTestDetails?ID=${encodeURIComponent(requestID)}&patient_id=${encodeURIComponent(patientID)}`;
+               window.location.href = `labTestDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
             }
          });
       });

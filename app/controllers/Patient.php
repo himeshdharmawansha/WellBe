@@ -37,20 +37,18 @@ class Patient extends Controller
 
       $ewalletArray = $appointmentsModel->getEWallet($patient_id);
       if (!$ewalletArray || empty($ewalletArray[0]['e_wallet'])) {
-         $ewalletAmount = (object)['e_wallet' => 0];
+          $ewalletAmount = (object)['e_wallet' => 0];
       } else {
-         $ewalletAmount = (object)['e_wallet' => $ewalletArray[0]['e_wallet']];
-      }
-
-
+          $ewalletAmount = (object)['e_wallet' => $ewalletArray[0]['e_wallet']];
+      }      
 
       // Pass appointment data to the dashboard view
       $this->view('Patient/patient_dashboard', 'patient_dashboard', [
          'appointments' => $appointments,
          'rescheduledAppointments' => $rescheduledAppointments,
          'ewalletAmount' => $ewalletAmount
-      ]);
-   }
+     ]);
+   }     
 
 
    public function medicalreports()

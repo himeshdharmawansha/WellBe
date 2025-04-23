@@ -214,12 +214,13 @@ class TestRequests extends Controller
                 $testList = implode(', ', $testNames);
 
                 $message = "
+                   <p>
                    <h3>Dear $patientName,</h3>
                    <p>We are pleased to inform you that your lab test report(s) for Request ID: $requestID are now ready. The following tests have been completed:</p>
                    <ul><li>$testList</li></ul>
                    <p>Please visit our portal or contact our support team to access your report.</p>
                    <p>Thank you for choosing WELLBE Lab Services.</p>
-                   <p>Best regards,<br>WELLBE Lab Services Team</p>
+                   <p>Best regards,<br>WELLBE Lab Services Team
                ";
 
                 // Send email using the email model

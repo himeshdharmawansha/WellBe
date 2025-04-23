@@ -241,15 +241,7 @@ $testDetails = $he->getTestDetails($requestID);
                         method: 'POST',
                         body: formData,
                     })
-                    .then(response => {
-                        console.log('Update Response Status:', response.status);
-                        if (!response.ok) {
-                            return response.text().then(text => {
-                                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
-                            });
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         console.log('Update Response Data:', data);
                         if (data.success) {

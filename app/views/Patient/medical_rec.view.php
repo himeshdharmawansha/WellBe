@@ -30,7 +30,7 @@ foreach ($medDetails as $med) {
         <div class="main-content">
             <?php
             $pageTitle = "Medical Records";
-            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/header.php';
             ?>
 
             <div class="dashboard-content">

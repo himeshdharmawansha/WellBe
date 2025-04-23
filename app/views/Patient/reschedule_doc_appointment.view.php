@@ -26,7 +26,7 @@
             <?php
 
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/Wellbe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/Wellbe/app/views/Components/header.php';
 
             ?>
 

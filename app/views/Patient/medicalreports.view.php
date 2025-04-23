@@ -22,7 +22,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Medical Reports"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/header.php';
             ?>
 
             <!-- Dashboard Content -->

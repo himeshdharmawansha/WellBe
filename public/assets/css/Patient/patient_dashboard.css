@@ -337,13 +337,13 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     margin-top: 10px; /* Add this to create space between the cards and the calendar */
-    height: auto;
+    height: 450px;
     width: 385px;
 }
 
 .additional-container {
     flex: 1; /* Adjusts the size so both containers take equal space */
-    border: 1px solid #ccc; /* Optional styling */
+    /* border: 1px solid #ccc; */
     background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
@@ -358,11 +358,11 @@
 }
 
 .mini-scroll-container {
-  max-height: 360px; /* Adjust height based on your card size */
+  max-height: 390px; /* Adjust height based on your card size */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Optional: space between cards */
+  gap: 1px; /* Optional: space between cards */
   padding-right: 8px; /* For scrollbar space */
 }
 

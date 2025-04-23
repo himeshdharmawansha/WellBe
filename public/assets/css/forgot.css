@@ -1,0 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: linear-gradient(
+        to right,
+        rgba(18, 172, 141, 0.345),
+        rgba(18, 172, 142, 0.7)
+    ),
+    url("http://localhost/wellbe/public/assets/images/login.jpg");
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.main form {
+    width: 400px;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.field {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.field input {
+    width: 100%;
+    height: 50px;
+    padding: 0 20px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.field input:focus {
+    border-color: #18ac8d;
+    box-shadow: 0 0 5px rgba(18, 172, 141, 0.5);
+}
+
+.field input::placeholder {
+    color: #aaa;
+}
+
+input[type="submit"] {
+    width: 100%;
+    height: 50px;
+    background-color: #18ac8d;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+input[type="submit"]:hover {
+    background-color: #17a07d;
+}
+
+.forgotpass,
+.signup_link {
+    margin-top: 20px;
+    color: #5c5c5c;
+    font-size: 16px;
+}
+
+.forgotpass a,
+.signup_link a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.forgotpass a:hover,
+.signup_link a:hover {
+    text-decoration: underline;
+}
+
+.forgot-message {
+    margin-top: -15px;
+    color: red;
+    font-size: 14px;
+}
+
+@media(max-width: 1280px) {
+    .main form {
+        width: 90%;
+        max-width: 450px;
+    }
+}
+
+@media(max-width: 800px) {
+    .main form {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .field input {
+        height: 45px;
+    }
+
+    input[type="submit"] {
+        height: 50px;
+        font-size: 16px;
+    }
+
+    .forgotpass,
+    .signup_link {
+        font-size: 14px;
+    }
+}

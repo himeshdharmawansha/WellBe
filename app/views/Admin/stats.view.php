@@ -278,8 +278,12 @@
                         <input type="text" name="doctor-name">
                     </div>
                     <div class="filter-label">
-                        <span class="filters">Date:</span>
-                        <input type="date" name="appointment-date">
+                        <span class="filters">Start Date:</span>
+                        <input type="date" name="start-date">
+                    </div>
+                    <div class="filter-label">
+                        <span class="filters">End Date:</span>
+                        <input type="date" name="end-date">
                     </div>
                     <div class="filter-label">
                         <button class="generate-btn" onclick="generateReport('appointments')">Generate Report</button>
@@ -370,7 +374,7 @@
                     } else if (type === "appointments") {
                         data.forEach(entry => {
                             labels.push(entry.date);
-                            values.push(entry.count);
+                            values.push(entry.total_bookings);
                         });
                     } else if (type === "staff") {
                         data.forEach(entry => {

@@ -398,4 +398,43 @@ class Appointments extends Model
         return $this->query($query, $params);
     }
 
+    public function getTotalBookings($startDate, $endDate, $doctor){
+        $query = "
+        SELECT 
+            t.date AS date,
+            COUNT(a.id) AS total_bookings
+        FROM 
+            appointment a
+        JOIN 
+            timeslot t ON a.date = t.slot_id
+        JOIN 
+            doctor d ON a.doctor_id = d.id
+        WHERE 1
+        ";
+
+        $params = [];
+
+        if (!empty($startDate)) {
+            $query .= " AND t.date >= :startDate";
+            $params['startDate'] = $startDate;
+        }
+
+        if (!empty($endDate)) {
+            $query .= " AND t.date <= :endDate";
+            $params['endDate'] = $endDate;
+        }
+
+        if (!empty($doctor)) {
+            $query .= " AND CONCAT(d.first_name, '' , d.last_name) LIKE :doctor";
+            $params['doctor'] = "%$doctor%";
+        }
+
+        $query .= " AND a.scheduled = 'Scheduled'
+                    GROUP BY t.date
+                    ORDER BY t.date ASC";
+
+        error_log("Generated query: " .$query);
+        return $this->query($query, $params);
+    }
+
 }

@@ -28,7 +28,21 @@ class Admin extends Controller
 
    public function index()
    {
-      $this->view('Admin/dashboard', 'dashboard');
+      $appointments = new Appointments();
+      $patient = new Patient();
+      $doctor = new Doctor();
+      $pharmacist = new Pharmacy();
+      $labTech = new Lab();
+
+      $data = [
+         'todayAppointmentsCount' => $appointments->totalTodayAppointments(),
+         'patientsCount'     => $patient->totalPatients(),
+         'doctorsCount'      => $doctor->totalDoctors(),
+         'pharmacistsCount'  => $pharmacist->totalPharmacists(),
+         'labTechsCount'     => $labTech->totalLabTechs(),
+     ];
+
+      $this->view('Admin/dashboard', 'dashboard', $data);
    }
 
    public function appointmentsOngoing()

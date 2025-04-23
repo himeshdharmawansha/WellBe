@@ -48,11 +48,16 @@
     display: flex;
     align-items: center;
     gap: 10px; /* Spacing between text and dropdown */
+    margin-bottom: 10px;
 }
 
 .filter-label input[name="start-age"],
 .filter-label input[name="end-age"] {
-    width: 50px;  /* Adjust width for two-digit numbers */
+    width: 50px;
+}
+
+.filter-label input{
+    /* width: 100px;  Adjust width for two-digit numbers */
     padding: 3px;
     text-align: center;
     border: 1px solid #a4a4a4;
@@ -136,10 +141,11 @@
 }
 
 .filter-card {
+    margin: 20px;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #a5bcf5;
     border-radius: 12px;
-    background-color: #f9f9f9;
+    background-color: #f1f5ff;
 }
 
 

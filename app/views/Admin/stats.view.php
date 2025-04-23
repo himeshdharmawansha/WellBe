@@ -202,7 +202,7 @@
                 </div>
             </div>      -->
 
-            <div class = "reports-grid">
+            <div class = "content-container">
                 <div class = "filter-card" data-type = "patient">
                     <span class = "section-title">Patients</span>
                     <div class = "filter-label">
@@ -254,11 +254,9 @@
                 <div class="filter-card" data-type="profits">
                     <span class="section-title">Profits</span>
                     <div class="filter-label">
-                        <span class="filters">Start Date:</span>
+                        <span class="filters">Date Range:</span>
                         <input type="date" name="start-date">
-                    </div>
-                    <div class="filter-label">
-                        <span class="filters">End Date:</span>
+                        <span class="filters">To</span>
                         <input type="date" name="end-date">
                     </div>
                     <div class="filter-label">
@@ -278,11 +276,9 @@
                         <input type="text" name="doctor-name">
                     </div>
                     <div class="filter-label">
-                        <span class="filters">Start Date:</span>
+                        <span class="filters">Date Range:</span>
                         <input type="date" name="start-date">
-                    </div>
-                    <div class="filter-label">
-                        <span class="filters">End Date:</span>
+                        <span class="filters">To</span>
                         <input type="date" name="end-date">
                     </div>
                     <div class="filter-label">

@@ -236,8 +236,7 @@ class Patient extends Model
                 nic, 
                 CONCAT(first_name, ' ', last_name) AS name, 
                 age, 
-                contact,
-                e_wallet
+                contact
             FROM patient
         ";
         return $this->query($query); // Use the query method to execute and fetch data
@@ -383,6 +382,23 @@ class Patient extends Model
         error_log("Generated query: " .$query);
         return $this->query($query, $params);
     }
+
+
+    public function totalPatients(){
+        $query = "
+        SELECT 
+            COUNT(id) as totalPatients
+        FROM 
+            patient 
+        WHERE 
+            account_state = 'Active'
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalPatients ?? 0;
+        //return $this->query($query);
+    }
+
 
 
 

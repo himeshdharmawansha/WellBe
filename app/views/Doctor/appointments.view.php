@@ -1,6 +1,4 @@
-<?php
-    print_r($data);
-?>
+
 <html lang="en">
 
 <head>
@@ -46,13 +44,13 @@
                             <div class="card">
                                 <p>Name: <span class="doc_name"><?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?></span></p>
                                 <p>Appointment ID: <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
-                                <p>Gender: <span class="doc_name"><?php echo $appointment->gender; ?></span></p>
+                                <p>Gender: <span class="doc_name">
+                                    <?php echo (strtolower($appointment->gender) === 'm') ? 'Male' : 'Female'; ?>
+                                </span></p>
                                 <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
-                                <button class="btn1" style="margin-top: 10px; background-color: #f59e0b; color: white; font-weight: 600;">
-                                    <?php echo htmlspecialchars($appointment->patient_type); ?> Patient
-                                </button>
-                                <?php if ($appointment->patient_type == "Returning"): ?>
-                                    <button class="returning_patient">
+                                <button class="btn-new" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
+                                <?php if($appointment->patient_type == "RETURNING"): ?>
+                                    <button class="btn-returning">
                                         <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>

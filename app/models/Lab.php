@@ -282,6 +282,21 @@ class Lab extends Model
         return $this->query($query, $data);
     }
 
+    public function totalLabTechs(){
+        $query = "
+        SELECT 
+            COUNT(id) as totalLabTechs
+        FROM 
+            lab_technician 
+        WHERE 
+            account_state = 'Active'
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalLabTechs ?? 0;
+        //return $this->query($query);
+    }
+
     public function getErrors()
     {
         return $this->errors;

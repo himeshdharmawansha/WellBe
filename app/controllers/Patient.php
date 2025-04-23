@@ -27,17 +27,29 @@ class Patient extends Controller
    public function index()
    {
       $appointmentsModel = new Appointments();
+
       $patient_id = $_SESSION['USER']->id;
 
       //get rescheduled appointments
       $rescheduledAppointments = $appointmentsModel->getRescheduledApppointments($patient_id);
-   
+
       $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
-   
+
+      $ewalletArray = $appointmentsModel->getEWallet($patient_id);
+      if (!$ewalletArray || empty($ewalletArray[0]['e_wallet'])) {
+          $ewalletAmount = (object)['e_wallet' => 0];
+      } else {
+          $ewalletAmount = (object)['e_wallet' => $ewalletArray[0]['e_wallet']];
+      }      
+
       // Pass appointment data to the dashboard view
-      $this->view('Patient/patient_dashboard', 'patient_dashboard', ['appointments' => $appointments, 'rescheduledAppointments' => $rescheduledAppointments]);
-   }
-   
+      $this->view('Patient/patient_dashboard', 'patient_dashboard', [
+         'appointments' => $appointments,
+         'rescheduledAppointments' => $rescheduledAppointments,
+         'ewalletAmount' => $ewalletAmount
+     ]);
+   }     
+
 
    public function medicalreports()
    {
@@ -57,48 +69,49 @@ class Patient extends Controller
 
    public function labreports()
    {
-       $labTest = new LabTest();
-       $patientId = $_SESSION['USER']->id;
-       $labRequests = $labTest->getRequest($patientId);
+      $labTest = new LabTest();
+      $patientId = $_SESSION['USER']->id;
+      $labRequests = $labTest->getRequest($patientId);
 
-       // Filter unique requests based on id
-       $uniqueRequests = [];
-       $seenIds = [];
-       foreach ($labRequests as $request) {
-           if (!in_array($request->id, $seenIds)) {
-               $seenIds[] = $request->id;
-               $uniqueRequests[] = $request;
-           }
-       }
+      // Filter unique requests based on id
+      $uniqueRequests = [];
+      $seenIds = [];
+      foreach ($labRequests as $request) {
+         if (!in_array($request->id, $seenIds)) {
+            $seenIds[] = $request->id;
+            $uniqueRequests[] = $request;
+         }
+      }
 
-       $data['labRequests'] = $uniqueRequests;
-       $this->view('Patient/labreports', 'labreports', $data);
+      $data['labRequests'] = $uniqueRequests;
+      $this->view('Patient/labreports', 'labreports', $data);
    }
-   
 
-   public function reschedule_doc_appointment($id){
+
+   public function reschedule_doc_appointment($id)
+   {
 
       $data = [];
       $doctor = new Doctor(); // Instantiate the Doctor model
 
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-         
-         if(isset($_POST['specialization'])){
+
+         if (isset($_POST['specialization'])) {
             $doctor_name = isset($_POST['doctor']) ? $_POST['doctor'] : '';
             $specialization = isset($_POST['specialization']) ? $_POST['specialization'] : '';
-   
+
             $data['doctor_name'] = $doctor_name;
 
             if (empty($doctor_name) || empty($specialization)) {
                $data['error'] = "Please select a doctor.";
             } else {
 
-               $name = explode(" ",$doctor_name);
+               $name = explode(" ", $doctor_name);
 
                $first_name = $name[0];
                $last_name = isset($name[1]) ? $name[1] : "";
 
-               $docId = $doctor->getDoctorId($first_name,$last_name);
+               $docId = $doctor->getDoctorId($first_name, $last_name);
                $data['docId'] = $docId[0]->id;
                $data['doctorFee'] = $doctor->getFeesByDoctorId($docId[0]->id)[0]->fees;
                //echo $docId[0]->id;
@@ -111,16 +124,16 @@ class Patient extends Controller
                $appointment = new Appointments();
 
                //get current appointment num
-               $appointmentNums = $appointment->getAppointment($docId[0]->id,$availableDates['todayId']);
+               $appointmentNums = $appointment->getAppointment($docId[0]->id, $availableDates['todayId']);
 
-               foreach($availableDates['matchedDates'] as &$day){
+               foreach ($availableDates['matchedDates'] as &$day) {
                   $isScheduled = NULL;
-                  foreach($appointmentNums as $appointmentNum){
-                     if($day['slot_id'] === $appointmentNum->date){
-                        $isScheduled = $appointmentNum->appointment_id+1;
+                  foreach ($appointmentNums as $appointmentNum) {
+                     if ($day['slot_id'] === $appointmentNum->date) {
+                        $isScheduled = $appointmentNum->appointment_id + 1;
                      }
                   }
-                  if(!$isScheduled){
+                  if (!$isScheduled) {
                      $isScheduled = 1;
                   }
                   $day['appointment_id'] = $isScheduled;
@@ -128,27 +141,26 @@ class Patient extends Controller
 
                $data['dates'] = $availableDates['matchedDates'];
             }
-         }else{
+         } else {
             $newDocId = $_POST['doc_id'] ?? null;
             $newAppointmentId = $_POST['appointment_id'] ?? null;
             $newDate = $_POST['day'] ?? null;
 
             $timeslot = new Timeslot();
-            $newDateSlotId = $timeslot -> getDateId($newDate);
+            $newDateSlotId = $timeslot->getDateId($newDate);
             print_r($newDateSlotId);
             //print_r($_POST);
 
             $appointment = new Appointments();
-            $appointment->rescheduleAppointment($id,$newDocId,$newAppointmentId,$newDateSlotId[0]->slot_id);
+            $appointment->rescheduleAppointment($id, $newDocId, $newAppointmentId, $newDateSlotId[0]->slot_id);
          }
-         
       }
 
       $data['doctors'] = $doctor->getDoctorsWithSpecializations(); // Fetch all doctor name
-    
+
       //print_r($data['doctors']);
 
-      $this->view('Patient/reschedule_doc_appointment', 'doc_appointment',$data);
+      $this->view('Patient/reschedule_doc_appointment', 'doc_appointment', $data);
    }
 
    public function refund($id)
@@ -157,7 +169,7 @@ class Patient extends Controller
       $payment->refund();
 
       $appointment = new Appointments();
-      $appointment -> deleteAppointment($id);
+      $appointment->deleteAppointment($id);
 
       $this->view('Patient/patient_dashboard', 'patient_dashboard');
    }
@@ -226,16 +238,16 @@ class Patient extends Controller
 
    public function appointments()
    {
-       $appointmentsModel = new Appointments();
-       $patient_id = $_SESSION['USER']->id;
-   
-       $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
-   
-       // Fix: pass active tab correctly
-       $this->view('Patient/appointments', 'appointments', ['appointments' => $appointments]);
+      $appointmentsModel = new Appointments();
+      $patient_id = $_SESSION['USER']->id;
+
+      $appointments = $appointmentsModel->getAllAppointmentsForPatient($patient_id);
+
+      // Fix: pass active tab correctly
+      $this->view('Patient/appointments', 'appointments', ['appointments' => $appointments]);
    }
-   
-   
+
+
    public function chat()
    {
       $this->view('Patient/chat', 'chat');
@@ -249,60 +261,60 @@ class Patient extends Controller
    {
       $this->view('Patient/edit_profile', 'edit_profile');
    }
-   
+
    public function medical_rec()
    {
-       $patient = $_SESSION['USER'] ?? null;
-   
-       if ($patient && isset($patient->id)) {
-           $patient_id = $patient->id;
-   
-           $medicalRecord = new MedicalRecord();
-   
-           // Get all requests made by the patient
-           $requests = $medicalRecord->getRequest($patient_id);
-   
-           // Load details of the first request by default (if exists)
-           $medDetails = null;
-           if (!empty($requests)) {
-               $firstReqId = $requests[0]->id;
-               $medDetails = $medicalRecord->getMed($firstReqId);
-           }
-   
-           // Pass data to the view
-           $this->view('Patient/medical_rec', 'medical_rec', [
-               'requests' => $requests,
-               'medDetails' => $medDetails
-           ]);
-       } else {
-           $this->view('Patient/medical_rec', 'medical_rec', ['error' => 'User not logged in.']);
-       }
+      $patient = $_SESSION['USER'] ?? null;
+
+      if ($patient && isset($patient->id)) {
+         $patient_id = $patient->id;
+
+         $medicalRecord = new MedicalRecord();
+
+         // Get all requests made by the patient
+         $requests = $medicalRecord->getRequest($patient_id);
+
+         // Load details of the first request by default (if exists)
+         $medDetails = null;
+         if (!empty($requests)) {
+            $firstReqId = $requests[0]->id;
+            $medDetails = $medicalRecord->getMed($firstReqId);
+         }
+
+         // Pass data to the view
+         $this->view('Patient/medical_rec', 'medical_rec', [
+            'requests' => $requests,
+            'medDetails' => $medDetails
+         ]);
+      } else {
+         $this->view('Patient/medical_rec', 'medical_rec', ['error' => 'User not logged in.']);
+      }
    }
-   
-   
-   
-   
+
+
+
+
 
    public function Lab_download($request_id = null)
    {
-       $labTest = new LabTest();
-       $patientId = $_SESSION['USER']->id;
+      $labTest = new LabTest();
+      $patientId = $_SESSION['USER']->id;
 
-       if ($request_id) {
-           // Fetch test details for the specific request_id
-           $labReports = $labTest->getTest($patientId);
-           // Filter reports to include only those matching the request_id
-           $filteredReports = array_filter($labReports, function($report) use ($request_id) {
-               return $report->id == $request_id;
-           });
-           $data['labReports'] = $filteredReports;
-           $data['request_id'] = $request_id;
-       } else {
-           $data['labReports'] = [];
-           $data['error'] = "No test request selected.";
-       }
+      if ($request_id) {
+         // Fetch test details for the specific request_id
+         $labReports = $labTest->getTest($patientId);
+         // Filter reports to include only those matching the request_id
+         $filteredReports = array_filter($labReports, function ($report) use ($request_id) {
+            return $report->id == $request_id;
+         });
+         $data['labReports'] = $filteredReports;
+         $data['request_id'] = $request_id;
+      } else {
+         $data['labReports'] = [];
+         $data['error'] = "No test request selected.";
+      }
 
-       $this->view('Patient/lab_download', 'Lab_download', $data);
+      $this->view('Patient/lab_download', 'Lab_download', $data);
    }
 
    public function hello()
@@ -340,13 +352,13 @@ class Patient extends Controller
       //print_r($data);
       $message = "You have successfully placed an appointment with Dr. " . $data['doctor'] . " on " . $data['appointment_date'] . ". Your appointment number is: " . $data['appointment_number'] . ".";
 
-        $email = new Email();
-            $email->send(
-                "Wellbe",                    
-                "wellbe@gmail.com",            
-                $message,                  
-                $_SESSION['USER']->email,               
-            );
+      $email = new Email();
+      $email->send(
+         "Wellbe",
+         "wellbe@gmail.com",
+         $message,
+         $_SESSION['USER']->email,
+      );
 
       //find patient type(returning or new)
       $medicalRecord = new MedicalRecord();

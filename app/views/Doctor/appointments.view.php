@@ -1,4 +1,6 @@
+
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -15,38 +18,40 @@
         ?>
 
         <!-- Main Content -->
-        <div class="main-content" >
+        <div class="main-content">
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments";
             include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
-            
+
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-bottom: 10px">
-                <form action="" method="GET" style="display: flex; align-items: center;">
-                    <label for="date-select" style="margin-right: 10px; font-weight: bold;">Select Date:</label>
-                    <input type="date" id="date-select" name="selected_date" 
-                        style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                    <button type="submit" style="margin-left: 10px; padding: 5px 10px; background-color: #2278d4; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Search
-                    </button>
-                </form>
+                    <form action="" method="GET" style="display: flex; align-items: center;">
+                        <label for="date-select" style="margin-right: 10px; font-weight: bold;">Select Date:</label>
+                        <input type="date" id="date-select" name="selected_date"
+                            style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button type="submit" style="margin-left: 10px; padding: 5px 10px; background-color: #2278d4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Search
+                        </button>
+                    </form>
                 </div>
-                <hr>  
+                <hr>
                 <div class="container">
                     <?php if (!empty($data['appointmentsOnDate'])): ?>
                         <?php foreach ($data['appointmentsOnDate'] as $appointment): ?>
                             <div class="card">
                                 <p>Name: <span class="doc_name"><?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?></span></p>
                                 <p>Appointment ID: <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
-                                <p>Gender: <span class="doc_name"><?php echo $appointment->gender; ?></span></p>
+                                <p>Gender: <span class="doc_name">
+                                    <?php echo (strtolower($appointment->gender) === 'm') ? 'Male' : 'Female'; ?>
+                                </span></p>
                                 <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
-                                <button class="new_patient" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
-                                <?php if($appointment->patient_type == "Returning"): ?>
-                                    <button class="returning_patient">
-                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
+                                <button class="btn-new" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
+                                <?php if($appointment->patient_type == "RETURNING"): ?>
+                                    <button class="btn-returning">
+                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>
                             </div>
@@ -102,4 +107,5 @@
         }
     </script>
 </body>
+
 </html>

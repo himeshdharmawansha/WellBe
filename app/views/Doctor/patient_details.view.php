@@ -18,7 +18,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
         }
@@ -27,8 +27,10 @@
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            max-width: 80%;
-            max-height: 80%;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            max-heightters: 800px;
             overflow: auto;
             position: relative;
         }
@@ -40,27 +42,32 @@
         }
 
         #modalContent {
-            max-width: 90%; /* Slightly smaller to ensure close button is visible */
-            max-height: 90%;
-            padding: 40px 20px 20px 20px; /* Extra padding-top for close button */
+            width: 95%;
+            height: 95%;
+            padding: 40px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         #modalContent iframe {
             width: 100%;
-            height: 70vh; /* Fixed height to prevent overflow issues */
+            height: 100%;
             border: none;
+            transform: scale(1);
+            transform-origin: top left;
         }
 
-        /* Shared Close Button Styles */
+        /* Close Button Styles */
         .close {
             position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 24px;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
             cursor: pointer;
             color: #333;
             transition: color 0.2s;
-            z-index: 10000; /* Ensure it's above the iframe */
+            z-index: 10000;
+            font-weight: bold;
         }
 
         .close:hover {
@@ -278,12 +285,10 @@
     </div>
 
     <div id="reportModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999;">
-        <div id="modalContent" style="background: #fff; padding: 0px; max-width: 100%; max-height: 100%; overflow: auto; border-radius: 8px; position: relative;">
-            <!-- The PDF iframe will be injected here -->
-            <span id="closeReportModal" class="close" style="position: absolute; top: 10px; right: 20px; font-size: 24px; cursor: pointer; color: #333;">×</span>
+        <div id="modalContent" style="background: #fff; max-width: 95%; max-height: 95%; overflow: auto; border-radius: 8px; position: relative;">
+            <span id="closeReportModal" class="close" style="position: absolute; top: 15px; right: 25px; font-size: 30px; cursor: pointer; color: #333;">×</span>
         </div>
     </div>
-
 
     <script>
         console.log("Patient Details script loaded - version 2025-04-20");
@@ -299,12 +304,10 @@
             const medicationBody = document.getElementById('medication-body');
             medicationBody.innerHTML = '';
 
-            // Check if records is empty
             if (!records || records.length === 0) {
                 medicationBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No past records</td></tr>';
                 document.getElementById('prev-btn').disabled = true;
                 document.getElementById('next-btn').disabled = true;
-                // Clear header fields if they exist
                 if (document.getElementById('doctor-name')) document.getElementById('doctor-name').innerText = 'N/A';
                 if (document.getElementById('record-date')) document.getElementById('record-date').innerText = 'N/A';
                 if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = 'N/A';
@@ -354,12 +357,10 @@
             const labTestBody = document.getElementById('labtest-body');
             labTestBody.innerHTML = '';
 
-            // Check if labTests is empty
             if (!labTests || labTests.length === 0) {
                 labTestBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No past lab tests</td></tr>';
                 document.getElementById('prev-lab-btn').disabled = true;
                 document.getElementById('next-lab-btn').disabled = true;
-                // Clear header fields
                 if (document.getElementById('lab-doctor-name')) document.getElementById('lab-doctor-name').innerText = 'N/A';
                 if (document.getElementById('lab-record-date')) document.getElementById('lab-record-date').innerText = 'N/A';
                 return;
@@ -398,13 +399,21 @@
                             const modal = document.getElementById('reportModal');
                             const container = document.getElementById('modalContent');
 
-                            container.innerHTML = `
-                                <iframe src="http://localhost/WellBe/public/assets/files/${file}.pdf" width="100%" height="600px" style="border: none;"></iframe>
-                            `;
+                            // Insert iframe after the close button
+                            const iframe = document.createElement('iframe');
+                            iframe.src = `http://localhost/WellBe/public/assets/files/${file}.pdf`;
+                            iframe.style.width = '100%';
+                            iframe.style.height = '100%';
+                            iframe.style.border = 'none';
+
+                            // Clear previous content and append new iframe
+                            while (container.firstChild && container.firstChild !== document.getElementById('closeReportModal')) {
+                                container.removeChild(container.firstChild);
+                            }
+                            container.appendChild(iframe);
 
                             modal.style.display = 'flex';
                         });
-
                     });
                 } else {
                     labTestBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No tests recorded</td></tr>';
@@ -417,7 +426,6 @@
             document.getElementById('prev-lab-btn').disabled = index === 0;
             document.getElementById('next-lab-btn').disabled = index === labTests.length - 1;
         }
-
 
         // Navigation Functions
         function shiftMedication(direction) {
@@ -444,24 +452,13 @@
             updateLabTestsView(labTestIndex);
         };
 
-        document.getElementById('closeModal').addEventListener('click', function () {
-            document.getElementById('reportModal').style.display = 'none';
-        });
-
-        document.getElementById('reportModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                this.style.display = 'none';
-            }
-        });
-
+        // Close Modal Functionality
         const reportModal = document.getElementById('reportModal');
         const closeReportModal = document.getElementById('closeReportModal');
 
-        // Close the modal when the close button is clicked
         closeReportModal.addEventListener('click', function() {
             console.log('Closing report modal');
             reportModal.style.display = 'none';
-            // Optional: Clear the modal content (e.g., remove the iframe) to free memory
             const modalContent = document.getElementById('modalContent');
             const iframe = modalContent.querySelector('iframe');
             if (iframe) {
@@ -469,12 +466,10 @@
             }
         });
 
-        // Close the modal when clicking outside the modal content
         window.addEventListener('click', function(event) {
             if (event.target === reportModal) {
                 console.log('Closing report modal (clicked outside)');
                 reportModal.style.display = 'none';
-                // Optional: Clear the modal content
                 const modalContent = document.getElementById('modalContent');
                 const iframe = modalContent.querySelector('iframe');
                 if (iframe) {

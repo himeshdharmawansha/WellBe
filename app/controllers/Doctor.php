@@ -90,6 +90,29 @@ use Random\Engine\Mt19937;
             //echo $_SESSION['appointment_id'];
         }
 
+        public function patient_details_upcoming($appointment_id, $patient_id){
+
+            $_SESSION['appointment_id'] = $appointment_id;
+            $_SESSION['patient_id'] = $patient_id;
+
+            $appointments = new Appointments();
+            $patient_details = $appointments->getPatientDetails($appointment_id);
+            //print_r($patient_details);
+
+            $medicalRecord = new MedicalRecord();
+            $past_record_details = $medicalRecord->getPastRecordsDetials($patient_id);
+
+            $testRequest = new TestRequest();
+            $past_test_records = $testRequest -> getPastTestDetials($patient_id);
+            //print_r($past_test_records);
+
+            $patient_history['past_records'] = $past_record_details;
+            $patient_history['past_tests'] = $past_test_records;
+
+            $this->view('Doctor/patient_details_upcoming','today-checkups',$patient_history);
+            //echo $_SESSION['appointment_id'];
+        }
+
         public function logout(){
             $this->view('Doctor/logout','logout' );
         }

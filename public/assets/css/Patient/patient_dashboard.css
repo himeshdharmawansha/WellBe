@@ -7,7 +7,7 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     text-decoration: none;
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 
 /* Dashboard Container */
@@ -119,12 +119,12 @@
     color: #172554;
 }
 
-.header-right {
+/* .header-right {
     display: flex;
     align-items: center;
-}
+} */
 
-.user-details {
+/* .user-details {
     display: flex;
     align-items: center;
     margin-right: 20px;
@@ -134,12 +134,12 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #d1d9f1; /* Placeholder for avatar */
+    background-color: #d1d9f1;
     margin-left: 10px;
     margin-right: 10px;
-}
+} */
 
-.name{
+/* .name{
     margin: 0;
     font-size: 14px;
     color: #000000;
@@ -148,12 +148,12 @@
 .role{
     color: #525151;
     font-size: 12px;
-}
+} */
 
-.notification img{
+/* .notification img{
     margin-right: 20px;
     max-width: 25px;
-}
+} */
 
 /* Dashboard Content */
 .container {
@@ -471,39 +471,38 @@
     background-color: #172554;
     padding: 3px;
     margin-bottom: 10px;
-    overflow: hidden; /* Ensures any overflow (extra part of the image) is clipped */
+    overflow: hidden;
   }
   
   .image .profile-img {
     height: 100%;
     width: 100%;
-    object-fit: cover; /* This ensures the image covers the container without distorting */
-    object-position: center; /* Optional: Keeps the image centered within the frame */
-    border-radius: 50%; /* Keeps the image circular */
-    border: 3px solid #fff; /* Adds a white border around the image */
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%; 
+    border: 3px solid #fff; 
     padding-right: 15px;
   }
-
 
    .image .profile-img1 {
     height: 100%;
     width: 100%;
-    object-fit: cover; /* This ensures the image covers the container without distorting */
-    object-position: center; /* Optional: Keeps the image centered within the frame */
-    border-radius: 50%; /* Keeps the image circular */
-    border: 3px solid #fff; /* Adds a white border around the image */
+    object-fit: cover;
+    object-position: center; 
+    border-radius: 50%; 
+    border: 3px solid #fff; 
     padding-left: 15px;
   }
 
-  .notification-icon {
+  /* .notification-icon {
     position: relative;
     padding-top: 6px;
     font-size: 28px;
     color: #a0a0a0;
     margin-right: 15px;
- }
+ } */
 
- .notification-badge {
+ /* .notification-badge {
     position: absolute;
     top: 3px;
     right: -4px;
@@ -512,7 +511,7 @@
     background-color: red;
     border-radius: 50%;
     border: 2px solid white;
- }
+ } */
 
  .header-left h1 {
     font-size: 24px;

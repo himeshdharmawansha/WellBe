@@ -26,7 +26,8 @@
             <form method="post" onsubmit="validateForm(event)">         
                 <div class="loginsignup-fields">           
                     <input name="nic" type="text" placeholder="Type your NIC number" required/>           
-                    <input name="password" type="password" placeholder="Type your Password" required/>         
+                    <input name="password" type="password" placeholder="Type your Password" required/> 
+                        
                 </div>          
 
                 <?php if (!empty($errors)): ?>           

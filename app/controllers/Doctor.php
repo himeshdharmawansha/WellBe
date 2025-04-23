@@ -97,12 +97,13 @@ use Random\Engine\Mt19937;
 
             $appointments = new Appointments();
             $patient_details = $appointments->getPatientDetails($appointment_id);
+            //print_r($patient_details);
 
             $medicalRecord = new MedicalRecord();
-            $past_record_details = $medicalRecord->getPastRecordsDetials($patient_details[0]->id);
+            $past_record_details = $medicalRecord->getPastRecordsDetials($patient_id);
 
             $testRequest = new TestRequest();
-            $past_test_records = $testRequest -> getPastTestDetials($patient_details[0]->id);
+            $past_test_records = $testRequest -> getPastTestDetials($patient_id);
             //print_r($past_test_records);
 
             $patient_history['past_records'] = $past_record_details;

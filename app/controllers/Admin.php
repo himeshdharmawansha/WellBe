@@ -617,6 +617,26 @@ class Admin extends Controller
       }
    }
 
+   public function getProfitsStats()
+   {
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         // Debugging: Log received POST parameters
+         error_log("Received POST data: " . print_r($_POST, true));
+         $startDate = $_POST['start-date'] ?? null;
+         $endDate = $_POST['end-date'] ?? null;
+         $doctor = $_POST['doctor-name'] ?? null;
+
+         //error_log($_POST['startAge']);
+
+         $appointments = new Appointments();
+         $appointments = $appointments->getProfits($startDate, $endDate, $doctor);
+
+         error_log("Filtered Patients: " . print_r($appointments, true));
+         header('Content-Type: application/json');
+         echo json_encode($appointments);
+      }
+   }
+
    public function chat()
    {
       $this->view('Admin/chat', 'chat');

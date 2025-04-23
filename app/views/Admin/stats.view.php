@@ -262,6 +262,10 @@
                         <input type="date" name="end-date">
                     </div>
                     <div class="filter-label">
+                        <span class="filters">Doctor's Name:</span>
+                        <input type="text" name="doctor-name">
+                    </div>
+                    <div class="filter-label">
                         <button class="generate-btn" onclick="generateReport('profits')">Generate Report</button>
                     </div>
                 </div>
@@ -361,7 +365,7 @@
                     } else if (type === "profits") {
                         data.forEach(entry => {
                             labels.push(entry.date);
-                            values.push(entry.amount);
+                            values.push(entry.total_profit);
                         });
                     } else if (type === "appointments") {
                         data.forEach(entry => {

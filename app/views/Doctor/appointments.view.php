@@ -1,3 +1,6 @@
+<?php
+    print_r($data);
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -44,9 +47,9 @@
                                 <p>Gender: <span class="doc_name"><?php echo $appointment->gender; ?></span></p>
                                 <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
                                 <button class="new_patient" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
-                                <?php if($appointment->patient_type == "Returning"): ?>
+                                <?php if($appointment->patient_type == "RETURNING"): ?>
                                     <button class="returning_patient">
-                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/display_record/<?= $appointment->patient_id ?>">Patient Records</a>
+                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>
                             </div>

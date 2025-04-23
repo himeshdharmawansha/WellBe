@@ -6,7 +6,6 @@ class Admin extends Controller
    private $data = [
       'elements' => [
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
-         'appointmentsOngoing' => ["fas fa-calendar-alt", "Appointments"],
          'patients' => ["fas fa-user", "Patients"],
          'doctors' => ["fas fa-user-md", "Doctors"],
          'pharmacists' => ["fas fa-pills", "Pharmacists"],
@@ -28,22 +27,21 @@ class Admin extends Controller
 
    public function index()
    {
-      $this->view('Admin/dashboard', 'dashboard');
-   }
+      $appointments = new Appointments();
+      $patient = new Patient();
+      $doctor = new Doctor();
+      $pharmacist = new Pharmacy();
+      $labTech = new Lab();
 
-   public function appointmentsOngoing()
-   {
-      $this->view('Admin/appointmentsOngoing', 'appointments');
-   }
+      $data = [
+         'todayAppointmentsCount' => $appointments->totalTodayAppointments(),
+         'patientsCount'     => $patient->totalPatients(),
+         'doctorsCount'      => $doctor->totalDoctors(),
+         'pharmacistsCount'  => $pharmacist->totalPharmacists(),
+         'labTechsCount'     => $labTech->totalLabTechs(),
+     ];
 
-   public function appointmentsUpcoming()
-   {
-      $this->view('Admin/appointmentsUpcoming', 'appointments');
-   }
-
-   public function appointmentsPast()
-   {
-      $this->view('Admin/appointmentsPast', 'appointments');
+      $this->view('Admin/dashboard', 'dashboard', $data);
    }
 
    public function patients()
@@ -614,6 +612,42 @@ class Admin extends Controller
          error_log("Filtered Patients: " . print_r($patients, true));
          header('Content-Type: application/json');
          echo json_encode($patients);
+      }
+   }
+
+   public function getProfitsStats()
+   {
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         // Debugging: Log received POST parameters
+         error_log("Received POST data: " . print_r($_POST, true));
+         $startDate = $_POST['start-date'] ?? null;
+         $endDate = $_POST['end-date'] ?? null;
+         $doctor = $_POST['doctor-name'] ?? null;
+
+         $appointments = new Appointments();
+         $appointments = $appointments->getProfits($startDate, $endDate, $doctor);
+
+         error_log("Filtered Profits: " . print_r($appointments, true));
+         header('Content-Type: application/json');
+         echo json_encode($appointments);
+      }
+   }
+
+   public function getAppointmentsStats()
+   {
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+         // Debugging: Log received POST parameters
+         error_log("Received POST data: " . print_r($_POST, true));
+         $startDate = $_POST['start-date'] ?? null;
+         $endDate = $_POST['end-date'] ?? null;
+         $doctor = $_POST['doctor-name'] ?? null;
+
+         $appointments = new Appointments();
+         $appointments = $appointments->getTotalBookings($startDate, $endDate, $doctor);
+
+         error_log("Filtered Appointments: " . print_r($appointments, true));
+         header('Content-Type: application/json');
+         echo json_encode($appointments);
       }
    }
 

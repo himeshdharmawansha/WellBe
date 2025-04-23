@@ -10,7 +10,7 @@
 }
 
 .calendar-container {
-    background-color: #f0f8ff;
+    background-color: #E0EBFF;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -73,7 +73,7 @@
 }
 
 .calendar-table td.inactive {
-    color: #bebcbce1;
+    color: #9d9a9ae1;
     /* Dim color for other month's dates */
 }
 

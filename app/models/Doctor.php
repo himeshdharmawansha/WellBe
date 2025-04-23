@@ -276,6 +276,21 @@ class Doctor extends Model
         return $this->query($query, $data);
     }
 
+    public function totalDoctors(){
+        $query = "
+        SELECT 
+            COUNT(id) as totalDoctors
+        FROM 
+            doctor 
+        WHERE 
+            account_state = 'Active'
+        ";
+
+        $result = $this->query($query);
+        return $result[0]->totalDoctors ?? 0;
+        //return $this->query($query);
+    }
+
 
     public function getDocname()
     {

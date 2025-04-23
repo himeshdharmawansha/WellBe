@@ -36,7 +36,7 @@
                             <i class="fas icon fa-calendar-alt"></i>
                         </span>
                         <div>
-                            <h1 class="figure">150</h1>
+                            <h1 class="figure"><?= $todayAppointmentsCount ?></h1>
                             <span class="label">Appointments</span>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                             <i class="fas icon fa-user"></i>
                         </span>
                         <div>
-                            <h1 class="figure">300 </h1>
+                            <h1 class="figure"><?= $patientsCount ?> </h1>
                             <span class="label">Patients</span>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                             <i class="fas icon fa-user-md"></i>
                         </span>
                         <div>
-                            <h1 class="figure">120 </h1>
+                            <h1 class="figure"><?= $doctorsCount ?> </h1>
                             <span class="label">Doctors</span>
                         </div>                      
                     </div>
@@ -66,7 +66,7 @@
                             <i class="fas icon fa-pills"></i>
                         </span>
                         <div>
-                            <h1 class="figure">25 </h1>
+                            <h1 class="figure"><?= $pharmacistsCount ?> </h1>
                             <span class="label">Pharmacists</span>
                         </div>          
                     </div>
@@ -76,7 +76,7 @@
                             <i class="fas icon fa-vials"></i>
                         </span>
                         <div>
-                            <h1 class="figure">34 </h1>
+                            <h1 class="figure"><?= $labTechsCount ?> </h1>
                             <span class="label">Lab Techs</span>
                         </div>
                     </div>

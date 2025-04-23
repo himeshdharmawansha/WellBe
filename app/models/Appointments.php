@@ -145,7 +145,8 @@ class Appointments extends Model
         return $data;
     }
 
-    public function getAppointmentCount(){
+    public function getAppointmentCount()
+    {
 
         $query = "SELECT d.date, COUNT(a.id) AS appointment_count
                     FROM (
@@ -162,7 +163,7 @@ class Appointments extends Model
                     GROUP BY d.date
                     ORDER BY d.date ASC;";
 
-        $appointmentCount = $this->query($query,[$_SESSION['USER']->id]);
+        $appointmentCount = $this->query($query, [$_SESSION['USER']->id]);
         return $appointmentCount;
     }
 
@@ -236,14 +237,16 @@ class Appointments extends Model
     }
 
 
-    public function rescheduleAppointment($id, $newDocId,$newAppointId,$newDateId){
+    public function rescheduleAppointment($id, $newDocId, $newAppointId, $newDateId)
+    {
 
         $query = "UPDATE appointment SET doctor_id = ?, appointment_id = ?, date = ?, scheduled = 'Scheduled' WHERE id = ?;";
 
-        $this->query($query,[$newDocId, $newAppointId, $newDateId, $id]);
+        $this->query($query, [$newDocId, $newAppointId, $newDateId, $id]);
     }
 
-    public function getRescheduledApppointments($patientId){
+    public function getRescheduledApppointments($patientId)
+    {
 
         $query = "SELECT a.id , CONCAT(d.first_name , ' ' , d.last_name) as doctor_name,d.specialization,t.date  FROM appointment a
             JOIN doctor d ON a.doctor_id = d.id
@@ -254,10 +257,11 @@ class Appointments extends Model
         return $rescheduledAppointments;
     }
 
-    public function deleteAppointment($appointmentId){
+    public function deleteAppointment($appointmentId)
+    {
 
         $query = "DELETE FROM appointment WHERE id = ? ;";
-        $this->query($query,[$appointmentId]);
+        $this->query($query, [$appointmentId]);
 
         header("Location: http://localhost/wellbe/public/patient/");
     }
@@ -307,7 +311,8 @@ class Appointments extends Model
         return $this->query($query, [$patient_id]);
     }
 
-    public function getAppointmentsForSession($slot_id, $doctor_id){
+    public function getAppointmentsForSession($slot_id, $doctor_id)
+    {
         $query = "
         SELECT 
             a.appointment_id,
@@ -334,7 +339,8 @@ class Appointments extends Model
         ]);
     }
 
-    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id) {
+    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id)
+    {
         $query = "
         UPDATE `appointment` SET 
             `state` = ?, 
@@ -358,7 +364,8 @@ class Appointments extends Model
         return $this->query($query, $params);
     }
 
-    public function getProfits($startDate, $endDate, $doctor){
+    public function getProfits($startDate, $endDate, $doctor)
+    {
         $query = "
         SELECT 
             t.date AS date,
@@ -394,47 +401,13 @@ class Appointments extends Model
                     GROUP BY t.date
                     ORDER BY t.date ASC";
 
-        error_log("Generated query: " .$query);
+        error_log("Generated query: " . $query);
         return $this->query($query, $params);
     }
 
-    public function getTotalBookings($startDate, $endDate, $doctor){
-        $query = "
-        SELECT 
-            t.date AS date,
-            COUNT(a.id) AS total_bookings
-        FROM 
-            appointment a
-        JOIN 
-            timeslot t ON a.date = t.slot_id
-        JOIN 
-            doctor d ON a.doctor_id = d.id
-        WHERE 1
-        ";
-
-        $params = [];
-
-        if (!empty($startDate)) {
-            $query .= " AND t.date >= :startDate";
-            $params['startDate'] = $startDate;
-        }
-
-        if (!empty($endDate)) {
-            $query .= " AND t.date <= :endDate";
-            $params['endDate'] = $endDate;
-        }
-
-        if (!empty($doctor)) {
-            $query .= " AND CONCAT(d.first_name, '' , d.last_name) LIKE :doctor";
-            $params['doctor'] = "%$doctor%";
-        }
-
-        $query .= " AND a.scheduled = 'Scheduled'
-                    GROUP BY t.date
-                    ORDER BY t.date ASC";
-
-        error_log("Generated query: " .$query);
-        return $this->query($query, $params);
+    public function getEWallet($patient_id)
+    {
+        $query = "SELECT e_wallet FROM patient WHERE id = ?";
+        return $this->readn($query, [$patient_id]);
     }
-
 }

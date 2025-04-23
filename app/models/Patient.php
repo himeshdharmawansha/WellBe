@@ -236,7 +236,8 @@ class Patient extends Model
                 nic, 
                 CONCAT(first_name, ' ', last_name) AS name, 
                 age, 
-                contact
+                contact,
+                e_wallet
             FROM patient
         ";
         return $this->query($query); // Use the query method to execute and fetch data
@@ -382,5 +383,7 @@ class Patient extends Model
         error_log("Generated query: " .$query);
         return $this->query($query, $params);
     }
+
+
 
 }

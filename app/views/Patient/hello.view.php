@@ -129,7 +129,7 @@
                 <p>Your Payment has been made successfully. Thanks!</p>
             </div>
             <div class="modal-footer">
-                <button id="closeModal2" class="submit-btn">OK</button>
+                <button id="closeModal2" onclick="window.location.href='patient_dashboard'" class="submit-btn">OK</button>
             </div>
         </div>
     </div>
@@ -193,6 +193,22 @@
             payLaterBtn.classList.remove('hidden');
             payByWalletBtn.classList.remove('hidden');
         });
+
+        payByWalletBtn.addEventListener('click', function() {
+            popupModal2.classList.remove('hidden');
+        });
+
+        closeModal2.addEventListener('click', function() {
+            popupModal2.classList.add('hidden');
+        });
+        payLaterBtn.addEventListener('click', function() {
+            popupModal.classList.remove('hidden');
+        });
+        closeModal.addEventListener('click', function() {
+            popupModal.classList.add('hidden');
+        });
+
+
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -296,7 +312,7 @@
                 console.log("result", result);
                 if (result.success) {
                     if (paymentMethod == "counter" || paymentMethod == "wallet") {
-                        showModalsucess();
+                        //showModalsucess();
                     }
 
                     // alert("Payment initiated successfully!");

@@ -343,7 +343,7 @@ class Admin extends Controller
          } 
          else {
             // Add validation errors to data array
-            $data['errors'] = $labTech->getErrors();
+            $data['errors'] = $pharmacist->getErrors();
             $data['formData'] = $pharmacistData; // Pass submitted data back to the view
          }
       }

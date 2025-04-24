@@ -316,4 +316,29 @@ class Timeslot extends Model
 
         return $this->query($query);
     }
+
+    public function getSessionData($slot_id, $doctor_id){
+        $query = "
+        SELECT 
+            t.date AS date,
+            td.start_time AS start_time,
+            td.end_time AS end_time,
+            CONCAT(d.first_name, ' ', d.last_name) AS doctor_name
+        FROM 
+            timeslot_doctor td
+        JOIN 
+            timeslot t ON td.slot_id = t.slot_id
+        JOIN 
+            doctor d ON td.doctor_id = d.id
+        WHERE 
+            td.slot_id = :slot_id AND td.doctor_id = :doctor_id
+        ";
+
+        $result = $this->query($query, [
+            'slot_id' => $slot_id,
+            'doctor_id' => $doctor_id
+        ]);
+        
+        return $result ? $result[0] : false;
+    }
 }

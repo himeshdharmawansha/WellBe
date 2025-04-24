@@ -95,7 +95,7 @@
 
                     </div>
                     <div class=" dashboard patient-analysis">
-                        <h3>Patient Analysis</h3>
+                        <h3>Staff Analysis</h3>
                         <div class="analysis-graph">
                             <canvas id="staffHistogram" width="400" height="300"></canvas> 
                         </div>

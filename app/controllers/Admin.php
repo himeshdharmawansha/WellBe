@@ -6,7 +6,7 @@ class Admin extends Controller
    private $data = [
       'elements' => [
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
-         'patients' => ["fas fa-user", "Patients"],
+         // 'patients' => ["fas fa-user", "Patients"],
          'doctors' => ["fas fa-user-md", "Doctors"],
          'pharmacists' => ["fas fa-pills", "Pharmacists"],
          'labTechs' => ["fas fa-vials", "Lab Technicians"],

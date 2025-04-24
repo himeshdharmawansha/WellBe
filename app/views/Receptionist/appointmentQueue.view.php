@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrative Staff Dashboard</title>
+    <title>Appointments Queue</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Admin/appointments.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
@@ -23,13 +23,20 @@
             include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Receptionist/header.php';
             ?>
 
+            <?php $session = $data['session']; ?>
+
             <!--Content Container-->
             <div class="content-container">
                 <div class="top-buttons">
                     <!-- <div class="session-title">
                         <span class="session">29/11/2024  11:00-13:00  Dr. Nishantha Samarasekera</span>
                     </div> -->
-                    <span class="session-title">29/11/2024  11:00-13:00  Dr. Nishantha Samarasekera</span>
+                    <span class="session-title">
+                        <?= date('d/m/Y', strtotime($session->date)) ?>  
+                        <?= date('H:i', strtotime($session->start_time)) ?> - 
+                        <?= date('H:i', strtotime($session->end_time)) ?>  
+                        Dr. <?= $session->doctor_name ?>
+                    </span>
                     <div class="search-bar">
                         <input type="text" placeholder="Search by Appointment No" />
                         <button type="submit">

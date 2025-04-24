@@ -34,7 +34,7 @@ class MedicalRecord extends Model
                 FROM medication_requests mr
                 JOIN doctor d ON mr.doctor_id = d.id
                 JOIN timeslot t ON mr.date = t.slot_id
-                JOIN medication_request_details mrd ON mr.id = mrd.req_id
+                JOIN medication_request_details mrd ON mr.id = mrd.test_request_id
                 WHERE mr.patient_id = ?
                 GROUP BY mr.id, d.first_name, d.last_name, t.date, mr.diagnosis
                 ORDER BY mr.id ASC;";
@@ -75,7 +75,7 @@ class MedicalRecord extends Model
                     mrd.taken_time,
                     mrd.substitution
                 FROM medication_requests mr
-                JOIN medication_request_details mrd ON mr.id = mrd.req_id
+                JOIN medication_request_details mrd ON mr.id = mrd.test_request_id
                 WHERE mr.patient_id = ? AND mr.doctor_id = ?;";
 
         $records = $this->query($query, [$patient_id, $doctor_id]);
@@ -132,7 +132,7 @@ class MedicalRecord extends Model
         $susbstitution = $med['do_not_substitute'];
         $med_id = $id;
 
-        $query = "INSERT INTO medication_request_details (req_id, medication_name, dosage, taken_time, substitution)
+        $query = "INSERT INTO medication_request_details (test_request_id, medication_name, dosage, taken_time, substitution)
                       Values (?, ?, ?, ?, ?)";
 
         $this->query($query, [$med_id, $medication, $dosage, $howToTake, $susbstitution]);
@@ -162,7 +162,7 @@ class MedicalRecord extends Model
         return $result;
     }
 
-    public function getMed($req_id)
+    public function getMed($test_request_id)
     {
         $query = "SELECT
                         mrd.medication_name,
@@ -177,11 +177,11 @@ class MedicalRecord extends Model
                         mr.diagnosis
         
         FROM medication_request_details mrd
-        JOIN medication_requests mr ON mrd.req_id = mr.id
+        JOIN medication_requests mr ON mrd.test_request_id = mr.id
         JOIN doctor d ON mr.doctor_id = d.id   
         LEFT JOIN timeslot t ON mr.date = t.slot_id
-        WHERE mrd.req_id = ?";
-        $result = $this->query($query, [$req_id]);
+        WHERE mrd.test_request_id = ?";
+        $result = $this->query($query, [$test_request_id]);
         return $result;
     }
 }

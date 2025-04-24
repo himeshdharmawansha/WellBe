@@ -44,7 +44,7 @@ class MedicationRequest extends Model
       foreach ($medications as $medication) {
          $updateDetailQuery = "UPDATE medication_request_details 
                               SET state = :state 
-                              WHERE req_id = :requestID AND medication_name = :medicationName";
+                              WHERE test_request_id = :requestID AND medication_name = :medicationName";
          $detailParams = [
             ':state' => $medication['state'],
             ':requestID' => $requestID,

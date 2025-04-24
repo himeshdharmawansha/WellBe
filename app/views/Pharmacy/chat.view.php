@@ -222,7 +222,6 @@ $currentUserId = $_SESSION['userid'];
                })
                .catch(error => {
                   console.error('An error occurred while deleting the message:', error);
-                  alert('An error occurred while deleting the message.');
                });
          }
       }
@@ -264,7 +263,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error editing message:", error);
-               alert("Error editing message.");
             });
       }
 
@@ -304,7 +302,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error editing caption:", error);
-               alert("Error editing caption.");
             });
       }
 
@@ -454,7 +451,6 @@ $currentUserId = $_SESSION['userid'];
             chatMessages.scrollTop = chatMessages.scrollHeight;
          } catch (error) {
             console.error('Error fetching messages:', error);
-            alert('Failed to load messages. Please try again.');
          }
       }
 
@@ -488,7 +484,6 @@ $currentUserId = $_SESSION['userid'];
                })
                .catch(error => {
                   console.error('Error fetching messages:', error);
-                  alert('Failed to refresh messages. Please try again.');
                });
          }
       }
@@ -538,12 +533,10 @@ $currentUserId = $_SESSION['userid'];
                   refreshUnseenCounts([3, 5]);
                } else {
                   console.error('Server responded with failure:', data);
-                  alert(data.message || 'Error sending message');
                }
             })
             .catch(error => {
                console.error("Error sending message:", error);
-               alert(`Error sending message: ${error.message}`);
             });
       }
 
@@ -792,12 +785,10 @@ $currentUserId = $_SESSION['userid'];
                   isNotificationDismissed = false;
                } else {
                   console.error('Server responded with failure:', data);
-                  alert(data.message || 'Error uploading file');
                }
             })
             .catch(error => {
                console.error("Error uploading file:", error);
-               alert(`Error uploading file: ${error.message}`);
             });
       }
 
@@ -1031,7 +1022,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error searching users:", error);
-               alert('Failed to search users. Please try again.');
             });
       }
 
@@ -1046,7 +1036,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error marking messages as seen:", error);
-               alert('Failed to mark messages as seen. Please try again.');
             });
       }
 
@@ -1054,7 +1043,6 @@ $currentUserId = $_SESSION['userid'];
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
             .catch(error => {
                console.error("Error updating timestamps:", error);
-               alert('Failed to update message statuses. Please try again.');
             });
       }
 

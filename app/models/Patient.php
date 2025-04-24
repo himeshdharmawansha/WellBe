@@ -257,6 +257,7 @@ class Patient extends Model
                 age, 
                 contact
             FROM patient
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -365,7 +366,13 @@ class Patient extends Model
 
     public function deletePatient($nic)
     {
-        $query = "DELETE FROM patient WHERE nic = :nic";
+        $query = "
+        UPDATE patient
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM patient WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

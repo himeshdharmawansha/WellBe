@@ -179,6 +179,7 @@ class Pharmacy extends Model
                 age, 
                 contact
             FROM pharmacist
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -294,7 +295,13 @@ class Pharmacy extends Model
 
     public function deletePharmacist($nic)
     {
-        $query = "DELETE FROM pharmacist WHERE nic = :nic";
+        $query = "
+        UPDATE pharmacist
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM pharmacist WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

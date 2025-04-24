@@ -216,6 +216,7 @@ class Doctor extends Model
                 specialization, 
                 contact
             FROM doctor
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -286,7 +287,13 @@ class Doctor extends Model
 
     public function deleteDoctor($nic)
     {
-        $query = "DELETE FROM doctor WHERE nic = :nic";
+        $query = "
+        UPDATE doctor
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM doctor WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

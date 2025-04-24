@@ -181,6 +181,7 @@ class Lab extends Model
                 age, 
                 contact
             FROM lab_technician
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -293,7 +294,13 @@ class Lab extends Model
 
     public function deleteLabTech($nic)
     {
-        $query = "DELETE FROM lab_technician WHERE nic = :nic";
+        $query = "
+        UPDATE lab_technician
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM lab_technician WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

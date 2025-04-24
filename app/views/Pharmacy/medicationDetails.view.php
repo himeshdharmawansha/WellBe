@@ -45,7 +45,7 @@
                                  <th>Name of the Medication</th>
                                  <th>Dosage of the Medication</th>
                                  <th colspan='4'>Number taken at a time</th>
-                                 <th>Do not substitute</th>
+                                 <th>Substitution</th>
                                  <th>State</th>
                              </tr>
                              <tr>
@@ -66,7 +66,7 @@
                      $noon = $takenTimeArray[1] ?? 0;
                      $night = $takenTimeArray[2] ?? 0;
                      $ifNeeded = $takenTimeArray[3] ?? 0;
-                     $substitution = $medication['substitution'] == 0 ? "can't" : "can";
+                     $substitution = $medication['substitution'] == 0 ? "Not Allowed" : "Allowed";
 
                      $currentState = esc($medication['state']);
 
@@ -93,8 +93,6 @@
 
                   echo "<div class='remarks-section'>
                            <h3>Remarks</h3>
-                           <p>Patient ID: {$patientID}</p>
-                           <p>Doctor ID: {$doctorID}</p>
                            <p>Date: <span id='currentDate'></span></p>
                            <textarea id='additionalRemarks' placeholder='Enter additional remarks...'>" . htmlspecialchars($additionalRemarks) . "</textarea>
                          </div>";

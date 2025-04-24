@@ -27,7 +27,7 @@
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="welcome-message">
-                    <p>Welcome Mr. K.S.Perera</p>
+                    <p>Welcome <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?></p>
                 </div>
                 <div class="cards-container">
                     <!-- Statistics Cards -->

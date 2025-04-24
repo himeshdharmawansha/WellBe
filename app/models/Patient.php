@@ -188,7 +188,10 @@ class Patient extends Model
     {
         // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
-        $patient_pw = 'patient123';
+        //$patient_pw = 'patient123';
+
+        //hash password
+        $patient_pw = password_hash('patient123', PASSWORD_DEFAULT);
         $id = $data['nic'] . 'p';
 
         // Build the SQL query using the provided data

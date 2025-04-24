@@ -108,31 +108,36 @@ class ProfileModel extends Model
     {
         if($role == 1){
             $id = $data['nic'] . 'h';
-            $password = 'pharm123';
+            $password = password_hash('pharm123', PASSWORD_DEFAULT);
+            //$password = 'pharm123';
             $role ='1';
         }
 
         if($role == 2){
             $id = $data['nic'] . 'l';
-            $password = 'lab123';
+            //$password = 'lab123';
+            $password = password_hash('lab123', PASSWORD_DEFAULT);
             $role = '2';
         }
 
         if($role == 3){
             $id = $data['nic'] . 'a';
-            $password = 'admin';
+            //$password = 'admin';
+            $password = password_hash('admin', PASSWORD_DEFAULT);
             $role = '3';
         }
 
         if($role == 4){
             $id = $data['nic'] . 'p';
-            $password = 'patient123';
+            //$password = 'patient123';
+            $password = password_hash('patient123', PASSWORD_DEFAULT);
             $role = '4';
         }
 
         if($role == 5){
             $id = $data['nic'] . 'd';
-            $password = 'doc123';
+            //$password = 'doc123';
+            $password = password_hash('doc123', PASSWORD_DEFAULT);
             $role = '5';
         }
 
@@ -149,7 +154,7 @@ class ProfileModel extends Model
         ";
 
         // Debug the query
-        echo("Generated Query: <pre>$query</pre>");
+        //echo("Generated Query: <pre>$query</pre>");
 
         // Execute the query
         return $this->query($query);

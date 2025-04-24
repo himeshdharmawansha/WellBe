@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Admin/appointments.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -37,11 +39,13 @@
                     </div>
                 </div>
                 <div class="view-buttons">
-                    <a onclick="window.location.href='appointmentsOngoing'">
-                        <span class="ongoing">Ongoing</span>
-                    </a>
+                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/todayAppointments'">
+                        <span class="ongoing">Today</span>
+                    </a>     
                     <span class="upcoming active">Upcoming</span>
-                    <span class="past">Past</span>
+                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsPast'">
+                        <span class="past">Past</span>
+                    </a>
                 </div>
 
                 <div class="table-container">
@@ -53,15 +57,25 @@
                             <th>Booked Slots</th>
                             <th>Available Slots</th>
                         </tr>
-                        
-
-
+                        <?php if (!empty($today_sessions)): ?>
+                            <?php foreach ($today_sessions as $session): ?>
+                                <tr onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentQueue?slot_id=<?= $session->slot_id ?>&doctor_id=<?= $session->doctor_id ?>'">
+                                    <td><?= date('d/m/Y', strtotime($session->date)) ?></td>
+                                    <td><?= substr($session->start_time, 0, 5) ?> - <?= substr($session->end_time, 0, 5) ?></td>
+                                    <td>Dr. <?= htmlspecialchars($session->doctor_name) ?></td>
+                                    <td><?= htmlspecialchars($session->booked_slots) ?></td>
+                                    <td><?= htmlspecialchars(15 - $session->booked_slots) ?></td>
+                                    
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">No Upcoming Sessions</td>
+                            </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
-                
-
-            </div>
-                
+            </div>        
         </div>
     </div>
 

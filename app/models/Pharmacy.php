@@ -119,7 +119,10 @@ class Pharmacy extends Model
    {
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
-      $pharm_pw = 'pharm123';
+      //$pharm_pw = 'pharm123';
+
+      //hash password
+      $pharm_pw = password_hash('pharm123', PASSWORD_DEFAULT);
       $id = $data['nic'] . 'h';
 
       // Build the SQL query using the provided data

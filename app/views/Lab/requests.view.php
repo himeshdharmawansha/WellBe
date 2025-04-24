@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,6 +34,7 @@
                <table class="requests-table">
                   <thead>
                      <tr>
+                        <th>Request ID</th>
                         <th>Patient ID</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
@@ -47,6 +49,7 @@
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
@@ -62,6 +65,7 @@
                <table class="requests-table">
                   <thead>
                      <tr>
+                        <th>Request ID</th>
                         <th>Patient ID</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
@@ -76,6 +80,7 @@
                      <?php else : ?>
                         <?php foreach ($data['ongoingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
@@ -91,6 +96,7 @@
                <table class="requests-table">
                   <thead>
                      <tr>
+                        <th>Request ID</th>
                         <th>Patient ID</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
@@ -105,6 +111,7 @@
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
@@ -142,8 +149,13 @@
 
                fetch('<?= ROOT ?>/Lab/updateState', {
                      method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ requestID, state: 'ongoing' }),
+                     headers: {
+                        'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify({
+                        requestID,
+                        state: 'ongoing'
+                     }),
                   })
                   .then(response => response.json())
                   .then(data => {
@@ -260,6 +272,7 @@
 
                         const row = `
                            <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                              <td>${request.id}</td>
                               <td>${request.patient_id}</td>
                               <td>${request.first_name}</td>
                               <td>${request.date_t}</td>
@@ -302,6 +315,7 @@
 
                               const row = `
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                                    <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
                                     <td>${request.first_name}</td>
                                     <td>${request.date_t}</td>
@@ -355,7 +369,7 @@
             if (row) {
                const requestID = row.getAttribute('data-id');
                const doctorID = row.getAttribute('data-doctor-id');
-               const patientID = row.querySelector('td:nth-child(1)').textContent.trim();
+               const patientID = row.querySelector('td:nth-child(2)').textContent.trim();
 
                window.location.href = `labTestDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
             }
@@ -363,4 +377,5 @@
       });
    </script>
 </body>
+
 </html>

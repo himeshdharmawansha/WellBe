@@ -19,8 +19,8 @@ class Email {
                 $mail->Port = 587;
     
                 // Sender and recipient
-                $mail->setFrom($receiverEmail, "Himesh");
-                $mail->addAddress($receiverEmail, "Himesh");
+                $mail->setFrom($receiverEmail, "WellBe");
+                $mail->addAddress($receiverEmail, "WellBe");
     
                 // Email content
                 $mail->isHTML(true);

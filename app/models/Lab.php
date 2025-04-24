@@ -120,7 +120,10 @@ class Lab extends Model
    {
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
-      $lab_pw = 'lab123';
+      //$lab_pw = 'lab123';
+
+      //hash password
+      $lab_pw = password_hash('lab123', PASSWORD_DEFAULT);
       $id = $data['nic'] . 'l';
 
       // Build the SQL query using the provided data

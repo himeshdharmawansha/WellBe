@@ -65,13 +65,25 @@
                                         <input type="hidden" name="appointments[<?= $index ?>][original_payment_status]" value="<?= $app->payment_status ?>">
 
                                         <td>
-                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][patient_status]" onchange="changeDropdownColor(this)" style="<?= $app->patient_status === 'Present' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>">
+                                            <input type="hidden" name="appointments[<?= $index ?>][patient_status]" value="<?= $app->patient_status ?>" class="hidden-patient-status">
+                                            
+                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][patient_status]" 
+                                            onchange="changeDropdownColor(this); syncToHidden(this);" 
+                                            style="<?= $app->patient_status === 'Present' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>"
+                                            <?= $app->patient_status === 'Present' ? 'disabled' : '' ?>>
+                                                
                                                 <option value="Not Present" <?= $app->patient_status === 'Not Present' ? 'selected' : '' ?>>Not Present</option>
                                                 <option value="Present" <?= $app->patient_status === 'Present' ? 'selected' : '' ?>>Present</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][payment_status]" onchange="changeDropdownColor(this)" style="<?= $app->payment_status === 'Paid' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>">
+                                            <input type="hidden" name="appointments[<?= $index ?>][payment_status]" value="<?= $app->payment_status ?>" class="hidden-payment-status">
+                                            
+                                            <select class="patient-status-dropdown" name="appointments[<?= $index ?>][payment_status]" 
+                                            onchange="changeDropdownColor(this); syncToHidden(this);" 
+                                            style="<?= $app->payment_status === 'Paid' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>"
+                                            <?= $app->payment_status === 'Paid' ? 'disabled' : '' ?>>
+                                            
                                                 <option value="Not Paid" <?= $app->payment_status === 'Not Paid' ? 'selected' : '' ?>>Not Paid</option>
                                                 <option value="Paid" <?= $app->payment_status === 'Paid' ? 'selected' : '' ?>>Paid</option>
                                             </select>
@@ -101,6 +113,14 @@
             } else {
                 dropdown.style.backgroundColor = "#EFF4FF";
                 dropdown.style.color = "#FF4747"; // Reset to default styles
+            }
+        }
+
+        function syncToHidden(select) {
+            const td = select.closest('td');
+            const hidden = td.querySelector('input[type="hidden"]');
+            if (hidden) {
+                hidden.value = select.value;
             }
         }
     </script>

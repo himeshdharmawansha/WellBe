@@ -37,8 +37,8 @@ switch ($userType) {
     case 'doctor':
         $roles = [3, 4, 1, 2];
         break;
-    default:
-        $roles = [3];
+   case 'receptionist':
+        $roles = [3, 4];
         break;
 }
 

@@ -1,5 +1,32 @@
 <?php
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+require_once(__DIR__ . "/../../models/ProfileModel.php");
+
+$he = new ChatController();
+$profileModel = new ProfileModel();
+
+$unseenCounts = $he->UnseenCounts([3, 4]);
+$user_profile = $unseenCounts;
+if (!is_array($user_profile)) {
+   $user_profile = [];
+}
 $currentUserId = $_SESSION['userid'];
+
+$profiles = $profileModel->getAll();
+if (!empty($profiles) && !isset($profiles['error'])) {
+   $profileMap = [];
+   foreach ($profiles as $profile) {
+      $profileMap[$profile->id] = $profile;
+   }
+   foreach ($user_profile as &$user) {
+      if (isset($user['id']) && isset($profileMap[$user['id']])) {
+         $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
+      } else {
+         $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
+      }
+   }
+   unset($user);
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,9 +69,9 @@ $currentUserId = $_SESSION['userid'];
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
                               onclick="selectChat(this, '<?php echo $user['id']; ?>')">
-                              <img src="<?php echo esc($user['image']); ?>" alt="Avatar" class="avatar">
+                              <img src="<?php echo htmlspecialchars($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
-                                 <h4><?php echo esc($user['username']); ?></h4>
+                                 <h4><?php echo htmlspecialchars($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
                               </div>
                               <div class="chat-side">
@@ -128,8 +155,17 @@ $currentUserId = $_SESSION['userid'];
       </ul>
    </div>
 
-   <!-- Dim overlay -->
+   <!-- Add this just before the discard-notification div -->
    <div id="dim-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 99;"></div>
+
+   <div id="discard-notification" style="display: none; position: fixed; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; z-index: 100;">
+      <h4>Discard unsent message?</h4>
+      <p>Your message, including attached media, will not be sent if you leave this screen.</p>
+      <div class="notification-actions">
+         <button onclick="discardFile()" class="discard-btn">Discard</button>
+         <button onclick="returnToMedia()" class="return-btn">Return to media</button>
+      </div>
+   </div>
 
    <div id="discard-notification" style="display: none; position: fixed; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; z-index: 100;">
       <h4>Discard unsent message?</h4>
@@ -213,7 +249,7 @@ $currentUserId = $_SESSION['userid'];
                })
                .then(data => {
                   if (data.status === "success") {
-                     refreshUnseenCounts([3, 5]);
+                     refreshUnseenCounts([3, 4]);
                      pullMessages();
                      hidePopupMenu();
                   } else {
@@ -222,6 +258,7 @@ $currentUserId = $_SESSION['userid'];
                })
                .catch(error => {
                   console.error('An error occurred while deleting the message:', error);
+                  alert('An error occurred while deleting the message.');
                });
          }
       }
@@ -254,7 +291,7 @@ $currentUserId = $_SESSION['userid'];
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -294,7 +331,7 @@ $currentUserId = $_SESSION['userid'];
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -303,6 +340,7 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error editing caption:", error);
+               alert("Error editing caption.");
             });
       }
 
@@ -321,135 +359,116 @@ $currentUserId = $_SESSION['userid'];
       }
 
       function escapeHTML(str) {
-         if (!str) return '';
          const div = document.createElement('div');
          div.textContent = str;
          return div.innerHTML;
       }
 
-      function renderMessage(message, chatMessages, isInitialRender = false, unseenCount = 0, index = 0, insertedUnseenLine = { value: false }) {
-         const messageDate = new Date(message.date);
-         const formattedTime = formatTimeOrDate(messageDate);
-         const currentDate = messageDate.toDateString();
-
-         // Insert date header if the date changes (only for initial render)
-         if (isInitialRender) {
-            const lastDate = chatMessages.lastDate || null;
-            if (lastDate !== currentDate) {
-               const dateHeader = document.createElement('div');
-               dateHeader.classList.add('date-header');
-               dateHeader.innerHTML = `<span>${getDateHeader(messageDate)}</span>`;
-               chatMessages.appendChild(dateHeader);
-               chatMessages.lastDate = currentDate;
-            }
-         }
-
-         const div = document.createElement('div');
-         div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
-         div.setAttribute('data-message-id', message.id);
-
-         if (message.type === 'text') {
-            div.innerHTML = `
-               <p>${escapeHTML(message.message)}</p>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-            `;
-         } else if (message.type === 'photo') {
-            div.classList.add('photo');
-            const fileName = message.file_path.split('/').pop(); // Extract file name from path
-            div.innerHTML = `
-               <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
-               ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-               <div class="message-actions">
-                  <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                  <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-               </div>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-            `;
-         } else if (message.type === 'document') {
-            div.classList.add('document');
-            const maxLength = 40;
-            let displayName = message.message;
-            if (displayName.length > maxLength) {
-               displayName = displayName.substring(0, maxLength - 3) + '...';
-            }
-            const fileSize = message.file_size || 'Unknown';
-            let iconClass;
-            let fileTypeDisplay = message.file_type || 'Document';
-            const extension = message.message.split('.').pop().toLowerCase();
-            if (extension === 'doc' || extension === 'docx') {
-               iconClass = 'fa-file-word';
-               fileTypeDisplay = message.file_type || 'Microsoft Word Document';
-            } else if (extension === 'xls' || extension === 'xlsx') {
-               iconClass = 'fa-file-excel';
-               fileTypeDisplay = message.file_type || 'Microsoft Excel Document';
-            } else if (extension === 'pdf') {
-               iconClass = 'fa-file-pdf';
-               fileTypeDisplay = message.file_type || 'PDF Document';
-            } else if (extension === 'txt') {
-               iconClass = 'fa-file';
-               fileTypeDisplay = message.file_type || 'Text Document';
-            } else if (extension === 'csv') {
-               iconClass = 'fa-file';
-               fileTypeDisplay = message.file_type || 'CSV Document';
-            } else if (extension === 'rtf') {
-               iconClass = 'fa-file';
-               fileTypeDisplay = message.file_type || 'RTF Document';
-            } else if (extension === 'zip') {
-               iconClass = 'fa-file';
-               fileTypeDisplay = message.file_type || 'ZIP Archive';
-            } else {
-               iconClass = 'fa-file';
-               fileTypeDisplay = message.file_type || 'Document';
-            }
-            const fileName = message.file_path.split('/').pop(); // Extract file name from path
-            div.innerHTML = `
-               <div class="file-frame">
-                  <i class="fa-solid ${iconClass} doc-icon"></i>
-                  <p>${escapeHTML(displayName)}</p>
-               </div>
-               <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-               <hr>
-               ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-               <div class="message-actions">
-                  <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                  <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-               </div>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-            `;
-         }
-
-         // Insert the unseen messages line before the first unseen message (only for initial render)
-         if (isInitialRender && unseenCount > 0 && index === (data.messages.length - unseenCount) && !insertedUnseenLine.value) {
-            const unseenLine = document.createElement('div');
-            unseenLine.classList.add('unseen-line');
-            unseenLine.innerHTML = `<span>${unseenCount} unread message${unseenCount !== 1 ? 's' : ''}</span>`;
-            chatMessages.appendChild(unseenLine);
-            insertedUnseenLine.value = true;
-         }
-
-         chatMessages.appendChild(div);
-      }
-
       async function startChat(receiverId) {
          try {
             const response = await fetch(`<?= ROOT ?>/ChatController/getMessages/${receiverId}`);
-            if (!response.ok) {
-               throw new Error('Failed to fetch messages');
+            if (response.ok) {
+               const data = await response.json();
+               const chatMessages = document.getElementById("chat-messages");
+               chatMessages.innerHTML = '';
+
+               // Get the unseen count from the map
+               const unseenCount = unseenCountsMap[receiverId] || 0;
+
+               // Track the position of unseen messages
+               let unseenMessagesStartIndex = data.messages.length - unseenCount;
+               let insertedUnseenLine = false;
+
+               data.messages.forEach((message, index) => {
+                  const messageDate = new Date(message.date);
+                  const formattedDate = formatTimeOrDate(messageDate);
+
+                  const div = document.createElement('div');
+                  div.classList.add('message', message.sender == receiverId ? 'received' : 'sent');
+                  div.setAttribute('data-message-id', message.id);
+
+                  if (message.type === 'text') {
+                     div.innerHTML = `
+                        <p>${escapeHTML(message.message)}</p>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
+                  } else if (message.type === 'photo') {
+                     div.classList.add('photo');
+                     div.innerHTML = `
+                        <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
+                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                        <div class="message-actions">
+                            <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                            <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                        </div>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
+                  } else if (message.type === 'document') {
+                     div.classList.add('document');
+                     const maxLength = 40;
+                     let displayName = message.message;
+                     if (displayName.length > maxLength) {
+                        displayName = displayName.substring(0, maxLength - 3) + '...';
+                     }
+                     const fileSize = message.file_size || '1.7 MB';
+                     let iconClass;
+                     let fileTypeDisplay = message.file_type || 'Document';
+                     const extension = message.message.split('.').pop().toLowerCase();
+                     if (extension === 'doc' || extension === 'docx') {
+                        iconClass = 'fa-file-word';
+                        fileTypeDisplay = message.file_type || 'Microsoft Word Document';
+                     } else if (extension === 'xls' || extension === 'xlsx') {
+                        iconClass = 'fa-file-excel';
+                        fileTypeDisplay = message.file_type || 'Microsoft Excel Document';
+                     } else if (extension === 'pdf') {
+                        iconClass = 'fa-file-pdf';
+                        fileTypeDisplay = message.file_type || 'PDF Document';
+                     } else if (extension === 'txt') {
+                        iconClass = 'fa-file';
+                        fileTypeDisplay = message.file_type || 'Text Document';
+                     } else if (extension === 'csv') {
+                        iconClass = 'fa-file';
+                        fileTypeDisplay = message.file_type || 'CSV Document';
+                     } else if (extension === 'rtf') {
+                        iconClass = 'fa-file';
+                        fileTypeDisplay = message.file_type || 'RTF Document';
+                     } else if (extension === 'zip') {
+                        iconClass = 'fa-file';
+                        fileTypeDisplay = message.file_type || 'ZIP Archive';
+                     } else {
+                        iconClass = 'fa-file';
+                        fileTypeDisplay = message.file_type || 'Document';
+                     }
+                     div.innerHTML = `
+                        <div class="file-frame">
+                            <i class="fa-solid ${iconClass} doc-icon"></i>
+                            <p>${escapeHTML(displayName)}</p>
+                        </div>
+                        <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                        <hr>
+                        ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                        <div class="message-actions">
+                            <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                            <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                        </div>
+                        <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                    `;
+                  }
+
+                  // Insert the unseen messages line before the first unseen message
+                  if (unseenCount > 0 && index === unseenMessagesStartIndex && !insertedUnseenLine) {
+                     const unseenLine = document.createElement('div');
+                     unseenLine.classList.add('unseen-line');
+                     unseenLine.innerHTML = `<span>${unseenCount} unread message${unseenCount !== 1 ? 's' : ''}</span>`;
+                     chatMessages.appendChild(unseenLine);
+                     insertedUnseenLine = true;
+                  }
+
+                  chatMessages.appendChild(div);
+               });
+
+               chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-            const data = await response.json();
-            const chatMessages = document.getElementById("chat-messages");
-            chatMessages.innerHTML = '';
-            chatMessages.lastDate = null; // Reset last date for date headers
-
-            // Get the unseen count from the map
-            const unseenCount = unseenCountsMap[receiverId] || 0;
-            let insertedUnseenLine = { value: false };
-
-            data.messages.forEach((message, index) => {
-               renderMessage(message, chatMessages, true, unseenCount, index, insertedUnseenLine);
-            });
-
-            chatMessages.scrollTop = chatMessages.scrollHeight;
          } catch (error) {
             console.error('Error fetching messages:', error);
          }
@@ -460,21 +479,89 @@ $currentUserId = $_SESSION['userid'];
       function pullMessages() {
          if (selectedUserId) {
             fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
-               .then(response => {
-                  if (!response.ok) {
-                     throw new Error('Failed to fetch messages');
-                  }
-                  return response.json();
-               })
+               .then(response => response.json())
                .then(data => {
                   if (data.messages.length > 0) {
                      const latestMessage = data.messages[data.messages.length - 1];
                      const chatMessages = document.getElementById("chat-messages");
                      chatMessages.innerHTML = '';
-                     chatMessages.lastDate = null; // Reset last date for date headers
-
                      data.messages.forEach(message => {
-                        renderMessage(message, chatMessages, true);
+                        const messageDate = new Date(message.date);
+                        const formattedDate = formatTimeOrDate(messageDate);
+
+                        const div = document.createElement('div');
+                        div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
+                        div.setAttribute('data-message-id', message.id);
+
+                        if (message.type === 'text') {
+                           div.innerHTML = `
+                                <p>${escapeHTML(message.message)}</p>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
+                        } else if (message.type === 'photo') {
+                           div.classList.add('photo');
+                           div.innerHTML = `
+                                <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
+                                ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                                <div class="message-actions">
+                                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                                </div>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
+                        } else if (message.type === 'document') {
+                           div.classList.add('document');
+                           const maxLength = 40;
+                           let displayName = message.message;
+                           if (displayName.length > maxLength) {
+                              displayName = displayName.substring(0, maxLength - 3) + '...';
+                           }
+                           const fileSize = message.file_size || '1.7 MB';
+                           let iconClass;
+                           let fileTypeDisplay = message.file_type || 'Document';
+                           const extension = message.message.split('.').pop().toLowerCase();
+                           if (extension === 'doc' || extension === 'docx') {
+                              iconClass = 'fa-file-word';
+                              fileTypeDisplay = message.file_type || 'Microsoft Word Document';
+                           } else if (extension === 'xls' || extension === 'xlsx') {
+                              iconClass = 'fa-file-excel';
+                              fileTypeDisplay = message.file_type || 'Microsoft Excel Document';
+                           } else if (extension === 'pdf') {
+                              iconClass = 'fa-file-pdf';
+                              fileTypeDisplay = message.file_type || 'PDF Document';
+                           } else if (extension === 'txt') {
+                              iconClass = 'fa-file';
+                              fileTypeDisplay = message.file_type || 'Text Document';
+                           } else if (extension === 'csv') {
+                              iconClass = 'fa-file';
+                              fileTypeDisplay = message.file_type || 'CSV Document';
+                           } else if (extension === 'rtf') {
+                              iconClass = 'fa-file';
+                              fileTypeDisplay = message.file_type || 'RTF Document';
+                           } else if (extension === 'zip') {
+                              iconClass = 'fa-file';
+                              fileTypeDisplay = message.file_type || 'ZIP Archive';
+                           } else {
+                              iconClass = 'fa-file';
+                              fileTypeDisplay = message.file_type || 'Document';
+                           }
+                           div.innerHTML = `
+                                <div class="file-frame">
+                                    <i class="fa-solid ${iconClass} doc-icon"></i>
+                                    <p>${escapeHTML(displayName)}</p>
+                                </div>
+                                <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                                <hr>
+                                ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                                <div class="message-actions">
+                                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(message.message)}')">Save as...</button>
+                                </div>
+                                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedDate}</span>
+                            `;
+                        }
+
+                        chatMessages.appendChild(div);
                      });
 
                      if (lastMessageId !== latestMessage.id) {
@@ -482,9 +569,6 @@ $currentUserId = $_SESSION['userid'];
                         lastMessageId = latestMessage.id;
                      }
                   }
-               })
-               .catch(error => {
-                  console.error('Error fetching messages:', error);
                });
          }
       }
@@ -517,6 +601,10 @@ $currentUserId = $_SESSION['userid'];
                body: formData
             })
             .then(response => {
+               // Log the response status and headers for debugging
+               console.log('Response Status:', response.status);
+               console.log('Response Headers:', response.headers);
+               // Check if the response is OK (status 200-299)
                if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
                }
@@ -525,13 +613,15 @@ $currentUserId = $_SESSION['userid'];
             .then(data => {
                if (data.status === "success") {
                   messageInput.value = '';
+                  // Remove the unseen messages line
                   const unseenLine = document.querySelector('.unseen-line');
                   if (unseenLine) {
                      unseenLine.remove();
                   }
+                  // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                } else {
                   console.error('Server responded with failure:', data);
                   alert(data.message || 'Error sending message');
@@ -585,15 +675,15 @@ $currentUserId = $_SESSION['userid'];
             return;
          } else if (selectedFileType === 'document') {
             const allowedDocumentTypes = [
-               'application/pdf',
-               'application/msword',
-               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-               'application/vnd.ms-excel',
-               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-               'text/plain',
-               'text/csv',
-               'application/rtf',
-               'application/zip'
+               'application/pdf', // PDF
+               'application/msword', // Word (.doc)
+               'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word (.docx)
+               'application/vnd.ms-excel', // Excel (.xls)
+               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel (.xlsx)
+               'text/plain', // Text (.txt)
+               'text/csv', // CSV (.csv)
+               'application/rtf', // RTF (.rtf)
+               'application/zip' // ZIP (.zip)
             ];
             if (!allowedDocumentTypes.includes(fileType)) {
                alert("Invalid document format. Only PDF, Word, Excel, TXT, CSV, RTF, and ZIP files are allowed.");
@@ -614,12 +704,15 @@ $currentUserId = $_SESSION['userid'];
          } else if (selectedFileType === 'document') {
             const div = document.createElement('div');
             div.classList.add('document-preview');
+            // Truncate file name to 40 characters and append "..."
             const maxLength = 40;
             let displayName = file.name;
             if (displayName.length > maxLength) {
                displayName = displayName.substring(0, maxLength - 3) + '...';
             }
+            // Calculate file size in MB
             const fileSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            // Determine file type and icon
             let fileTypeDisplay = 'Document';
             let iconClass;
             if (fileType === 'application/pdf') {
@@ -648,24 +741,28 @@ $currentUserId = $_SESSION['userid'];
                iconClass = 'fa-file';
             }
             div.innerHTML = `
-               <div class="file-frame">
-                  <i class="fa-solid ${iconClass} doc-icon"></i>
-                  <p>${escapeHTML(displayName)}</p>
-               </div>
-               <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-            `;
+        <div class="file-frame">
+            <i class="fa-solid ${iconClass} doc-icon"></i>
+            <p>${escapeHTML(displayName)}</p>
+        </div>
+        <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+        `;
             previewContent.appendChild(div);
          }
 
          previewArea.style.display = 'block';
+
+         // Reset the flag when a new file is selected
          isNotificationDismissed = false;
+
+         // Add click event listener to detect clicks outside the preview area
          setTimeout(() => {
             document.addEventListener('click', handleOutsideClick);
          }, 0);
       }
 
-      let isNotificationDismissed = false;
-      let ignoreNextOutsideClick = false;
+      let isNotificationDismissed = false; // This should already be at the top of your <script> tag
+      let ignoreNextOutsideClick = false; // Add this new flag to prevent immediate re-triggering
 
       function handleOutsideClick(event) {
          const previewArea = document.getElementById('preview-area');
@@ -673,15 +770,18 @@ $currentUserId = $_SESSION['userid'];
          const uploadIcon = document.querySelector('.upload');
          const notification = document.getElementById('discard-notification');
 
+         // If we should ignore this click (e.g., right after clicking "Return to media"), skip processing
          if (ignoreNextOutsideClick) {
-            ignoreNextOutsideClick = false;
+            ignoreNextOutsideClick = false; // Reset the flag after ignoring the click
             return;
          }
 
+         // If the notification is already visible, don't show it again
          if (notification.style.display === 'block') {
             return;
          }
 
+         // Check if the click is outside the preview area, upload popup, and upload icon
          if (
             !previewArea.contains(event.target) &&
             !uploadPopup.contains(event.target) &&
@@ -695,53 +795,98 @@ $currentUserId = $_SESSION['userid'];
       function showDiscardNotification() {
          const notification = document.getElementById('discard-notification');
          const chatWindow = document.getElementById('chat-window');
-         const dimOverlay = document.getElementById('dim-overlay');
+         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
 
+         // Get the dimensions and position of the chat window
          const chatWindowRect = chatWindow.getBoundingClientRect();
+
+         // Calculate the center position
          const centerX = chatWindowRect.left + (chatWindowRect.width / 2);
          const centerY = chatWindowRect.top + (chatWindowRect.height / 2);
 
+         // Get the dimensions of the notification to offset it so it's centered
          const notificationRect = notification.getBoundingClientRect();
          const notificationWidth = notificationRect.width;
          const notificationHeight = notificationRect.height;
 
-         const verticalOffset = -140;
-         const horizontalOffset = -330;
+         // Custom position: adjust these offsets to position the notification
+         const verticalOffset = -140; // Moves the notification 50px above the center (negative = up, positive = down)
+         const horizontalOffset = -330; // Moves the notification horizontally (negative = left, positive = right)
          const adjustedX = centerX - (notificationWidth / 2) + horizontalOffset;
          const adjustedY = centerY - (notificationHeight / 2) + verticalOffset;
 
+         // Position the notification
          notification.style.left = `${adjustedX}px`;
          notification.style.top = `${adjustedY}px`;
          notification.style.display = 'block';
+
+         // Show the dim overlay
          dimOverlay.style.display = 'block';
+
+         // Reset the dismissed flag when showing the notification
          isNotificationDismissed = false;
       }
 
       function discardFile() {
+         console.log("discardFile called");
          const previewArea = document.getElementById('preview-area');
          const fileInput = document.getElementById('file-upload');
          const notification = document.getElementById('discard-notification');
-         const dimOverlay = document.getElementById('dim-overlay');
+         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
 
+         if (!previewArea || !fileInput || !notification || !dimOverlay) {
+            console.error("One or more elements not found:", {
+               previewArea,
+               fileInput,
+               notification,
+               dimOverlay
+            });
+            return;
+         }
+
+         // Clear the preview and reset the file input
          previewArea.style.display = 'none';
          fileInput.value = '';
          document.getElementById('caption-input').value = '';
          selectedFile = null;
          selectedFileType = null;
          notification.style.display = 'none';
+
+         // Hide the dim overlay
          dimOverlay.style.display = 'none';
+
+         // Reset the flag since the preview area is closed
          isNotificationDismissed = false;
+
+         // Remove the outside click listener
          document.removeEventListener('click', handleOutsideClick);
       }
 
       function returnToMedia() {
+         console.log("returnToMedia called");
          const notification = document.getElementById('discard-notification');
          const previewArea = document.getElementById('preview-area');
-         const dimOverlay = document.getElementById('dim-overlay');
+         const dimOverlay = document.getElementById('dim-overlay'); // Get the overlay
 
+         if (!notification || !previewArea || !dimOverlay) {
+            console.error("Elements not found:", {
+               notification,
+               previewArea,
+               dimOverlay
+            });
+            return;
+         }
+
+         // Hide the notification
          notification.style.display = 'none';
+
+         // Hide the dim overlay
          dimOverlay.style.display = 'none';
+
+         // Ensure the preview area remains visible
          previewArea.style.display = 'block';
+
+         // Prevent the next outside click from re-showing the notification
          ignoreNextOutsideClick = true;
       }
 
@@ -765,6 +910,10 @@ $currentUserId = $_SESSION['userid'];
                body: formData
             })
             .then(response => {
+               // Log the response status and headers for debugging
+               console.log('Response Status:', response.status);
+               console.log('Response Headers:', response.headers);
+               // Check if the response is OK (status 200-299)
                if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
                }
@@ -777,21 +926,25 @@ $currentUserId = $_SESSION['userid'];
                   document.getElementById('preview-area').style.display = 'none';
                   selectedFile = null;
                   selectedFileType = null;
+                  // Remove the unseen messages line
                   const unseenLine = document.querySelector('.unseen-line');
                   if (unseenLine) {
                      unseenLine.remove();
                   }
+                  // Update unseen count for this user
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   document.removeEventListener('click', handleOutsideClick);
                   isNotificationDismissed = false;
                } else {
                   console.error('Server responded with failure:', data);
+                  alert(data.message || 'Error uploading file');
                }
             })
             .catch(error => {
                console.error("Error uploading file:", error);
+               alert(`Error uploading file: ${error.message}`);
             });
       }
 
@@ -800,10 +953,11 @@ $currentUserId = $_SESSION['userid'];
       }
 
       function downloadFile(url, fileName) {
+         // Clean the file name to remove any unwanted characters or paths
          const cleanFileName = fileName.replace(/[^a-zA-Z0-9\.\-_]/g, '_');
          const a = document.createElement('a');
          a.href = url;
-         a.download = cleanFileName;
+         a.download = cleanFileName; // Use the cleaned file name for the "Save As" dialog
          document.body.appendChild(a);
          a.click();
          document.body.removeChild(a);
@@ -815,59 +969,21 @@ $currentUserId = $_SESSION['userid'];
          const xhr = new XMLHttpRequest();
          xhr.open("GET", "<?= ROOT ?>/ChatController/getUserStatuses", true);
          xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-               if (xhr.status == 200) {
-                  const users = JSON.parse(xhr.responseText);
-                  users.forEach(user => {
-                     const chatItem = document.querySelector(`.chat-item[data-receiver-id="${user.id}"]`);
-                     if (chatItem) {
-                        const statusElement = chatItem.querySelector('.chat-status');
-                        statusElement.textContent = user.state ? 'Online' : 'Offline';
-                     }
-                  });
-               } else {
-                  console.error('Failed to refresh user statuses:', xhr.status);
-               }
+            if (xhr.readyState == 4 && xhr.status == 200) {
+               const users = JSON.parse(xhr.responseText);
+               users.forEach(user => {
+                  const chatItem = document.querySelector(`.chat-item[data-receiver-id="${user.id}"]`);
+                  if (chatItem) {
+                     const statusElement = chatItem.querySelector('.chat-status');
+                     statusElement.textContent = user.state ? 'Online' : 'Offline';
+                  }
+               });
             }
          };
          xhr.send();
       }
 
       function formatTimeOrDate(messageDate) {
-         return messageDate.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-         });
-      }
-
-      function getDateHeader(messageDate) {
-         const today = new Date();
-         const yesterday = new Date(today);
-         yesterday.setDate(today.getDate() - 1);
-         const oneWeekAgo = new Date(today);
-         oneWeekAgo.setDate(today.getDate() - 7);
-
-         const isToday = messageDate.toDateString() === today.toDateString();
-         const isYesterday = messageDate.toDateString() === yesterday.toDateString();
-         const isWithinWeek = messageDate > oneWeekAgo && messageDate < yesterday;
-
-         if (isToday) {
-            return "Today";
-         } else if (isYesterday) {
-            return "Yesterday";
-         } else if (isWithinWeek) {
-            return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
-         } else {
-            return messageDate.toLocaleDateString('en-GB', {
-               day: '2-digit',
-               month: '2-digit',
-               year: 'numeric'
-            });
-         }
-      }
-
-      function formatChatListDate(messageDate) {
          const today = new Date();
          const yesterday = new Date(today);
          yesterday.setDate(today.getDate() - 1);
@@ -900,18 +1016,14 @@ $currentUserId = $_SESSION['userid'];
          const roles = roleArray.join(',');
 
          fetch(`<?= ROOT ?>/ChatController/getUnseenCounts?roles=${roles}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to fetch unseen counts');
-               }
-               return response.json();
-            })
+            .then(response => response.json())
             .then(users => {
                if (users.error) {
                   console.error("Error:", users.error);
                   return;
                }
 
+               // Update the unseenCountsMap
                unseenCountsMap = {};
                users.forEach(user => {
                   unseenCountsMap[user.id] = user.unseen_count || 0;
@@ -926,7 +1038,7 @@ $currentUserId = $_SESSION['userid'];
                   let lastMessageDisplay = '';
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
-                     lastMessageDisplay = formatChatListDate(messageDate);
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
                   const profileImageUrl = user.image ?
@@ -934,32 +1046,31 @@ $currentUserId = $_SESSION['userid'];
                      '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
                   const chatItemHTML = `
-                     <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, '${user.id}')">
-                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                        </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
-                     </div>
-                     </li>
-                  `;
+               <li>
+               <div class="chat-item ${unseenClass}" 
+                  data-receiver-id="${user.id}" 
+                  onclick="selectChat(this, '${user.id}')">
+                  <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                  <div class="chat-info">
+                     <h4>${user.username}</h4>
+                     <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                  </div>
+                  <div class="chat-side">
+                     <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                     <span class="circle"></span>
+                  </div>
+               </div>
+               </li>
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
             .catch(error => console.error("Error fetching unseen counts:", error));
       }
-
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([3, 4]);
          }
       }, 1000);
 
@@ -968,19 +1079,14 @@ $currentUserId = $_SESSION['userid'];
 
          if (!query.trim()) {
             isSearching = false;
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([3, 4]);
             return;
          }
 
          isSearching = true;
 
          fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to search users');
-               }
-               return response.json();
-            })
+            .then(response => response.json())
             .then(user_profile => {
                chatList.innerHTML = '';
 
@@ -995,7 +1101,7 @@ $currentUserId = $_SESSION['userid'];
 
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
-                     lastMessageDisplay = formatChatListDate(messageDate);
+                     lastMessageDisplay = formatTimeOrDate(messageDate);
                   }
 
                   const profileImageUrl = user.image ?
@@ -1003,50 +1109,40 @@ $currentUserId = $_SESSION['userid'];
                      '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
                   const chatItemHTML = `
-                     <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, '${user.id}')">
-                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
-                        </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
+                  <li>
+                  <div class="chat-item ${unseenClass}" 
+                     data-receiver-id="${user.id}" 
+                     onclick="selectChat(this, '${user.id}')">
+                     <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                     <div class="chat-info">
+                        <h4>${user.username}</h4>
+                        <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
                      </div>
-                     </li>
-                  `;
+                     <div class="chat-side">
+                        <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                        <span class="circle"></span>
+                     </div>
+                  </div>
+                  </li>
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
-            .catch(error => {
-               console.error("Error searching users:", error);
-            });
+            .catch(error => console.error("Error searching users:", error));
       }
 
       function markMessagesAsSeen(receiverId) {
          fetch(`<?= ROOT ?>/ChatController/markMessagesSeen/${receiverId}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to mark messages as seen');
-               }
+            .then(() => {
                const chatItem = document.querySelector(`.chat-item[data-receiver-id="${receiverId}"]`);
                if (chatItem) chatItem.classList.remove('unseen');
-            })
-            .catch(error => {
-               console.error("Error marking messages as seen:", error);
             });
       }
 
       function updateReceivedState() {
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
-            .catch(error => {
-               console.error("Error updating timestamps:", error);
-            });
+            .catch(error => console.error("Error updating timestamps:", error));
       }
 
       setInterval(updateReceivedState, 3000);

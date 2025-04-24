@@ -43,7 +43,7 @@ class TestRequest extends Model
 
    public function updateState($requestID, $newState, $testName)
    {
-      $query = "UPDATE test_request_details SET state = :state WHERE test_request_id = :id AND test_name = :testName";
+      $query = "UPDATE test_request_details SET state = :state WHERE req_id = :id AND test_name = :testName";
       $params = [
          'state' => $newState,
          'id' => $requestID,
@@ -55,7 +55,7 @@ class TestRequest extends Model
 
    public function getTestDetails($requestID)
    {
-      $query = "SELECT test_name, state, priority, file FROM test_request_details WHERE test_request_id = :requestID";
+      $query = "SELECT test_name, state, priority, file FROM test_request_details WHERE req_id = :requestID";
       $params = [':requestID' => $requestID];
       return $this->read($query, $params);
    }
@@ -102,7 +102,7 @@ class TestRequest extends Model
 
          $query = "UPDATE test_request_details 
                      SET state = :state, file = COALESCE(:file, file)
-                     WHERE test_request_id = :requestID AND test_name = :testName";
+                     WHERE req_id = :requestID AND test_name = :testName";
          $params = [
             ':state' => $state,
             ':file' => $fileName,
@@ -115,7 +115,7 @@ class TestRequest extends Model
 
    public function deleteFile($requestID, $testName)
    {
-      $query = "SELECT file FROM test_request_details WHERE test_request_id = :requestID AND test_name = :testName";
+      $query = "SELECT file FROM test_request_details WHERE req_id = :requestID AND test_name = :testName";
       $params = [':requestID' => $requestID, ':testName' => $testName];
       $result = $this->read($query, $params);
 
@@ -126,14 +126,14 @@ class TestRequest extends Model
             unlink($filePath);
          }
 
-         $updateQuery = "UPDATE test_request_details SET file = NULL WHERE test_request_id = :requestID AND test_name = :testName";
+         $updateQuery = "UPDATE test_request_details SET file = NULL WHERE req_id = :requestID AND test_name = :testName";
          $this->read($updateQuery, $params);
       }
    }
 
    public function getFileUrl($requestID, $testName)
    {
-      $query = "SELECT file FROM test_request_details WHERE test_request_id = :requestID AND test_name = :testName";
+      $query = "SELECT file FROM test_request_details WHERE req_id = :requestID AND test_name = :testName";
       $params = [':requestID' => $requestID, ':testName' => $testName];
       $result = $this->read($query, $params);
 

@@ -31,11 +31,11 @@
 
                $query = "SELECT medication_name, dosage, taken_time, substitution, state 
                          FROM medication_request_details 
-                         WHERE test_request_id = :test_request_id";
-               $medicationDetails = $db->read($query, ['test_request_id' => $requestID]);
+                         WHERE req_id = :req_id";
+               $medicationDetails = $db->read($query, ['req_id' => $requestID]);
 
-               $remarksQuery = "SELECT remark FROM medication_requests WHERE id = :test_request_id";
-               $remarksResult = $db->read($remarksQuery, ['test_request_id' => $requestID]);
+               $remarksQuery = "SELECT remark FROM medication_requests WHERE id = :req_id";
+               $remarksResult = $db->read($remarksQuery, ['req_id' => $requestID]);
                $additionalRemarks = $remarksResult[0]['remark'] ?? '';
 
                if ($medicationDetails) {
@@ -45,7 +45,7 @@
                                  <th>Name of the Medication</th>
                                  <th>Dosage of the Medication</th>
                                  <th colspan='4'>Number taken at a time</th>
-                                 <th>Substitution</th>
+                                 <th>Do not substitute</th>
                                  <th>State</th>
                              </tr>
                              <tr>
@@ -66,7 +66,7 @@
                      $noon = $takenTimeArray[1] ?? 0;
                      $night = $takenTimeArray[2] ?? 0;
                      $ifNeeded = $takenTimeArray[3] ?? 0;
-                     $substitution = $medication['substitution'] == 0 ? "Not Allowed" : "Allowed";
+                     $substitution = $medication['substitution'] == 0 ? "can't" : "can";
 
                      $currentState = esc($medication['state']);
 
@@ -93,6 +93,8 @@
 
                   echo "<div class='remarks-section'>
                            <h3>Remarks</h3>
+                           <p>Patient ID: {$patientID}</p>
+                           <p>Doctor ID: {$doctorID}</p>
                            <p>Date: <span id='currentDate'></span></p>
                            <textarea id='additionalRemarks' placeholder='Enter additional remarks...'>" . htmlspecialchars($additionalRemarks) . "</textarea>
                          </div>";

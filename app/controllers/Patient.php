@@ -352,13 +352,13 @@ class Patient extends Controller
       //print_r($data);
       $message = "You have successfully placed an appointment with Dr. " . $data['doctor'] . " on " . $data['appointment_date'] . ". Your appointment number is: " . $data['appointment_number'] . ".";
 
-      $email = new Email();
-      $email->send(
-         "Wellbe",
-         "wellbe@gmail.com",
-         $message,
-         $_SESSION['USER']->email,
-      );
+      // $email = new Email();
+      // $email->send(
+      //    "Wellbe",
+      //    "wellbe@gmail.com",
+      //    $message,
+      //    $_SESSION['USER']->email,
+      // );
 
       //find patient type(returning or new)
       $medicalRecord = new MedicalRecord();

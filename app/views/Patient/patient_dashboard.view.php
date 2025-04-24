@@ -41,9 +41,9 @@
               <img src="<?= ROOT ?>/assets/images/<?= $profileImage ?>" alt="Profile Picture" class="profile-img" />
             </div>
             <div class="text-data">
-              <span class="name"> <?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></span>
+              <span class="name" style="font-size: 25px;"><strong> <?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></strong></span>
 
-              <span class="job"><strong>Patient_id: </strong>PT_<?= $_SESSION['USER']->id; ?></span>
+              <!-- <span class="job"><strong>Patient_id: </strong>PT_<?= $_SESSION['USER']->id; ?></span> -->
             </div>
             <br>
             <div class="profile-details">

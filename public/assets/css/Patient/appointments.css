@@ -10,6 +10,7 @@ body {
     background-color: #f7f8fc;
     color: #333;
     line-height: 1.6;
+    height: auto;
 }
 
 /* Layout containers */
@@ -179,6 +180,67 @@ body {
     background-color: #e5e7eb;
     color: #111827;
 }
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 20px 0;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filters label {
+    font-weight: 600;
+    margin-right: 8px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.filters select {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.filters select:focus {
+    border-color: #009688;
+}
+
+.refresh-btn{
+    background-color: #49bb4d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 500px;
+}
+
+/* Optional: Make the filters responsive */
+@media (max-width: 600px) {
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filters label {
+        margin-bottom: 4px;
+    }
+
+    .filters select {
+        width: 100%;
+    }
+}
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9); }

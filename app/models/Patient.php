@@ -44,6 +44,15 @@ class Patient extends Model
             $this->errors['last_name'] = "Last Name must contain only letters and spaces";
         }
 
+        if (empty($data['nic'])) {
+            $this->errors['nic'] = "NIC is required";
+        } elseif (
+            !preg_match("/^([0-9]{9}[vVxX]|[0-9]{12})$/", $data['nic'])
+        ) {
+            $this->errors['nic'] = "Invalid NIC format. Use 9 digits followed by V/X or 12 digits.";
+        }
+        
+
         // Validate date of birth and age
         if (empty($data['dob'])) {
             $this->errors['dob'] = "Date of Birth is required";
@@ -86,16 +95,6 @@ class Patient extends Model
     public function validate_second_form($data){
 
         $this->errors = [];
-
-        // Validate medical history
-        if (empty($data['medical_history'])) {
-            $this->errors['medical_history'] = "Medical History is required";
-        }
-
-        // Validate allergies
-        if (empty($data['allergies'])) {
-            $this->errors['allergies'] = "Allergies field is required";
-        }
 
         // Validate emergency contact name
         if (empty($data['emergency_contact_name'])) {

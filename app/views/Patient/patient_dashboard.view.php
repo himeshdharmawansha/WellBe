@@ -25,7 +25,7 @@
       <!-- Top Header -->
       <?php
       $pageTitle = "Dashboard"; // Set the text you want to display
-      include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/Patient/header.php';
+      include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/header.php';
       ?>
 
 
@@ -41,9 +41,9 @@
               <img src="<?= ROOT ?>/assets/images/<?= $profileImage ?>" alt="Profile Picture" class="profile-img" />
             </div>
             <div class="text-data">
-              <span class="name"> <?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></span>
+              <span class="name" style="font-size: 25px;"><strong> <?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></strong></span>
 
-              <span class="job"><strong>Patient_id: </strong><?= $_SESSION['USER']->id; ?></span>
+              <!-- <span class="job"><strong>Patient_id: </strong>PT_<?= $_SESSION['USER']->id; ?></span> -->
             </div>
             <br>
             <div class="profile-details">

@@ -37,16 +37,32 @@
                         <label for="emergency_contact_name">Emergency Contact Name:</label>
                         <input type="text" id="emergency_contact_name" name="emergency_contact_name" required value="<?= $_POST['emergency_contact_name'] ?? '' ?>">
                     </div>
+                    <?php if (!empty($errors['emergency_contact_name'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['emergency_contact_name'] ?>
+                    </div>
+                <?php endif; ?>
                     
                     <div class="form-row">
                         <label for="emergency_contact_no">Emergency Contact No:</label>
                         <input type="text" id="emergency_contact_no" name="emergency_contact_no" required value="<?= $_POST['emergency_contact_no'] ?? '' ?>">
                     </div>
+                    <?php if (!empty($errors['emergency_contact_no'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['emergency_contact_no'] ?>
+                    </div>
+                <?php endif; ?>
                     
                     <div class="form-row">
                         <label for="emergency_contact_relationship">Emergency Contact Relationship:</label>
                         <input type="text" id="emergency_contact_relationship" required name="emergency_contact_relationship" value="<?= $_POST['emergency_contact_relationship'] ?? '' ?>">
                     </div>
+                    <?php if (!empty($errors['emergency_contact_relationship'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['emergency_contact_relationship'] ?>
+                    </div>
+                <?php endif; ?>
+                    
                     
                     <div class="buttons-bar">
                         <button type="button" class="prev-button" onclick="window.location.href='./form1.php';">Previous</button>

@@ -11,10 +11,12 @@
 
   <div class=main>
     <form method="POST" action="<?= ROOT ?>/forgot/check">
-      <h1> Enter Your Email</h1>
-
+      <h1> Enter Your Nic & Email</h1>
       <div class="field">
-        <input type="text" name="email" placeholder="Email" required>
+        <input type="text " name="nicID" placeholder="Nic ID" required>
+      </div>
+      <div class="field">
+        <input type="email " name="email" placeholder="Email" required>
       </div>
 
       <?php if (!empty($errorMessage)): ?>

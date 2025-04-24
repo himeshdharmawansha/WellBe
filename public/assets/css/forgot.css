@@ -39,6 +39,16 @@ body {
     text-align: center;
 }
 
+.form-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-container {
+    width: 400px;
+}
+
 h1 {
     font-size: 28px;
     color: #333;
@@ -87,21 +97,61 @@ input[type="submit"]:hover {
     background-color: #17a07d;
 }
 
+.arrow-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: #18ac8d;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.arrow-button:hover:not(.disabled) {
+    background-color: #17a07d;
+}
+
+.arrow-button.disabled {
+    background-color: #a0d2c2;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.left-arrow {
+    left: -50px;
+}
+
+.right-arrow {
+    right: -50px;
+}
+
 .forgotpass,
-.signup_link {
+.signup_link,
+.resend-link {
     margin-top: 20px;
     color: #5c5c5c;
     font-size: 16px;
 }
 
 .forgotpass a,
-.signup_link a {
+.signup_link a,
+.resend-link a {
     color: #007BFF;
     text-decoration: none;
 }
 
 .forgotpass a:hover,
-.signup_link a:hover {
+.signup_link a:hover,
+.resend-link a:hover {
     text-decoration: underline;
 }
 
@@ -112,14 +162,35 @@ input[type="submit"]:hover {
 }
 
 @media(max-width: 1280px) {
-    .main form {
+    .main form,
+    .form-container {
         width: 90%;
         max-width: 450px;
+    }
+
+    .form-wrapper {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .arrow-button {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .left-arrow {
+        left: -45px;
+    }
+
+    .right-arrow {
+        right: -45px;
     }
 }
 
 @media(max-width: 800px) {
-    .main form {
+    .main form,
+    .form-container {
         padding: 20px;
     }
 
@@ -136,8 +207,23 @@ input[type="submit"]:hover {
         font-size: 16px;
     }
 
+    .arrow-button {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .left-arrow {
+        left: -40px;
+    }
+
+    .right-arrow {
+        right: -40px;
+    }
+
     .forgotpass,
-    .signup_link {
+    .signup_link,
+    .resend-link {
         font-size: 14px;
     }
 }

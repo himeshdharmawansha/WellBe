@@ -1,10 +1,10 @@
 <?php
 class checkValues extends Model
 {
-    public function check($email)
+    public function check($nicID, $email, $table)
     {
-        $sql = "SELECT * FROM patient WHERE email=?";
-        $check = $this->query($sql, [$email]);
+        $sql = "SELECT * FROM $table WHERE nic=? AND email=?";
+        $check = $this->query($sql, [$nicID, $email]);
 
         if (is_array($check) && count($check) > 0) {
             // Handle array of stdClass objects
@@ -14,9 +14,9 @@ class checkValues extends Model
         return ['found' => 'false'];
     }
 
-    public function updatePassword($email, $hashedPassword)
+    public function updatePassword($nicID, $table, $hashedPassword)
     {
-        $sql = "UPDATE patient SET password=? WHERE email=?";
-        return $this->write($sql, [$hashedPassword, $email]);
+        $sql = "UPDATE $table SET password=? WHERE nic=?";
+        return $this->write($sql, [$hashedPassword, $nicID]);
     }
 }

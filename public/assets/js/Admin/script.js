@@ -28,6 +28,11 @@ function generateCalendar(month, year) {
    // Fill in the dates in the table
    let date = 1;
    let nextMonthDate = 1;
+
+   const today = new Date();
+   const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+   const todayDate = today.getDate();
+   
    for (let i = 0; i < 6; i++) {
       let row = document.createElement('tr');
 
@@ -43,6 +48,10 @@ function generateCalendar(month, year) {
             cell.classList.add('inactive'); // empty space after the last day of the month
          } else {
             cell.textContent = date;
+            // Highlight today
+            if (isCurrentMonth && date === todayDate) {
+               cell.classList.add('today');
+            }
             date++;
          }
          row.appendChild(cell);

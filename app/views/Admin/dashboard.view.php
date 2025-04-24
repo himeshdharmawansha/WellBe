@@ -7,6 +7,7 @@
     <title>Administrative Staff Dashboard</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Admin/dashboard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -84,61 +85,19 @@
                 <div class="content-container">
                     <div class="dashboard appointments">
                         <div class="header">
-                            <h3>Today's Appointments</h3>
-                            <a href="#" class="see-all">See all</a>
-                        </div>  
-                        <table class="appointment-table">
-                            <tr>
-                                <td>
-                                    <span class="doctor-name">Dr.K.G.Gunawardana</span>
-                                    <span class="speciality">Cardiologist</span>
-                                </td>
-                                <td>
-                                    <span class="time ongoing">Ongoing</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="doctor-name">Dr.K.G.Gunawardana</span>
-                                    <span class="speciality">Cardiologist</span>
-                                </td>
-                                <td>
-                                    <span class="time">12:30pm</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="doctor-name">Dr.K.G.Gunawardana</span>
-                                    <span class="speciality">Cardiologist</span>
-                                </td>
-                                <td>
-                                    <span class="time">1:00pm</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="doctor-name">Dr.K.G.Gunawardana</span>
-                                    <span class="speciality">Cardiologist</span>
-                                </td>
-                                <td>
-                                    <span class="time">3:00pm</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="doctor-name">Dr.K.G.Gunawardana</span>
-                                    <span class="speciality">Cardiologist</span>
-                                </td>
-                                <td>
-                                    <span class="time">5:00pm</span>
-                                </td>
-                            </tr>
-                        </table>  
+                            <h3>Add New Users</h3>
+                        </div>
+                        <div class = "quick-buttons">
+                            <button class = "new-doc" onclick = "window.location.href='<?= ROOT ?>/Admin/doctorForm1'"> New Doctor </button>
+                            <button class = "new-labtech" onclick = "window.location.href='<?= ROOT ?>/Admin/labTechForm1'"> New Lab Technician </button>
+                            <button class = "new-pharmacist" onclick = "window.location.href='<?= ROOT ?>/Admin/pharmacistForm1'"> New Pharmacist </button>
+                        </div>
+
                     </div>
                     <div class=" dashboard patient-analysis">
                         <h3>Patient Analysis</h3>
                         <div class="analysis-graph">
-                                <!-- Graph image or chart can be placed here -->
+                            <canvas id="staffHistogram" width="400" height="300"></canvas> 
                         </div>
                     </div>
                     <div class="dashboard calendar-container">
@@ -171,6 +130,41 @@
             </div>
         </div>
     </div>
+        <script>
+        const ctx = document.getElementById('staffHistogram').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Doctors', 'Lab Technicians', 'Pharmacists'],
+                datasets: [{
+                    label: 'Total Registered',
+                    data: [<?= $doctorsCount ?>, <?= $labTechsCount ?>, <?= $pharmacistsCount ?>],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0 // Prevent decimal tick values
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 
     <script src="<?= ROOT ?>/assets/js/Admin/script.js"></script>
 </body>

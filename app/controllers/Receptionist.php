@@ -23,7 +23,23 @@ class Receptionist extends Controller
 
    public function index()
    {
-      $this->view('Receptionist/dashboard', 'dashboard');
+      $appointments = new Appointments();
+      $patient = new Patient();
+      $doctor = new Doctor();
+      $pharmacist = new Pharmacy();
+      $labTech = new Lab();
+      $timeslot = new Timeslot();
+
+      $data = [
+         'todayAppointmentsCount' => $appointments->totalTodayAppointments(),
+         'patientsCount'     => $patient->totalPatients(),
+         'doctorsCount'      => $doctor->totalDoctors(),
+         'pharmacistsCount'  => $pharmacist->totalPharmacists(),
+         'labTechsCount'     => $labTech->totalLabTechs(),
+         'todaySessions'     => $timeslot->getTodaySessions(),
+      ];
+
+      $this->view('Receptionist/dashboard', 'dashboard', $data);
    }
 
    public function todayAppointments()
@@ -76,12 +92,20 @@ class Receptionist extends Controller
 
    public function appointmentsUpcoming()
    {
-      $this->view('Receptionist/appointmentsUpcoming', 'appointmentsUpcoming');
+      $timeslot = new Timeslot(); 
+      $data['today_sessions'] = $timeslot->getUpcomingSessions(); // Fetch all upcoming appointments
+      //print_r($data['today_sessions']);
+      
+      $this->view('Receptionist/appointmentsUpcoming', 'Appointments', $data);
    }
 
    public function appointmentsPast()
    {
-      $this->view('Receptionist/appointmentsPast', 'appointmentsPast');
+      $timeslot = new Timeslot(); 
+      $data['today_sessions'] = $timeslot->getPastSessions(); // Fetch all past appointments
+      //print_r($data['today_sessions']);
+      
+      $this->view('Receptionist/appointmentsPast', 'Appointments', $data);
    }
 
    public function patients()

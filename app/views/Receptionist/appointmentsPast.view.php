@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,13 +39,13 @@
                     </div>
                 </div>
                 <div class="view-buttons">
-                    <span class="ongoing active">Today</span>
-                    <a onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsUpcoming'">
+                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/todayAppointments'">
+                        <span class="ongoing">Today</span>
+                    </a>     
+                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsUpcoming'">
                         <span class="upcoming">Upcoming</span>
                     </a>
-                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsPast'">
-                        <span class="past">Past</span>
-                    </a>
+                    <span class="past active">Past</span>
                 </div>
 
                 <div class="table-container">
@@ -69,7 +70,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5">No sessions found for today</td>
+                                <td colspan="5">No Past Sessions</td>
                             </tr>
                         <?php endif; ?>
                     </table>

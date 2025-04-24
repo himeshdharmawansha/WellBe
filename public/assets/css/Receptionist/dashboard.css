@@ -278,8 +278,10 @@
 }
 
 .see-all {
+    margin-right: 400px;
     font-size: 14px;
     color: #683CFC;
+    cursor: pointer;
 }
 
 .see-all:hover {

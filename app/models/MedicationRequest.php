@@ -7,7 +7,7 @@ class MedicationRequest extends Model
 
    public function getAll()
    {
-      return $this->read("SELECT mr.*, d.first_name FROM medication_requests mr, doctor d where mr.doctor_id = d.id");
+      return $this->read("SELECT mr.*, d.first_name,t.date as date_t FROM medication_requests mr, timeslot t, doctor d where mr.date = t.slot_id AND mr.doctor_id = d.id");
    }
 
    public function getPendingRequests()

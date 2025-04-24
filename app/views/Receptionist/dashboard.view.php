@@ -141,8 +141,9 @@
                                     <?php foreach ($todaySessions as $session) : ?>
                                         <?php
                                             $sessionTime = strtotime($session->start_time);
+                                            $endTime = strtotime($session->end_time);
                                             $currentTime = strtotime(date('H:i:s'));
-                                            $isOngoing = $currentTime >= $sessionTime;
+                                            $isOngoing = $currentTime >= $sessionTime && $currentTime <= $endTime;
                                             $formattedTime = date('g:i a', $sessionTime);
                                         ?>
                                         <tr>

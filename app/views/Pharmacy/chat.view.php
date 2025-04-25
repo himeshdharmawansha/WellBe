@@ -1,7 +1,4 @@
-<?php
-$currentUserId = $_SESSION['userid'];
-?>
-
+<?php $currentUserId = $_SESSION['userid']; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,14 +27,14 @@ $currentUserId = $_SESSION['userid'];
             <div class="container">
                <div class="chat-list">
                   <div class="search-bar">
-                     <input
-                        type="text"
-                        id="search-input"
-                        placeholder="Search"
-                        oninput="searchUsers(this.value)" />
+                     <input type="text" id="search-input" placeholder="Search" oninput="searchUsers(this.value)" />
                   </div>
                   <ul id="chat-list">
                      <?php foreach ($user_profile as $user): ?>
+                        <?php
+                        $roles = [1 => 'pharmacy', 2 => 'lab', 3 => 'admin', 4 => 'patient', 5 => 'doctor', 6 => 'receptionist'];
+                        $roleTitle = $roles[$user['role']] ?? 'Unknown';
+                        ?>
                         <li>
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
@@ -45,7 +42,8 @@ $currentUserId = $_SESSION['userid'];
                               <img src="<?php echo esc($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
                                  <h4><?php echo esc($user['username']); ?></h4>
-                                 <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
+                                 <p class="chat-status"><?php echo $roleTitle; ?></p>
+                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline';?></p>
                               </div>
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
@@ -148,6 +146,19 @@ $currentUserId = $_SESSION['userid'];
       let selectedFileType = null;
       let unseenCountsMap = {}; // Store unseen counts for each user
 
+      // Role mapping function
+      function getRoleTitle(roleId) {
+         const roles = {
+            1: 'pharmacy',
+            2: 'lab',
+            3: 'admin',
+            4: 'patient',
+            5: 'doctor',
+            6: 'receptionist'
+         };
+         return roles[roleId] || 'Unknown';
+      }
+
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
          event.preventDefault();
          const target = event.target.closest('.message');
@@ -222,7 +233,6 @@ $currentUserId = $_SESSION['userid'];
                })
                .catch(error => {
                   console.error('An error occurred while deleting the message:', error);
-                  alert('An error occurred while deleting the message.');
                });
          }
       }
@@ -304,7 +314,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error editing caption:", error);
-               alert("Error editing caption.");
             });
       }
 
@@ -312,10 +321,11 @@ $currentUserId = $_SESSION['userid'];
          selectedUserId = userId;
          const username = chatItem.querySelector('.chat-info h4').textContent;
          const userStatus = chatItem.querySelector('.chat-status').textContent;
+         const userTime = chatItem.querySelector('.chat-time').textContent;
          const avatarSrc = chatItem.querySelector('.avatar').src;
 
          document.getElementById('chat-username').textContent = username;
-         document.getElementById('chat-status').textContent = userStatus;
+         document.getElementById('chat-status').textContent = userTime;
          document.getElementById('chat-avatar').src = avatarSrc;
 
          startChat(userId);
@@ -405,19 +415,19 @@ $currentUserId = $_SESSION['userid'];
             }
             const fileName = message.file_path.split('/').pop(); // Extract file name from path
             div.innerHTML = `
-               <div class="file-frame">
-                  <i class="fa-solid ${iconClass} doc-icon"></i>
-                  <p>${escapeHTML(displayName)}</p>
-               </div>
-               <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-               <hr>
-               ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-               <div class="message-actions">
-                  <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                  <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-               </div>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-            `;
+                  <div class="file-frame">
+                     <i class="fa-solid ${iconClass} doc-icon"></i>
+                     <p>${escapeHTML(displayName)}</p>
+                  </div>
+                  <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                  <hr>
+                  ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                  <div class="message-actions">
+                     <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                     <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
+                  </div>
+                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
+               `;
          }
 
          // Insert the unseen messages line before the first unseen message (only for initial render)
@@ -454,7 +464,6 @@ $currentUserId = $_SESSION['userid'];
             chatMessages.scrollTop = chatMessages.scrollHeight;
          } catch (error) {
             console.error('Error fetching messages:', error);
-            alert('Failed to load messages. Please try again.');
          }
       }
 
@@ -488,7 +497,6 @@ $currentUserId = $_SESSION['userid'];
                })
                .catch(error => {
                   console.error('Error fetching messages:', error);
-                  alert('Failed to refresh messages. Please try again.');
                });
          }
       }
@@ -792,12 +800,10 @@ $currentUserId = $_SESSION['userid'];
                   isNotificationDismissed = false;
                } else {
                   console.error('Server responded with failure:', data);
-                  alert(data.message || 'Error uploading file');
                }
             })
             .catch(error => {
                console.error("Error uploading file:", error);
-               alert(`Error uploading file: ${error.message}`);
             });
       }
 
@@ -947,7 +953,8 @@ $currentUserId = $_SESSION['userid'];
                         <img src="${profileImageUrl}" alt="Avatar" class="avatar">
                         <div class="chat-info">
                            <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
@@ -955,7 +962,7 @@ $currentUserId = $_SESSION['userid'];
                         </div>
                      </div>
                      </li>
-                  `;
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
@@ -1016,7 +1023,8 @@ $currentUserId = $_SESSION['userid'];
                         <img src="${profileImageUrl}" alt="Avatar" class="avatar">
                         <div class="chat-info">
                            <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
@@ -1024,14 +1032,13 @@ $currentUserId = $_SESSION['userid'];
                         </div>
                      </div>
                      </li>
-                  `;
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
             .catch(error => {
                console.error("Error searching users:", error);
-               alert('Failed to search users. Please try again.');
             });
       }
 
@@ -1046,7 +1053,6 @@ $currentUserId = $_SESSION['userid'];
             })
             .catch(error => {
                console.error("Error marking messages as seen:", error);
-               alert('Failed to mark messages as seen. Please try again.');
             });
       }
 
@@ -1054,7 +1060,6 @@ $currentUserId = $_SESSION['userid'];
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
             .catch(error => {
                console.error("Error updating timestamps:", error);
-               alert('Failed to update message statuses. Please try again.');
             });
       }
 

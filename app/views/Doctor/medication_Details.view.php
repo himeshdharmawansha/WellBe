@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <th>Name of the Medication</th>
                                 <th>Dosage of the Medication</th>
                                 <th colspan="4">Number taken at a time</th>
-                                <th>Do not substitute</th>
+                                <th>Allowed to substitute</th>
                             </tr>
                             <tr>
                                 <th></th>

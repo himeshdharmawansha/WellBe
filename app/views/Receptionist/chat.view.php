@@ -1,3 +1,34 @@
+<?php
+require_once(__DIR__ . "/../../controllers/ChatController.php");
+require_once(__DIR__ . "/../../models/ProfileModel.php");
+
+$he = new ChatController();
+$profileModel = new ProfileModel();
+
+$unseenCounts = $he->UnseenCounts([3, 4]);
+$user_profile = $unseenCounts;
+if (!is_array($user_profile)) {
+   $user_profile = [];
+}
+$currentUserId = $_SESSION['userid'];
+
+$profiles = $profileModel->getAll();
+if (!empty($profiles) && !isset($profiles['error'])) {
+   $profileMap = [];
+   foreach ($profiles as $profile) {
+      $profileMap[$profile->id] = $profile;
+   }
+   foreach ($user_profile as &$user) {
+      if (isset($user['id']) && isset($profileMap[$user['id']])) {
+         $user['image'] = ROOT . '/assets/images/users/' . $profileMap[$user['id']]->image;
+      } else {
+         $user['image'] = ROOT . '/assets/images/users/Profile_default.png';
+      }
+   }
+   unset($user);
+}
+?>
+
 <?php $currentUserId = $_SESSION['userid']; ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -224,7 +255,7 @@
                })
                .then(data => {
                   if (data.status === "success") {
-                     refreshUnseenCounts([3, 5]);
+                     refreshUnseenCounts([3, 4]);
                      pullMessages();
                      hidePopupMenu();
                   } else {
@@ -265,7 +296,7 @@
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -305,7 +336,7 @@
             .then(response => response.json())
             .then(data => {
                if (data.status === "success") {
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   pullMessages();
                   hidePopupMenu();
                } else {
@@ -543,7 +574,7 @@
                   }
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                } else {
                   console.error('Server responded with failure:', data);
                   alert(data.message || 'Error sending message');
@@ -795,7 +826,7 @@
                   }
                   unseenCountsMap[selectedUserId] = 0;
                   pullMessages();
-                  refreshUnseenCounts([3, 5]);
+                  refreshUnseenCounts([3, 4]);
                   document.removeEventListener('click', handleOutsideClick);
                   isNotificationDismissed = false;
                } else {
@@ -972,7 +1003,7 @@
 
       setInterval(() => {
          if (!isSearching) {
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([3, 4]);
          }
       }, 1000);
 
@@ -981,7 +1012,7 @@
 
          if (!query.trim()) {
             isSearching = false;
-            refreshUnseenCounts([3, 5]);
+            refreshUnseenCounts([3, 4]);
             return;
          }
 

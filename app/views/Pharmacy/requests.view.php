@@ -29,6 +29,7 @@
                <table class="requests-table">
                   <thead>
                      <tr>
+                        <th>Request ID</th>
                         <th>Patient ID</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
@@ -43,9 +44,10 @@
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
-                              <td><?= esc($request['date']) ?></td>
+                              <td><?= esc($request['date_t']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
@@ -57,6 +59,7 @@
                <table class="requests-table">
                   <thead>
                      <tr>
+                        <th>Request ID</th>
                         <th>Patient ID</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
@@ -71,9 +74,10 @@
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
+                              <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
-                              <td><?= esc($request['date']) ?></td>
+                              <td><?= esc($request['date_t']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
@@ -192,9 +196,10 @@
                         const formattedTime = formatTimeToAmPm(request.time);
                         const row = `
                            <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                              <td>${request.id}</td>
                               <td>${request.patient_id}</td>
                               <td>${request.first_name}</td>
-                              <td>${request.date}</td>
+                              <td>${request.date_t}</td>
                               <td>${formattedTime}</td>
                            </tr>`;
 
@@ -245,9 +250,10 @@
                               const formattedTime = formatTimeToAmPm(request.time);
                               const row = `
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                                    <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
                                     <td>${request.first_name}</td>
-                                    <td>${request.date}</td>
+                                    <td>${request.date_t}</td>
                                     <td>${formattedTime}</td>
                                  </tr>`;
                               if (request.state === "completed") {
@@ -294,7 +300,7 @@
             if (row) {
                const requestID = row.getAttribute('data-id');
                const doctorID = row.getAttribute('data-doctor-id');
-               const patientID = row.querySelector('td:nth-child(1)').textContent.trim();
+               const patientID = row.querySelector('td:nth-child(2)').textContent.trim();
 
                window.location.href = `medicationDetails?ID=${encodeURIComponent(requestID)}&doctor_id=${encodeURIComponent(doctorID)}&patient_id=${encodeURIComponent(patientID)}`;
             }

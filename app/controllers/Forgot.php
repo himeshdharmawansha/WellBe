@@ -8,28 +8,15 @@ class Forgot extends Controller
 
     public function check()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'], $_POST['selection'])) {
             $nicID = $_POST['nicID'];
             $userEmail = $_POST['email'];
+            $table = $_POST['selection'];
 
-            // Determine the table based on NIC ID
-            $table = null;
-            if (strpos($nicID, 'd') !== false) {
-                $table = "doctor";
-            } elseif (strpos($nicID, 'p') !== false) {
-                $table = "patient";
-            } elseif (strpos($nicID, 'h') !== false) {
-                $table = "pharmacist";
-            } elseif (strpos($nicID, 'l') !== false) {
-                $table = "lab_technician";
-            } elseif (strpos($nicID, 'a') !== false) {
-                $table = "administrative_staff";
-            } elseif (strpos($nicID, 'r') !== false) {
-                $table = "receptionist";
-            }
-
-            if (!$table) {
-                $errorMessage = 'Invalid NIC ID format.';
+            // Validate the selected table to prevent invalid values
+            $validTables = ['doctor', 'patient', 'pharmacist', 'lab_technician', 'administrative_staff', 'receptionist'];
+            if (!in_array($table, $validTables)) {
+                $errorMessage = 'Invalid selection.';
                 $this->view('forgot', 'forgot', ['errorMessage' => $errorMessage]);
                 return;
             }
@@ -40,7 +27,7 @@ class Forgot extends Controller
             if ($result['found'] === 'true') {
                 // Generate a 6-digit verification code
                 $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
-                
+
                 // Store the code, email, and table in session for verification
                 $_SESSION['reset_email'] = $userEmail;
                 $_SESSION['reset_nic'] = $nicID;
@@ -136,7 +123,7 @@ class Forgot extends Controller
 
                             // Clear session
                             unset($_SESSION['reset_email'], $_SESSION['reset_nic'], $_SESSION['reset_table'], $_SESSION['verification_code'], $_SESSION['code_expiry'], $_SESSION['code_verified']);
-                            
+
                             // Redirect to login with success message
                             echo "<script>alert('Password updated successfully!'); window.location.href='" . ROOT . "/login';</script>";
                             exit();
@@ -165,28 +152,15 @@ class Forgot extends Controller
         $errorMessage = '';
         $entryErrorMessage = '';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'], $_POST['selection'])) {
             $nicID = $_POST['nicID'];
             $userEmail = $_POST['email'];
+            $table = $_POST['selection'];
 
-            // Determine the table based on NIC ID
-            $table = null;
-            if (strpos($nicID, 'd') !== false) {
-                $table = "doctor";
-            } elseif (strpos($nicID, 'p') !== false) {
-                $table = "patient";
-            } elseif (strpos($nicID, 'h') !== false) {
-                $table = "pharmacist";
-            } elseif (strpos($nicID, 'l') !== false) {
-                $table = "lab_technician";
-            } elseif (strpos($nicID, 'a') !== false) {
-                $table = "administrative_staff";
-            } elseif (strpos($nicID, 'r') !== false) {
-                $table = "receptionist";
-            }
-
-            if (!$table) {
-                $entryErrorMessage = 'Invalid NIC ID format.';
+            // Validate the selected table
+            $validTables = ['doctor', 'patient', 'pharmacist', 'lab_technician', 'administrative_staff', 'receptionist'];
+            if (!in_array($table, $validTables)) {
+                $entryErrorMessage = 'Invalid selection.';
             } else {
                 $model = new checkValues();
                 $result = $model->check($nicID, $userEmail, $table);
@@ -194,7 +168,7 @@ class Forgot extends Controller
                 if ($result['found'] === 'true') {
                     // Generate a new 6-digit verification code
                     $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
-                    
+
                     // Update session with new data
                     $_SESSION['reset_email'] = $userEmail;
                     $_SESSION['reset_nic'] = $nicID;
@@ -224,14 +198,14 @@ class Forgot extends Controller
                     $entryErrorMessage = 'NIC ID or email not found in our records.';
                 }
             }
-        }
 
-        $this->view('verify', 'verify', [
-            'errorMessage' => $errorMessage,
-            'entryErrorMessage' => $entryErrorMessage,
-            'codeVerified' => isset($_SESSION['code_verified']) && $_SESSION['code_verified'],
-            'codeExpired' => isset($_SESSION['code_expiry']) && time() >= $_SESSION['code_expiry']
-        ]);
+            $this->view('verify', 'verify', [
+                'errorMessage' => $errorMessage,
+                'entryErrorMessage' => $entryErrorMessage,
+                'codeVerified' => isset($_SESSION['code_verified']) && $_SESSION['code_verified'],
+                'codeExpired' => isset($_SESSION['code_expiry']) && time() >= $_SESSION['code_expiry']
+            ]);
+        }
     }
 
     public function resend()
@@ -243,7 +217,7 @@ class Forgot extends Controller
         ) {
             // Generate a new 6-digit verification code
             $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
-            
+
             // Update session with new code and expiry
             $_SESSION['verification_code'] = $verificationCode;
             $_SESSION['code_expiry'] = time() + 360; // 6 minutes

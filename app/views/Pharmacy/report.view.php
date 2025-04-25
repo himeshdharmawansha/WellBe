@@ -75,7 +75,7 @@
                </div>
                <div class="pharmacy-report-popup-body">
                   <button class="pharmacy-report-popup-close">×</button>
-                  <div id="bar_chart" style="width: 100%; height: 300px;"></div>
+                  <div id="pie_chart" style="width: 100%; height: 300px;margin-left: 100px;"></div>
                   <div id="line_chart" style="width: 100%; height: 300px;"></div>
                </div>
                <button class="pharmacy-report-popup-print" onclick="window.print()">Print</button>
@@ -121,14 +121,14 @@
                fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
                   .then((response) => response.json())
                   .then((data) => {
-                     drawBarChart(data.medications);
+                     drawPieChart(data.medications);
                      drawLineChart(data.requests);
                   })
                   .catch((error) => console.error('Error fetching report data:', error));
             });
          }
 
-         function drawBarChart(medications) {
+         function drawPieChart(medications) {
             const chartData = [
                ['Medication', 'Usage']
             ];
@@ -138,18 +138,14 @@
 
             const data = google.visualization.arrayToDataTable(chartData);
 
-            const options = {
-               title: 'Medication Usage',
-               hAxis: {
-                  title: 'Type of Medications'
-               },
-               vAxis: {
-                  title: 'Usage'
-               },
-               colors: ['#1a73e8'],
+            var options = {
+               title: 'Medication Usage Distribution',
+               pieSliceText: 'percentage', // Display percentages on slices
+               legend: { position: 'right' }, // Adjust legend position
+               chartArea: { width: '100%', height: '80%' } // Ensure chart fits well
             };
 
-            const chart = new google.visualization.ColumnChart(document.getElementById('bar_chart'));
+            const chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
             chart.draw(data, options);
          }
 

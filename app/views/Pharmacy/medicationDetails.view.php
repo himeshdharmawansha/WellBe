@@ -80,7 +80,7 @@
                                <td>{$substitution}</td>
                                <td>
                                    <select>
-                                       <option disabled value='pending' " . ($currentState === 'pending' ? 'selected' : '') . ">Pending</option>
+                                       <option disabled selected value=''>choose</option>
                                        <option value='given' " . ($currentState === 'given' ? 'selected' : '') . ">Given</option>
                                        <option value='notavailable' " . ($currentState === 'notavailable' ? 'selected' : '') . ">Not available</option>
                                    </select>

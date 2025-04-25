@@ -31,6 +31,7 @@
                      <tr>
                         <th>Request ID</th>
                         <th>Patient ID</th>
+                        <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
                         <th>Time</th>
@@ -46,6 +47,7 @@
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['patient_name']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
@@ -61,6 +63,7 @@
                      <tr>
                         <th>Request ID</th>
                         <th>Patient ID</th>
+                        <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
                         <th>Time</th>
@@ -76,6 +79,7 @@
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
+                              <td><?= esc($request['patient_name']) ?></td>
                               <td><?= esc($request['first_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
                               <td><?= date('h:i A', strtotime($request['time'])) ?></td>
@@ -198,6 +202,7 @@
                            <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                               <td>${request.id}</td>
                               <td>${request.patient_id}</td>
+                              <td>${request.patient_name}</td>
                               <td>${request.first_name}</td>
                               <td>${request.date_t}</td>
                               <td>${formattedTime}</td>
@@ -252,6 +257,7 @@
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                     <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
+                                    <td>${request.patient_name}</td>
                                     <td>${request.first_name}</td>
                                     <td>${request.date_t}</td>
                                     <td>${formattedTime}</td>

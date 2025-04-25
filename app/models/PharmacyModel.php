@@ -123,10 +123,10 @@ class PharmacyModel extends Model
         $medicationData = $db->read($medicationQuery, ['start_date' => $startDate, 'end_date' => $endDate]);
 
         $requestsQuery = "
-            SELECT DATE(mr.date) AS request_date, COUNT(*) AS request_count
-            FROM medication_requests mr
-            WHERE mr.date BETWEEN :start_date AND :end_date
-            GROUP BY DATE(mr.date)
+            SELECT DATE(t.date) AS request_date, COUNT(*) AS request_count
+            FROM medication_requests mr, timeslot t
+            WHERE t.slot_id = mr.date AND t.date BETWEEN :start_date AND :end_date
+            GROUP BY DATE(t.date)
             ORDER BY request_date ASC
         ";
         $requestData = $db->read($requestsQuery, ['start_date' => $startDate, 'end_date' => $endDate]);

@@ -228,7 +228,6 @@
             function handleDelete(event) {
                const row = event.target.closest('tr');
                const medicineId = row.dataset.medicineId;
-               alert(medicineId);
 
                // Check if this is a new row (not yet saved)
                if (!medicineId) {

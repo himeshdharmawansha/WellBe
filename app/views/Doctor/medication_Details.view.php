@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_FILES['document']) && $_FILES['document']['error'] == UPLOAD_ERR_OK) {
         $allowed_types = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
         $max_file_size = 5 * 1024 * 1024; // 5MB
-        $upload_dir = 'C:/xampp/htdocs/wellbe/public/assets/files/prescription_documents/';
+        $upload_dir = 'C:\wamp64\www\WellBe\public\assets\files\prescription_documents/';
         
         // Ensure upload directory exists
         if (!is_dir($upload_dir)) {
@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $medicalRecord = new MedicalRecord();
         $medicalRecord->insertRecord($remarks, $diagnosis, $patient_id, $file_name);
         $request_id = $medicalRecord->getLastInsertedId($patient_id);
+        print_r($request_id);
 
         foreach ($medicationDetails as $medic) {
             $medicalRecord->insertMed($medic, $request_id);

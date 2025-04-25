@@ -177,7 +177,7 @@ class Timeslot extends Model
         $today = $this->query($query,$data);
         $todayId =  $today[0]->slot_id;
 
-        $query = "SELECT slot_id, date FROM timeslot WHERE slot_id > :todayId";
+        $query = "SELECT slot_id, date FROM timeslot WHERE slot_id >= :todayId";
         $data = ['todayId'=>$todayId];
         $dates = $this->query($query,$data);
         /*foreach($dates as $date){

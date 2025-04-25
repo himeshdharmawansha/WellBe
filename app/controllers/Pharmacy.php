@@ -123,7 +123,26 @@ class Pharmacy extends Controller
 
     public function medicationDetails()
     {
-        $this->view('Pharmacy/medicationDetails', 'requests');
+        $pharmacyModel = new PharmacyModel();
+        
+        $requestID = isset($_GET['ID']) ? esc($_GET['ID']) : null;
+        $doctorID = isset($_GET['doctor_id']) ? esc($_GET['doctor_id']) : null;
+        $patientID = isset($_GET['patient_id']) ? esc($_GET['patient_id']) : null;
+
+        $data = [
+            'active' => 'requests',
+            'requestID' => $requestID,
+            'doctorID' => $doctorID,
+            'patientID' => $patientID
+        ];
+
+        if ($requestID && $doctorID && $patientID) {
+            $medicationData = $pharmacyModel->getMedicationDetails($requestID);
+            $data['medicationDetails'] = $medicationData['medicationDetails'];
+            $data['additionalRemarks'] = $medicationData['additionalRemarks'];
+        }
+
+        $this->view('Pharmacy/medicationDetails','medicationDetails', $data);
     }
 
     public function Medicines()

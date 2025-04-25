@@ -73,6 +73,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                               <div class="chat-info">
                                  <h4><?php echo esc($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $roleTitle; ?></p>
+                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline';?></p>
                               </div>
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
@@ -350,10 +351,11 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          selectedUserId = userId;
          const username = chatItem.querySelector('.chat-info h4').textContent;
          const userStatus = chatItem.querySelector('.chat-status').textContent;
+         const userTime = chatItem.querySelector('.chat-time').textContent;
          const avatarSrc = chatItem.querySelector('.avatar').src;
 
          document.getElementById('chat-username').textContent = username;
-         document.getElementById('chat-status').textContent = userStatus;
+         document.getElementById('chat-status').textContent = userTime;
          document.getElementById('chat-avatar').src = avatarSrc;
 
          startChat(userId);
@@ -982,6 +984,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                         <div class="chat-info">
                            <h4>${user.username}</h4>
                            <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
@@ -1050,7 +1053,8 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                         <img src="${profileImageUrl}" alt="Avatar" class="avatar">
                         <div class="chat-info">
                            <h4>${user.username}</h4>
-                        <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>

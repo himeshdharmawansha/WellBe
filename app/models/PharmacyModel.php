@@ -115,7 +115,8 @@ class PharmacyModel extends Model
             SELECT mrd.medication_name, COUNT(mrd.req_id) AS count 
             FROM medication_request_details mrd
             INNER JOIN medication_requests mr ON mrd.req_id = mr.id
-            WHERE mr.date BETWEEN :start_date AND :end_date
+            JOIN timeslot t ON mr.date = t.slot_id
+            WHERE t.date BETWEEN :start_date AND :end_date
             GROUP BY mrd.medication_name
             LIMIT 10
         ";

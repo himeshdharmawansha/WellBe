@@ -77,25 +77,30 @@
                         <div class="input-box">
                             <label>Available Dates</label>
                             <div id="dates-container" class="dates-grid">
-                                <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?>
-                                    <?php foreach ($data['dates'] as $day): ?>
-                                        <?php if ($day['appointment_id'] <= 15): ?>
-                                            <button class="date-btn"
-                                                data-doc-id="<?= isset($data['docId']) ? $data['docId'] : '' ?>"
-                                                data-doctor-fee="<?= isset($data['doctorFee']) ? $data['doctorFee'] : '' ?>"
-                                                data-doctor="<?= htmlspecialchars($_POST['doctor']) ?>"
-                                                data-specialization="<?= htmlspecialchars($_POST['specialization']) ?>"
-                                                data-appointment-id="<?= $day['appointment_id'] ?>"
-                                                data-start-time="<?= $day['start_time'] ?>"
-                                                data-day="<?= $day['day'] ?>"
-                                                onclick="storeSelection(this)">
-                                                <div class="dawasa">Date : <?= $day['day'] ?></div>
-                                                <div class="time">Starting Time : <?= $day['start_time'] ?></div>
-                                                <div class="appnmbr">Appointment Number : <?= $day['appointment_id'] ?></div>
-                                            </button>
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
+                            <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?>
+                                <?php foreach ($data['dates'] as $day): ?>
+                                    <button class="date-btn"
+                                        data-doc-id="<?= isset($data['docId']) ? $data['docId'] : '' ?>"
+                                        data-doctor-fee="<?= isset($data['doctorFee']) ? $data['doctorFee'] : '' ?>"
+                                        data-doctor="<?= htmlspecialchars($_POST['doctor']) ?>"
+                                        data-specialization="<?= htmlspecialchars($_POST['specialization']) ?>"
+                                        data-appointment-id="<?= $day['appointment_id'] ?>"
+                                        data-start-time="<?= $day['start_time'] ?>"
+                                        data-day="<?= $day['day'] ?>"
+                                        onclick="storeSelection(this)"
+                                        <?php if ($day['appointment_id'] > 15): ?> disabled <?php endif; ?>>
+                                        <div class="dawasa">Date: <?= $day['day'] ?></div>
+                                        <div class="time">Starting Time: <?= $day['start_time'] ?></div>
+                                        <div class="appnmbr">
+                                            <?php if ($day['appointment_id'] > 15): ?>
+                                                <span style="color: red;">All appointments are booked</span>
+                                            <?php else: ?>
+                                                Appointment Number: <?= $day['appointment_id'] ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </button>
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                     <p>Please select the doctor and specialization to show the available slots.</p>
                                 <?php endif; ?>
                             </div>

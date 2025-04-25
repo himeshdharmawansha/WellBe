@@ -79,7 +79,7 @@
          font-family: sans-serif;
       }
 
-      .modal-content {
+      .modal-content-noti {
          background-color: #fff;
          padding: 20px;
          border-radius: 16px;
@@ -88,19 +88,19 @@
          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       }
 
-      .modal-content h3 {
+      .modal-content-noti h3 {
          margin-bottom: 10px;
          font-size: 18px;
       }
 
-      .modal-buttons {
+      .modal-buttons-noti {
          display: flex;
          flex-direction: column;
          gap: 10px;
          margin-top: 20px;
       }
 
-      .modal-buttons button {
+      .modal-buttons-noti button {
          padding: 10px;
          border: none;
          border-radius: 8px;
@@ -138,16 +138,16 @@
 
    <!-- Modal HTML -->
    <div id="notificationModal">
-      <div class="modal-content" id="step1">
+      <div class="modal-content-noti" id="step1">
          <h3 id="appointmentMessage">Your appointment has been rescheduled.</h3>
          <h3 id="appointmentPrimaryId" hidden>primary id</h3>
-         <div class="modal-buttons">
+         <div class="modal-buttons-noti">
             <button class="btn-primary" onclick="showManageOptions()" style="background-color: #007bff;">Manage Appointment</button>
          </div>
       </div>
-      <div class="modal-content" id="step2" style="display: none;">
+      <div class="modal-content-noti" id="step2" style="display: none;">
          <h3>What would you like to do?</h3>
-         <div class="modal-buttons">
+         <div class="modal-buttons-noti">
             <button class="btn-primary" onclick="handleReschedule()">Reschedule</button>
             <button class="btn-danger" onclick="handleCancel()">Cancel Appointment</button>
          </div>

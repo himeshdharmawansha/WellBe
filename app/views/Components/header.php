@@ -62,6 +62,61 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
    <link rel="stylesheet" href="<?= ROOT ?>/assets/css/header.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+   <style>
+      #notificationModal {
+         display: none;
+         position: fixed;
+         z-index: 999;
+         left: 0;
+         top: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.6);
+         justify-content: center;
+         align-items: center;
+         font-family: sans-serif;
+      }
+
+      .modal-content-noti {
+         background-color: #fff;
+         padding: 20px;
+         border-radius: 16px;
+         text-align: center;
+         width: 350px;
+         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-content-noti h3 {
+         margin-bottom: 10px;
+         font-size: 18px;
+      }
+
+      .modal-buttons-noti {
+         display: flex;
+         flex-direction: column;
+         gap: 10px;
+         margin-top: 20px;
+      }
+
+      .modal-buttons-noti button {
+         padding: 10px;
+         border: none;
+         border-radius: 8px;
+         cursor: pointer;
+         font-size: 16px;
+      }
+
+      .btn-primary {
+         background-color: #007bff;
+         color: white;
+      }
+
+      .btn-danger {
+         background-color: #dc3545;
+         color: white;
+      }
+   </style>
 </head>
 
 <body>
@@ -127,6 +182,23 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
             </div>
          </div>
          <button class="save-btn" onclick="saveEditedPhoto()">Save photo</button>
+      </div>
+   </div>
+
+   <div id="notificationModal">
+      <div class="modal-content-noti" id="step1">
+         <h3 id="appointmentMessage">Your appointment has been rescheduled.</h3>
+         <h3 id="appointmentPrimaryId" hidden>primary id</h3>
+         <div class="modal-buttons-noti">
+            <button class="btn-primary" onclick="showManageOptions_noti()" style="background-color: #007bff;">Manage Appointment</button>
+         </div>
+      </div>
+      <div class="modal-content-noti" id="step2" style="display: none;">
+         <h3>What would you like to do?</h3>
+         <div class="modal-buttons-noti">
+            <button class="btn-primary" onclick="handleReschedule_noti()">Reschedule</button>
+            <button class="btn-danger" onclick="handleCancel_noti()">Cancel Appointment</button>
+         </div>
       </div>
    </div>
 
@@ -446,6 +518,61 @@ $badgeVisibility = $totalUnseen > 0 ? 'block' : 'none';
 
       setInterval(updateNotificationBadge, 500);
    </script>
+
+   <?php
+   //check whether user is a patient
+   if (isset($_SESSION['USER']->nic) && strpos($_SESSION['USER']->nic, 'p') !== false) {
+   ?>
+      <script>
+         const socket = new WebSocket('ws://localhost:8080');
+
+         socket.addEventListener('open', () => {
+            const userId = <?php echo json_encode($_SESSION['USER']->nic); ?>;
+            socket.send(JSON.stringify({ type: 'register', userId }));
+         });
+
+         socket.addEventListener('message', (event) => {
+            try {
+               const data = JSON.parse(event.data);
+               document.getElementById('appointmentMessage').innerText = data.text;
+               document.getElementById('appointmentPrimaryId').innerText = data.id;
+               //console.log("Notification ID:", data.id);
+
+               showModal_noti();
+            } catch (err) {
+               console.error('Failed to parse WebSocket message:', err);
+            }
+         });
+
+         function showModal_noti() {
+            document.getElementById('notificationModal').style.display = 'flex';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+         }
+
+         function showManageOptions_noti() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+         }
+
+         function handleReschedule_noti() {
+            const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
+            document.getElementById('notificationModal').style.display = 'none';
+            window.location.href = `http://localhost/wellbe/public/patient/reschedule_doc_appointment/${appointmentPrimaryId}`;
+         }
+
+         function handleCancel_noti() {
+            const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
+            console.log(appointmentPrimaryId);
+            document.getElementById('notificationModal').style.display = 'none';
+            alert('Appointment canceled.');
+            const userId = <?php echo json_encode($_SESSION['USER']->id); ?>;
+            window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentPrimaryId}`;
+         }
+      </script>
+   <?php
+   }
+   ?>
 </body>
 
 </html>

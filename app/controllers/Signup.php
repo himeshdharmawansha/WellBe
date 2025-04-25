@@ -26,15 +26,18 @@ class Signup extends Controller
     }
 
     public function form2()
+
     {
         $data = [];
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             
+            //print_r($_POST);
             $fullData = array_merge($_SESSION['form1_data'] ?? [], $_POST);
             //echo $_SESSION['newNIC'];
+            //print_r($fullData);
             $fullData['nic'] = $_SESSION['newNIC'];
-            echo $fullData['nic'];
+            //echo $fullData['nic'];
             $_SESSION['form2_data'] = $_POST;
 
             //hash password
@@ -42,7 +45,7 @@ class Signup extends Controller
             $fullData['password'] = $hashedPassword;
 
 
-            unset($_SESSION['form1_data']);
+            //unset($_SESSION['form1_data']);
 
             $user = new Patient;
 
@@ -53,6 +56,6 @@ class Signup extends Controller
             $data['errors'] = $user->errors;
         }
 
-        $this->view('patientForm2', $data);
+        $this->view('patientForm2',"", $data);
     }
 }

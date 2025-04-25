@@ -312,7 +312,7 @@
                 console.log("result", result);
                 if (result.success) {
                     if (paymentMethod == "counter" || paymentMethod == "wallet") {
-                        //showModalsucess();
+                        // showModalsucess();
                     }
 
                     // alert("Payment initiated successfully!");

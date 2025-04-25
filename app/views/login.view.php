@@ -65,7 +65,7 @@
                         </span>
                     </div>
                     <div class="forgot-password">
-                        <a href="<?= ROOT ?>/forgot-password">Forgot password?</a>
+                        <a href="<?= ROOT ?>/forgot">Forgot password?</a>
                     </div>
 
                 </div>

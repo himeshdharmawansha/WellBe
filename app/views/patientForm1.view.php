@@ -56,11 +56,20 @@
                     <label for="noc">NIC:</label>
                     <input type="text" id="nic" name="nic" required value="<?= $_SESSION['form1_data']['nic'] ?? '' ?>">
                 </div>
+                <?php if (!empty($errors['nic'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['nic'] ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="form-row">
                     <label for="dob">Date of Birth:</label>
                     <input type="date" id="dob" name="dob" required value="<?= $_SESSION['form1_data']['dob'] ?? '' ?>">
-
+                    <?php if (!empty($errors['dob'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['dob'] ?>
+                    </div>
+                <?php endif; ?>
 
                 </div>
 
@@ -84,6 +93,11 @@
                     <input type="email" id="email" name="email" required
                         value="<?= $_SESSION['form1_data']['email'] ?? '' ?>">
                 </div>
+                <?php if (!empty($errors['email'])): ?>
+                    <div class="input-error">
+                        <?php echo $errors['email'] ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="form-row">
                     <label for="contact">Contact No:</label>

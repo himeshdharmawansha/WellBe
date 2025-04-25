@@ -55,6 +55,14 @@ class Lab extends Model
          return $dobDate->diff($currentDate)->y;
    }
 
+   private function checkNIC($nic)
+   {
+        $query = "SELECT COUNT(*) AS count FROM lab_technician WHERE nic LIKE :nic";
+        $data = ['nic' => "%$nic%"];
+
+        return $this->query($query, $data);
+    }
+
    public function formValidate($labTechData, $step = 1)
    {
       $this->errors = [];
@@ -76,9 +84,14 @@ class Lab extends Model
       // Step-specific validations
       if ($step === 1) {
           // Validate NIC format (12 digits)
-          if (!empty($labTechData['nic']) && !preg_match('/^\d{12}$/', $labTechData['nic'])) {
-              $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
-          }
+          if (!empty($labTechData['nic']) && !preg_match('/^(\d{12}|\d{9}[vV])$/', $labTechData['nic'])) {
+              $this->errors[] = 'Invalid NIC format. It must be 12 digits or 9 digits followed by "V" or "v".';
+          }else{
+            $result = $this->checkNIC($labTechData['nic']);
+            if($result && $result[0]->count > 0){
+                $this->errors[] = 'This NIC is already registered.';
+            }
+        }
 
           // Validate email format manually
           if (!empty($labTechData['email']) && !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $labTechData['email'])) {
@@ -120,7 +133,10 @@ class Lab extends Model
    {
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
-      $lab_pw = 'lab123';
+      //$lab_pw = 'lab123';
+
+      //hash password
+      $lab_pw = password_hash('lab123', PASSWORD_DEFAULT);
       $id = $data['nic'] . 'l';
 
       // Build the SQL query using the provided data
@@ -165,6 +181,7 @@ class Lab extends Model
                 age, 
                 contact
             FROM lab_technician
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -277,7 +294,13 @@ class Lab extends Model
 
     public function deleteLabTech($nic)
     {
-        $query = "DELETE FROM lab_technician WHERE nic = :nic";
+        $query = "
+        UPDATE lab_technician
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM lab_technician WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

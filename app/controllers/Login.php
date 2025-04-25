@@ -29,6 +29,9 @@ class Login extends Controller
                 } elseif (strpos($id, 'a') !== false) {
                     $user = new Admin;
                     $_SESSION['user_type'] = "admin";
+                }elseif (strpos($id, 'r') !== false) {
+                    $user = new Receptionist;
+                    $_SESSION['user_type'] = "receptionist";
                 }
 
                 //password_verify($_POST['password'], $row->password
@@ -36,7 +39,7 @@ class Login extends Controller
                 $row = $user->first($arr);
 
                 if ($row) {
-                    if ($_POST['password'] == $row->password) {
+                    if (password_verify($_POST['password'], $row->password)) {
                 
                         $_SESSION['USER'] = $row; // Save user details in the session
                         $model->loggedin();

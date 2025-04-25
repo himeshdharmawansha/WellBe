@@ -44,6 +44,15 @@ class Patient extends Model
             $this->errors['last_name'] = "Last Name must contain only letters and spaces";
         }
 
+        if (empty($data['nic'])) {
+            $this->errors['nic'] = "NIC is required";
+        } elseif (
+            !preg_match("/^([0-9]{9}[vVxX]|[0-9]{12})$/", $data['nic'])
+        ) {
+            $this->errors['nic'] = "Invalid NIC format. Use 9 digits followed by V/X or 12 digits.";
+        }
+        
+
         // Validate date of birth and age
         if (empty($data['dob'])) {
             $this->errors['dob'] = "Date of Birth is required";
@@ -87,16 +96,6 @@ class Patient extends Model
 
         $this->errors = [];
 
-        // Validate medical history
-        if (empty($data['medical_history'])) {
-            $this->errors['medical_history'] = "Medical History is required";
-        }
-
-        // Validate allergies
-        if (empty($data['allergies'])) {
-            $this->errors['allergies'] = "Allergies field is required";
-        }
-
         // Validate emergency contact name
         if (empty($data['emergency_contact_name'])) {
             $this->errors['emergency_contact_name'] = "Emergency Contact Name is required";
@@ -127,6 +126,13 @@ class Patient extends Model
         $currentDate = new DateTime();
         return $dobDate->diff($currentDate)->y;
     }
+    
+    private function checkNIC($nic){
+        $query = "SELECT COUNT(*) AS count FROM patient WHERE nic LIKE :nic";
+        $data = ['nic' => "%$nic%"];
+
+        return $this->query($query, $data);
+    }
 
     public function validate($patientData, $step = 1)
     {
@@ -149,8 +155,18 @@ class Patient extends Model
         // Step-specific validations
         if ($step === 1) {
             // Validate NIC format (12 digits)
-            if (!empty($patientData['nic']) && !preg_match('/^\d{12}$/', $patientData['nic'])) {
-                $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
+            // if (!empty($patientData['nic']) && !preg_match('/^\d{12}$/', $patientData['nic'])) {
+            //     $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
+            // }
+
+            // Validate NIC format
+            if (!empty($patientData['nic']) && !preg_match('/^(\d{12}|\d{9}[vV])$/', $patientData['nic'])) {
+                $this->errors[] = 'Invalid NIC format. It must be 12 digits or 9 digits followed by "V" or "v".';
+            }else{
+                $result = $this->checkNIC($patientData['nic']);
+                if($result && $result[0]->count > 0){
+                    $this->errors[] = 'This NIC is already registered.';
+                }
             }
 
             // Validate email format manually
@@ -189,7 +205,10 @@ class Patient extends Model
     {
         // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
-        $patient_pw = 'patient123';
+        //$patient_pw = 'patient123';
+
+        //hash password
+        $patient_pw = password_hash('patient123', PASSWORD_DEFAULT);
         $id = $data['nic'] . 'p';
 
         // Build the SQL query using the provided data
@@ -238,6 +257,7 @@ class Patient extends Model
                 age, 
                 contact
             FROM patient
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -346,7 +366,13 @@ class Patient extends Model
 
     public function deletePatient($nic)
     {
-        $query = "DELETE FROM patient WHERE nic = :nic";
+        $query = "
+        UPDATE patient
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM patient WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

@@ -5,14 +5,18 @@ class LabTest extends Model
 
     public function insertRecord($id)
     {
+
+        $timeslot = new Timeslot();
+        $today = $timeslot -> getDateId(date('y-m-d'));
+
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
         $state = 'Pending';
 
         $query = "INSERT INTO test_requests (doctor_id, patient_id, date, state)
-                  VALUES (?, ?, CURDATE(), ?)";
+                  VALUES (?, ?, ?, ?)";
 
-        $this->query($query, [$doctor_id, $patient_id, $state]);
+        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $state]);
     }
 
     public function getPastTestDetails() {}
@@ -21,10 +25,11 @@ class LabTest extends Model
     {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
-        $date = date('Y-m-d');
+        $timeslot = new Timeslot();
+        $date = $timeslot -> getDateId(date('y-m-d'));
 
         $query = "SELECT id FROM test_requests WHERE doctor_id = ? AND patient_id = ? AND date = ?";
-        $result = $this->query($query, [$doctor_id, $patient_id, $date]);
+        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id]);
 
         return $result[0]->id;
     }

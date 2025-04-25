@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrative Staff Dashboard</title>
+    <title>Receptionist Dashboard</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Receptionist/dashboard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
@@ -21,85 +21,75 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Dashboard"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/mvc/app/views/Components/Receptionist/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/header.php';
             ?>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="welcome-message">
-                    <p>Welcome Mr. K.S.Perera</p>
+                    <p>Welcome <?php echo htmlspecialchars($_SESSION['USER']->first_name); ?></p>
                 </div>
                 <div class="cards-container">
                     <!-- Statistics Cards -->
-                     <a href="../Appointments/ongoing.html">
-                        <div class="card appointment">
-                            <span class="circle-background">
-                                <i class="fas icon fa-calendar-alt"></i>
-                            </span>
-                            <div>
-                                <h1 class="figure">150</h1>
-                                <span class="label">Appointments</span>
-                            </div>
+                    <div class="card appointment">
+                        <span class="circle-background">
+                            <i class="fas icon fa-calendar-alt"></i>
+                        </span>
+                        <div>
+                            <h1 class="figure"><?= $todayAppointmentsCount ?></h1>
+                            <span class="label">Appointments</span>
                         </div>
-                     </a>
+                    </div>
                     
-                     <a href="../Patient/index.html">
-                        <div class="card patients">
-                            <span class="circle-background">
-                                <i class="fas icon fa-user"></i>
-                            </span>
-                            <div>
-                                <h1 class="figure">300 </h1>
-                                <span class="label">Patients</span>
-                            </div>
+                    <div class="card patients">
+                        <span class="circle-background">
+                            <i class="fas icon fa-user"></i>
+                        </span>
+                        <div>
+                            <h1 class="figure"><?= $patientsCount ?></h1>
+                            <span class="label">Patients</span>
                         </div>
-                     </a>
+                    </div>
                     
-                     <a href="../Doctor/index.html">
-                        <div class="card doctors">
-                            <span class="circle-background">
-                                <i class="fas icon fa-user-md"></i>
-                            </span>
-                            <div>
-                                <h1 class="figure">120 </h1>
-                                <span class="label">Doctors</span>
-                            </div>                      
-                        </div>
-                     </a>
+                    <div class="card doctors">
+                        <span class="circle-background">
+                            <i class="fas icon fa-user-md"></i>
+                        </span>
+                        <div>
+                            <h1 class="figure"><?= $doctorsCount ?> </h1>
+                            <span class="label">Doctors</span>
+                        </div>                      
+                    </div>
 
-                     <a href="../Pharmacists/index.html">
-                        <div class="card pharmacists">
-                            <span class="circle-background">
-                                <i class="fas icon fa-pills"></i>
-                            </span>
-                            <div>
-                                <h1 class="figure">25 </h1>
-                                <span class="label">Pharmacists</span>
-                            </div>          
-                        </div>
-                     </a>
+                    <div class="card pharmacists">
+                        <span class="circle-background">
+                            <i class="fas icon fa-pills"></i>
+                        </span>
+                        <div>
+                            <h1 class="figure"><?= $pharmacistsCount ?></h1>
+                            <span class="label">Pharmacists</span>
+                        </div>          
+                    </div>
                     
-                    <a href="../LabTechs/index.html">
-                        <div class="card lab-techs">
-                            <span class="circle-background">
-                                <i class="fas icon fa-vials"></i>
-                            </span>
-                            <div>
-                                <h1 class="figure">34 </h1>
-                                <span class="label">Lab Techs</span>
-                            </div>
+                    <div class="card lab-techs">
+                        <span class="circle-background">
+                            <i class="fas icon fa-vials"></i>
+                        </span>
+                        <div>
+                            <h1 class="figure"><?= $labTechsCount ?></h1>
+                            <span class="label">Lab Techs</span>
                         </div>
-                    </a>
-                    
+                    </div>    
                 </div>
+
                 <div class="content-container">
                     <!-- Today's Appointments and Patient Analysis -->
                         <div class="dashboard appointments">
                             <div class="header">
                                 <h3>Today's Appointments</h3>
-                                <a href="#" class="see-all">See all</a>
+                                <a onclick="window.location.href='<?= ROOT ?>/Receptionist/todayAppointments'" class="see-all">See all</a>
                             </div>  
-                            <table class="appointment-table">
+                            <!-- <table class="appointment-table">
                                 <tr>
                                     <td>
                                         <span class="doctor-name">Dr.K.G.Gunawardana</span>
@@ -145,10 +135,37 @@
                                         <span class="time">5:00pm</span>
                                     </td>
                                 </tr>
-                            </table>  
-                        </div>
-                        
-                        
+                            </table>   -->
+                            <table class="appointment-table">
+                                <?php if (!empty($todaySessions)) : ?>
+                                    <?php foreach ($todaySessions as $session) : ?>
+                                        <?php
+                                            $sessionTime = strtotime($session->start_time);
+                                            $endTime = strtotime($session->end_time);
+                                            $currentTime = strtotime(date('H:i:s'));
+                                            $isOngoing = $currentTime >= $sessionTime && $currentTime <= $endTime;
+                                            $formattedTime = date('g:i a', $sessionTime);
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <span class="doctor-name">Dr. <?= htmlspecialchars($session->doctor_name) ?></span>
+                                                <span class="speciality"><?= htmlspecialchars($session->specialization) ?></span>
+                                            </td>
+                                            <!-- <td>
+                                                <span class="time"><?= date('g:i a', strtotime($session->start_time)) ?></span>
+                                            </td> -->
+                                            <td>
+                                                <span class="time <?= $isOngoing ? 'ongoing' : '' ?>">
+                                                    <?= $isOngoing ? 'Ongoing' : $formattedTime ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr><td colspan="2">No sessions today.</td></tr>
+                                <?php endif; ?>
+                            </table>
+                        </div>            
                 </div>
             </div>
         </div>

@@ -262,6 +262,7 @@
 }
 
 .content-container {
+    margin-top:50px;
     display: flex;
     gap: 20px;
     justify-content: space-between;
@@ -422,3 +423,35 @@
     flex: 1;
     text-align: right;
 }
+
+.quick-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Optional: adds spacing between buttons */
+    width: 100%;
+    max-width: 500px; /* Optional: set a max-width */
+    margin: 10px auto;   /* Optional: center the buttons horizontally */
+}
+
+.quick-buttons button {
+    width: 100%;
+    padding: 20px;
+    font-size: 18px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.quick-buttons button:hover {
+    background-color: #60acff;
+}
+
+.today {
+    background-color: #939393;
+    color: white;
+    border-radius: 100%;
+    font-weight: bold;
+ }

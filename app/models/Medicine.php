@@ -91,4 +91,11 @@ class Medicine extends Model
                 VALUES (:generic_name, :brand_name, :category, :expiry_date, :quantity_in_stock, :unit)";
       return $this->db->write($query, $data);
    }
+
+   public function getMedicines(){
+
+      $query = 'SELECT * FROM medicines';
+
+      return $this->query($query);
+   }
 }

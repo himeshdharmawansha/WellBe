@@ -37,7 +37,7 @@
                         </div>
                         <div class="status">
                             <p>Not Available for Check-Up  :  </p>
-                            <div style="width: 20px;height: 20px;background-color: #8aa0cc;border-radius:20%;"></div>
+                            <div style="width: 20px;height: 20px;background-color: #a4afc3f3;border-radius:20%;"></div>
                         </div>
                     </div>
                 </div>

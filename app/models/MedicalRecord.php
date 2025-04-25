@@ -3,17 +3,21 @@
 class MedicalRecord extends Model
 {
 
-    public function insertRecord($remarks, $data, $id)
+    public function insertRecord($remarks, $data, $id, $file_name)
     {
+
+        $timeslot = new Timeslot();
+        $today = $timeslot -> getDateId(date('y-m-d'));
+
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
         $state = "new";
         $diagnosis = $data;
 
-        $query = "INSERT INTO medication_requests (doctor_id, patient_id, date, time, remark, state, diagnosis)
-                  VALUES (?, ?, CURDATE(), CURTIME(), ?, ?, ?)";
+        $query = "INSERT INTO medication_requests (doctor_id, patient_id, date, time, remark, state, diagnosis, file_name)
+                  VALUES (?, ?, ?, CURTIME(), ?, ?, ?, ?)";
 
-        $this->query($query, [$doctor_id, $patient_id, $remarks, $state, $diagnosis]);
+        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $remarks, $state, $diagnosis, $file_name]);
     }
 
     public function getPastRecordsDetials($patient_id)
@@ -115,10 +119,11 @@ class MedicalRecord extends Model
     {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
-        $date = date('Y-m-d');
+        $timeslot = new Timeslot();
+        $date = $timeslot -> getDateId(date('y-m-d'));
 
         $query = "SELECT id FROM medication_requests WHERE doctor_id = ? AND patient_id = ? AND date = ?";
-        $result = $this->query($query, [$doctor_id, $patient_id, $date]);
+        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id]);
 
         return $result[0]->id;
     }

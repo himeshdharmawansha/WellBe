@@ -54,7 +54,15 @@ class Pharmacy extends Model
          return $dobDate->diff($currentDate)->y;
    }
 
-   public function formValidate($labTechData, $step = 1)
+   private function checkNIC($nic)
+   {
+        $query = "SELECT COUNT(*) AS count FROM pharmacist WHERE nic LIKE :nic";
+        $data = ['nic' => "%$nic%"];
+
+        return $this->query($query, $data);
+    }
+
+   public function formValidate($pharmacistData, $step = 1)
    {
       $this->errors = [];
 
@@ -75,9 +83,14 @@ class Pharmacy extends Model
       // Step-specific validations
       if ($step === 1) {
           // Validate NIC format (12 digits)
-          if (!empty($pharmacistData['nic']) && !preg_match('/^\d{12}$/', $pharmacistData['nic'])) {
-              $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
-          }
+          if (!empty($pharmacistData['nic']) && !preg_match('/^(\d{12}|\d{9}[vV])$/', $pharmacistData['nic'])) {
+              $this->errors[] = 'Invalid NIC format. It must be 12 digits or 9 digits followed by "V" or "v".';
+          }else{
+            $result = $this->checkNIC($pharmacistData['nic']);
+            if($result && $result[0]->count > 0){
+                $this->errors[] = 'This NIC is already registered.';
+            }
+        }
 
           // Validate email format manually
           if (!empty($pharmacistData['email']) && !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $pharmacistData['email'])) {
@@ -119,7 +132,10 @@ class Pharmacy extends Model
    {
       // Calculate the age based on the date of birth
       $data['age'] = $this->calculateAge($data['dob']);
-      $pharm_pw = 'pharm123';
+      //$pharm_pw = 'pharm123';
+
+      //hash password
+      $pharm_pw = password_hash('pharm123', PASSWORD_DEFAULT);
       $id = $data['nic'] . 'h';
 
       // Build the SQL query using the provided data
@@ -163,6 +179,7 @@ class Pharmacy extends Model
                 age, 
                 contact
             FROM pharmacist
+            WHERE account_state = 'Active'
         ";
         return $this->query($query); // Use the query method to execute and fetch data
     }
@@ -278,7 +295,13 @@ class Pharmacy extends Model
 
     public function deletePharmacist($nic)
     {
-        $query = "DELETE FROM pharmacist WHERE nic = :nic";
+        $query = "
+        UPDATE pharmacist
+        SET account_state = 'Deleted'
+        WHERE nic = :nic
+        ";
+
+        //$query = "DELETE FROM pharmacist WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }

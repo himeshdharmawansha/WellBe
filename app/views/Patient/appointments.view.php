@@ -25,7 +25,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/Patient/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/wellbe/app/views/Components/header.php';
             ?>
 
             <!-- Dashboard Content -->
@@ -37,10 +37,46 @@
                     </span>
                 </div>
                 <hr>
+                <div class="filters">
+                    <label for="paymentFilter">Payment Status:</label>
+                    <select id="paymentFilter" onchange="filterAppointments()">
+                        <option value="all">All</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Payment Pending">Payment Pending</option>
+                    </select>
+
+                    <label for="presenceFilter">Presence Status:</label>
+                    <select id="presenceFilter" onchange="filterAppointments()">
+                        <option value="all">All</option>
+                        <option value="Present">Present</option>
+                        <option value="Not Present">Not Present</option>
+                    </select>
+                    <button type="button" class="refresh-btn"
+                    onclick="window.location.href = window.location.href;">Refresh</button>
+                </div>
+
                 <div class="container">
                     <?php if (!empty($appointments)) : ?>
                         <?php foreach ($appointments as $appointment) : ?>
-                            <div class="card">
+                            <?php
+                            $statusRaw = strtolower(str_replace(' ', '', (string)($appointment->state ?? '')));
+                            $presenceStatus = ($statusRaw === 'present') ? 'Present' : 'Not Present';
+                            $rawStatus = strtolower(str_replace(' ', '', (string)($appointment->payment_status ?? '')));
+                            $paymentStatus = ($rawStatus === 'paid') ? 'Paid' : 'Payment Pending';
+
+                            if ($paymentStatus === 'Paid') {
+                                $color = 'green';
+                                $label = 'Paid';
+                            } else {
+                                $color = 'orange';
+                                $label = 'Payment Pending';
+                            }
+                            ?>
+
+                            <div class="card"
+                                data-payment="<?= $paymentStatus ?>"
+                                data-presence="<?= $presenceStatus ?>">
+
                                 <p>Hi <span><?= htmlspecialchars((string)($_SESSION['USER']->first_name ?? 'Patient')) ?></span>,</p>
                                 <p>You have an appointment with:</p>
                                 <p class="doc_name">
@@ -51,23 +87,7 @@
                                 <p>Appointment Date: <span><strong><?= htmlspecialchars((string)(date('Y-m-d', strtotime($appointment->date ?? 'now')))) ?></strong></span></p>
                                 <p>Appointment Time: <span><strong><?= htmlspecialchars((string)($appointment->start_time ?? '')) ?></strong></span></p>
 
-                                <?php
-                                $status = htmlspecialchars((string)($appointment->state ?? ''));
-                                ?>
-                                <p>Appointment Status: <span style="font-weight:bold;"><?= $status ?></span></p>
-
-                                <?php
-                                $rawStatus = $appointment->payment_status ?? '';
-                                $paymentStatus = htmlspecialchars((string)$rawStatus);
-
-                                if ($paymentStatus === 'Paid') {
-                                    $color = 'green';
-                                    $label = 'Paid';
-                                } else {
-                                    $color = 'orange';
-                                    $label = 'Payment Pending';
-                                }
-                                ?>
+                                <p>Appointment Status: <span style="font-weight:bold;"><?= $presenceStatus ?></span></p>
                                 <p>
                                     Payment Status:
                                     <span style="color: <?= $color ?>; font-weight: bold; padding: 4px 8px; border-radius: 4px;">
@@ -75,13 +95,12 @@
                                     </span>
                                 </p>
 
-
                                 <div class="buttons">
                                     <button class="cancel" onclick="showModal(<?= $appointment->id ?>)">Cancel</button>
                                 </div>
                             </div>
-
                         <?php endforeach; ?>
+
                     <?php else : ?>
                         <p>No appointments found.</p>
                     <?php endif; ?>
@@ -138,6 +157,26 @@
             if (event.target == modal) {
                 closeModal();
             }
+        }
+
+        function filterAppointments() {
+            const paymentFilter = document.getElementById('paymentFilter').value.toLowerCase().trim();
+            const presenceFilter = document.getElementById('presenceFilter').value.toLowerCase().trim();
+
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const payment = card.getAttribute('data-payment').toLowerCase().trim();
+                const presence = card.getAttribute('data-presence').toLowerCase().trim();
+
+                const matchesPayment = (paymentFilter === 'all' || payment === paymentFilter);
+                const matchesPresence = (presenceFilter === 'all' || presence === presenceFilter);
+
+                if (matchesPayment && matchesPresence) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

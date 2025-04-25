@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrative Staff Dashboard</title>
+    <title>Today Sessions</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/Admin/appointments.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
@@ -20,7 +20,7 @@
             <!-- Top Header -->
             <?php
             $pageTitle = "Appointments"; // Set the text you want to display
-            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/Receptionist/header.php';
+            include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
             ?>
 
             <!--Content Container-->
@@ -39,10 +39,12 @@
                 </div>
                 <div class="view-buttons">
                     <span class="ongoing active">Today</span>
-                    <a onclick="window.location.href='appointmentsUpcoming'">
+                    <a onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsUpcoming'">
                         <span class="upcoming">Upcoming</span>
                     </a>
-                    <span class="past">Past</span>
+                    <a  onclick="window.location.href='<?= ROOT ?>/Receptionist/appointmentsPast'">
+                        <span class="past">Past</span>
+                    </a>
                 </div>
 
                 <div class="table-container">

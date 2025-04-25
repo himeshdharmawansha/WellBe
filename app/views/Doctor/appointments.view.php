@@ -1,15 +1,11 @@
-
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Details</title>
     <link rel="stylesheet" href="<?= ROOT ?>/assets/css/appointment.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
 </head>
-
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -30,8 +26,7 @@
                 <div class="header" style="padding: 10px; background-color: #f3f3f3;margin-bottom: 10px">
                     <form action="" method="GET" style="display: flex; align-items: center;">
                         <label for="date-select" style="margin-right: 10px; font-weight: bold;">Select Date:</label>
-                        <input type="date" id="date-select" name="selected_date"
-                            style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                        <input type="date" id="date-select" name="selected_date" value="<?php echo htmlspecialchars($data['date'] ?? date('Y-m-d')); ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
                         <button type="submit" style="margin-left: 10px; padding: 5px 10px; background-color: #2278d4; color: white; border: none; border-radius: 4px; cursor: pointer;">
                             Search
                         </button>
@@ -42,16 +37,16 @@
                     <?php if (!empty($data['appointmentsOnDate'])): ?>
                         <?php foreach ($data['appointmentsOnDate'] as $appointment): ?>
                             <div class="card">
-                                <p>Name: <span class="doc_name"><?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?></span></p>
-                                <p>Appointment ID: <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
-                                <p>Gender: <span class="doc_name">
+                                <p>Name : <span class="doc_name"><?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?></span></p>
+                                <p>Appointment ID : <span class="doc_name"><?php echo $appointment->appointment_id; ?></span></p>
+                                <p>Gender : <span class="doc_name">
                                     <?php echo (strtolower($appointment->gender) === 'm') ? 'Male' : 'Female'; ?>
                                 </span></p>
-                                <p>Date: <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
-                                <button class="btn-new" style="margin-top: 10px;font-weight:bold"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</button>
+                                <p>Date : <span class="doc_name"><?php echo htmlspecialchars($data['date']); ?></span></p>
+                                <p>Patient Type : <span class="doc_name"><?php echo htmlspecialchars($appointment->patient_type); ?> Patient</span></p>
                                 <?php if($appointment->patient_type == "RETURNING"): ?>
-                                    <button class="btn-returning">
-                                        <a style="color: #f3f3f3;font-weight:bold" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
+                                    <button class="btn-returning" style="margin-top:15px;">
+                                        <a style="color: #f3f3f3;font-weight:bold;" href="<?= ROOT ?>/doctor/patient_details_upcoming/<?= $appointment->appointment_id ?>/<?= $appointment->patient_id ?>">Patient Records</a>
                                     </button>
                                 <?php endif ?>
                             </div>
@@ -67,7 +62,7 @@
     <!-- Modal HTML -->
     <div id="cancelModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeModal()">×</span>
             <p>Are you sure you want to cancel this appointment?</p>
             <div class="modal-buttons">
                 <button class="yes-btn" onclick="cancelAppointment()">Yes</button>
@@ -107,5 +102,4 @@
         }
     </script>
 </body>
-
 </html>

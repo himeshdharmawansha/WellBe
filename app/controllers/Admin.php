@@ -6,7 +6,7 @@ class Admin extends Controller
    private $data = [
       'elements' => [
          'dashboard' => ["fas fa-tachometer-alt", "Dashboard"],
-         'patients' => ["fas fa-user", "Patients"],
+         // 'patients' => ["fas fa-user", "Patients"],
          'doctors' => ["fas fa-user-md", "Doctors"],
          'pharmacists' => ["fas fa-pills", "Pharmacists"],
          'labTechs' => ["fas fa-vials", "Lab Technicians"],
@@ -343,7 +343,7 @@ class Admin extends Controller
          } 
          else {
             // Add validation errors to data array
-            $data['errors'] = $labTech->getErrors();
+            $data['errors'] = $pharmacist->getErrors();
             $data['formData'] = $pharmacistData; // Pass submitted data back to the view
          }
       }

@@ -188,7 +188,7 @@ html, body {
     border-radius: 15px; /* Rounded corners for a modern look */
     display: flex;
     align-items: center;
-    background-color: #8aa0cc;
+    background-color: #a4afc3f3;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
     padding: 10px 20px; /* Add padding inside the container */
     position: relative; /* Ensure image placement is accurate */

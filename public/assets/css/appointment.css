@@ -45,7 +45,7 @@ body {
 }
 
 .btn-new {
-    font-size: large;
+    font-size: 17px;
     background-color: #74d0ef; /* light blue */
     color: #333;
     border: none;
@@ -61,7 +61,7 @@ body {
 }
 
 .btn-returning {
-    font-size: large;
+    font-size: 20px;
     background-color: darkorange;
     color: white;
     border: none;

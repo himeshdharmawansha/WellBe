@@ -296,6 +296,35 @@
     padding: 10px 15px;
     z-index: 20;
  }
+
+ .submit-btn {
+   background-color: #4cd54c;
+   color: #ffffff;
+   padding: 10px 20px;
+   border: none;
+   border-radius: 5px;
+   font-size: 25px;
+   font-weight: bold;
+   cursor: pointer;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-btn-container {
+   display: block;
+   text-align: center;
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+.submit-btn:hover {
+   background-color: #38bb56;
+   transform: translateY(-2px);
+}
+
+.submit-btn:active {
+   transform: translateY(0); /* Reset lift on click */
+}
  
  /* Navigation Buttons Centered */
  .record-navigation {
@@ -324,6 +353,61 @@
  .nav-btn:hover {
     background-color: #0056b3;
  }
+
+ .file-upload-section {
+   margin: 25px 0;
+   padding: 15px;
+   background-color: #f9f9f9;
+   border-radius: 8px;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
+   .file-upload-section h3 {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+   }
+   .file-upload-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 500px;
+   }
+   .file-upload-wrapper input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #138b23; /* Light green border */
+      border-radius: 6px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+   }
+   .file-upload-wrapper input[type="file"]:hover {
+      border-color: #78C878; /* Darker green border */
+      background-color: #f0fff0; /* Light green background */
+   }
+   .file-upload-wrapper input[type="file"]::-webkit-file-upload-button {
+      visibility: hidden;
+   }
+   .file-upload-wrapper::before {
+      content: 'Choose File';
+      display: inline-block;
+      background: #0d932c; /* Light green button */
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+   }
+   .file-upload-wrapper:hover::before {
+      background: #48be48; /* Darker green on hover */
+   }
  
  /* Create New Record Button Right-Aligned */
  .button-container {
@@ -335,7 +419,8 @@
     font-weight: bold;
     text-decoration: none;
     transition: background-color 0.3s ease;
- } 
+ }
+
  
  .btn-green {
     background-color: #28a745;

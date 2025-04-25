@@ -64,6 +64,15 @@ use Random\Engine\Mt19937;
             //print_r($id);
             $data['patient_id'] = $patient_id;
             $data['app_id'] = $app_id;
+            $data['doc_id'] = $_SESSION['USER']->id;
+
+            $timeslot = new Timeslot();
+            $dateId = $timeslot->getDateId(date('y-m-d'));
+            $data['dateId'] = $dateId[0]->slot_id;
+
+            $medicine = new Medicine();
+            $data['medicines'] = $medicine->getMedicines();
+            //print_r($data['medicines']);
 
             $this->view('Doctor/medication_Details','today-checkups',$data);
         }

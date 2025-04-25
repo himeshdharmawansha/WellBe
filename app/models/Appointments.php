@@ -170,17 +170,18 @@ class Appointments extends Model
 
     public function endAppointment($id)
     {
-
-        //echo "updated";
-
+        $timeslot = new Timeslot();
+        $today = $timeslot -> getDateId(date('y-m-d'));
         $app_id = $id;
         //echo $app_id;
 
         $query = "UPDATE appointment
                   SET state = 'DONE'
-                  WHERE appointment_id = ?;";
+                  WHERE appointment_id = ? AND date = ? AND doctor_id = ?;";
 
-        $this->query($query, [$app_id]);
+        $this->query($query, [$app_id, $today[0]->slot_id, $_SESSION['USER']->id]);
+
+        redirect("doctor/today_checkups");
     }
 
     public function getAppointment($id, $today_id)

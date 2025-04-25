@@ -270,7 +270,7 @@ class Patient extends Controller
       $this->view('Patient/edit_profile', 'edit_profile');
    }
 
-   public function medical_rec($id)
+   public function medical_rec($testId)
    {
       $patient = $_SESSION['USER'] ?? null;
 
@@ -280,7 +280,8 @@ class Patient extends Controller
          $medicalRecord = new MedicalRecord();
 
          // Get all requests made by the patient
-         $requests = $medicalRecord->getRequest($patient_id);
+         $medicalRecordData = $medicalRecord->getMedicalRecordData($testId);
+         print_r($medicalRecordData);
 
          // Load details of the first request by default (if exists)
          $medDetails = null;

@@ -32,37 +32,41 @@
                 <div class="search-bar-container" style="margin-bottom: 20px; text-align: right;">
                         <input type="text" id="searchInput" placeholder="Search reports..." style="padding: 8px; width: 250px; border-radius: 5px; border: 1px solid #ccc;">
                     </div>
-                    <?php if (!empty($pastRecords)) : ?>
-                        <?php foreach ($pastRecords as $request) : ?>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Medi_Rep_Id</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Doctor's Name</th>
-                                            <th>Specialization</th>
-                                            <th>Diagnosis</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr  onclick="window.location.href='medical_rec'">
-                                            <td>Medi_Rec_<?= htmlspecialchars($request->id) ?></td>
-                                            <td><?= date('Y-m-d', strtotime($request->date)) ?></td>
-                                            <td><?= htmlspecialchars($request->start_time) ?></td>
-                                            <td><?= htmlspecialchars($request->doctor_first_name . " " . $request->doctor_last_name) ?></td>
-                                            <td><?= htmlspecialchars($request->specialization) ?></td>
-                                            <td><?= htmlspecialchars($request->diagnosis) ?></td>
-                                        </tr>
+                    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Medi_Rep_Id</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor's Name</th>
+                    <th>Specialization</th>
+                    <th>Diagnosis</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php if (!empty($pastRecords)) : ?>
+                <?php foreach ($pastRecords as $request) : ?>
+                    <tr onclick="window.location.href='<?= ROOT ?>/Patient/medical_rec/<?= htmlspecialchars($request->id) ?>'">
+                        <td>Medi_Rec_<?= htmlspecialchars($request->id) ?></td>
+                        <td><?= date('Y-m-d', strtotime($request->date)) ?></td>
+                        <td><?= htmlspecialchars($request->start_time) ?></td>
+                        <td><?= htmlspecialchars($request->doctor_first_name . " " . $request->doctor_last_name) ?></td>
+                        <td><?= htmlspecialchars($request->specialization) ?></td>
+                        <td><?= htmlspecialchars($request->diagnosis) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="6">No medical reports available.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
-                                        <!-- More rows here -->
-                                    </tbody>
-                                </table>
-                            <?php endforeach; ?>
-                        <?php else : ?>
-                            <p>No medical reports available.</p>
-                        <?php endif; ?>
+
                             </div>
                             <div class="pagination">
                                 <span>Previous</span>

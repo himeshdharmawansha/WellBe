@@ -56,8 +56,16 @@ class Patient extends Controller
       $medicalRecord = new MedicalRecord();
       $patientId = $_SESSION['USER']->id;
       $pastRecords = $medicalRecord->getRequest($patientId);
-      //print_r($pastRecords);
-      $data['pastRecords'] = $pastRecords;
+
+      $uniqueRequests = [];
+      $seenIds = [];
+      foreach ($pastRecords as $reports) {
+         if (!in_array($reports->id, $seenIds)) {
+            $seenIds[] = $reports->id;
+            $uniqueRequests[] = $reports;
+         }
+      }
+      $data['pastRecords'] = $uniqueRequests;
       $this->view('Patient/medicalreports', 'medicalreports', $data);
    }
 
@@ -262,7 +270,7 @@ class Patient extends Controller
       $this->view('Patient/edit_profile', 'edit_profile');
    }
 
-   public function medical_rec()
+   public function medical_rec($testId)
    {
       $patient = $_SESSION['USER'] ?? null;
 
@@ -272,14 +280,16 @@ class Patient extends Controller
          $medicalRecord = new MedicalRecord();
 
          // Get all requests made by the patient
-         $requests = $medicalRecord->getRequest($patient_id);
+         $medicalRecordData = $medicalRecord->getMedicalRecordData($testId);
+         print_r($medicalRecordData);
 
          // Load details of the first request by default (if exists)
          $medDetails = null;
-         if (!empty($requests)) {
+         if (!empty($requests) && isset($requests[0]->id)) {
             $firstReqId = $requests[0]->id;
             $medDetails = $medicalRecord->getMed($firstReqId);
          }
+         
 
          // Pass data to the view
          $this->view('Patient/medical_rec', 'medical_rec', [
@@ -352,13 +362,13 @@ class Patient extends Controller
       //print_r($data);
       $message = "You have successfully placed an appointment with Dr. " . $data['doctor'] . " on " . $data['appointment_date'] . ". Your appointment number is: " . $data['appointment_number'] . ".";
 
-       $email = new Email();
-       $email->send(
-          "Wellbe",
-          "wellbe@gmail.com",
-          $message,
-          $_SESSION['USER']->email,
-       );
+      $email = new Email();
+      $email->send(
+         "Wellbe",
+         "wellbe@gmail.com",
+         $message,
+         $_SESSION['USER']->email,
+      );
 
       //find patient type(returning or new)
       $medicalRecord = new MedicalRecord();

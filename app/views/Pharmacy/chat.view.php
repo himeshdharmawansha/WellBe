@@ -1,7 +1,4 @@
-<?php
-$currentUserId = $_SESSION['userid'];
-?>
-
+<?php $currentUserId = $_SESSION['userid']; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,14 +27,14 @@ $currentUserId = $_SESSION['userid'];
             <div class="container">
                <div class="chat-list">
                   <div class="search-bar">
-                     <input
-                        type="text"
-                        id="search-input"
-                        placeholder="Search"
-                        oninput="searchUsers(this.value)" />
+                     <input type="text" id="search-input" placeholder="Search" oninput="searchUsers(this.value)" />
                   </div>
                   <ul id="chat-list">
                      <?php foreach ($user_profile as $user): ?>
+                        <?php
+                        $roles = [1 => 'pharmacy', 2 => 'lab', 3 => 'admin', 4 => 'patient', 5 => 'doctor', 6 => 'receptionist'];
+                        $roleTitle = $roles[$user['role']] ?? 'Unknown';
+                        ?>
                         <li>
                            <div class="chat-item <?php echo ($user['unseen_count'] > 0) ? 'unseen' : ''; ?>"
                               data-receiver-id="<?php echo ($user['id']); ?>"
@@ -45,7 +42,7 @@ $currentUserId = $_SESSION['userid'];
                               <img src="<?php echo esc($user['image']); ?>" alt="Avatar" class="avatar">
                               <div class="chat-info">
                                  <h4><?php echo esc($user['username']); ?></h4>
-                                 <p class="chat-status"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
+                                 <p class="chat-status"><?php echo $roleTitle; ?></p>
                               </div>
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
@@ -147,6 +144,19 @@ $currentUserId = $_SESSION['userid'];
       let selectedFile = null;
       let selectedFileType = null;
       let unseenCountsMap = {}; // Store unseen counts for each user
+
+      // Role mapping function
+      function getRoleTitle(roleId) {
+         const roles = {
+            1: 'pharmacy',
+            2: 'lab',
+            3: 'admin',
+            4: 'patient',
+            5: 'doctor',
+            6: 'receptionist'
+         };
+         return roles[roleId] || 'Unknown';
+      }
 
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
          event.preventDefault();
@@ -403,19 +413,19 @@ $currentUserId = $_SESSION['userid'];
             }
             const fileName = message.file_path.split('/').pop(); // Extract file name from path
             div.innerHTML = `
-               <div class="file-frame">
-                  <i class="fa-solid ${iconClass} doc-icon"></i>
-                  <p>${escapeHTML(displayName)}</p>
-               </div>
-               <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-               <hr>
-               ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-               <div class="message-actions">
-                  <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                  <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-               </div>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-            `;
+                  <div class="file-frame">
+                     <i class="fa-solid ${iconClass} doc-icon"></i>
+                     <p>${escapeHTML(displayName)}</p>
+                  </div>
+                  <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                  <hr>
+                  ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
+                  <div class="message-actions">
+                     <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                     <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
+                  </div>
+                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
+               `;
          }
 
          // Insert the unseen messages line before the first unseen message (only for initial render)
@@ -941,7 +951,7 @@ $currentUserId = $_SESSION['userid'];
                         <img src="${profileImageUrl}" alt="Avatar" class="avatar">
                         <div class="chat-info">
                            <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
@@ -949,7 +959,7 @@ $currentUserId = $_SESSION['userid'];
                         </div>
                      </div>
                      </li>
-                  `;
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
@@ -1010,7 +1020,7 @@ $currentUserId = $_SESSION['userid'];
                         <img src="${profileImageUrl}" alt="Avatar" class="avatar">
                         <div class="chat-info">
                            <h4>${user.username}</h4>
-                           <p class="chat-status">${user.state ? 'Online' : 'Offline'}</p>
+                        <p class="chat-status">${getRoleTitle(user.role)}</p>
                         </div>
                         <div class="chat-side">
                            <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
@@ -1018,7 +1028,7 @@ $currentUserId = $_SESSION['userid'];
                         </div>
                      </div>
                      </li>
-                  `;
+               `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });

@@ -76,11 +76,11 @@
                                             
                                             <select class="patient-status-dropdown" name="appointments[<?= $index ?>][patient_status]" 
                                             onchange="changeDropdownColor(this); syncToHidden(this);" 
-                                            style="<?= $app->patient_status === 'Present' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>"
-                                            <?= $app->patient_status === 'Present' ? 'disabled' : '' ?>>
+                                            style="<?= $app->patient_status === 'PRESENT' ? 'background-color: #24FF3A; color: black;' : 'background-color: #EFF4FF; color: #FF4747;' ?>"
+                                            <?= $app->patient_status === 'PRESENT' ? 'disabled' : '' ?>>
                                                 
-                                                <option value="Not Present" <?= $app->patient_status === 'Not Present' ? 'selected' : '' ?>>Not Present</option>
-                                                <option value="Present" <?= $app->patient_status === 'Present' ? 'selected' : '' ?>>Present</option>
+                                                <option value="NOT PRESENT" <?= $app->patient_status === 'NOT PRESENT' ? 'selected' : '' ?>>Not Present</option>
+                                                <option value="PRESENT" <?= $app->patient_status === 'PRESENT' ? 'selected' : '' ?>>Present</option>
                                             </select>
                                         </td>
                                         <td>

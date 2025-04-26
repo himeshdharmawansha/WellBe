@@ -11,37 +11,37 @@
     <div class="big">
     <div class="edit-profile-container">
         <h1>Edit Profile</h1>
-        <form method="POST" action="" onsubmit="return validateForm()">
-    <label for="first_name">First Name:</label>
-    <input type="text" name="first_name" id="first_name" required>
+        <form method="POST" action="<?=ROOT?>/patient/edit_profile">
+        <label for="first_name">First Name:</label>
+    <input type="text" name="first_name" id="first_name"  value="<?= old_value('first_name', $data['first_name'] ?? '') ?>" required>
     <span class="error-message" id="first_name_error"></span>
 
     <label for="last_name">Last Name:</label>
-    <input type="text" name="last_name" id="last_name" >
+    <input type="text" name="last_name" id="last_name" value="<?= old_value('last_name', $data['last_name'] ?? '') ?>" required>
     <span class="error-message" id="last_name_error"></span>
 
     <label for="contact">Contact:</label>
-    <input type="text" name="contact" id="contact" pattern="\d{10}" title="Contact must be a 10-digit number.">
+    <input type="text" name="contact" id="contact" pattern="\d{10}" title="Contact must be a 10-digit number." value="<?= old_value('contact', $data['contact'] ?? '') ?>" required>
     <span class="error-message" id="contact_error"></span>
 
     <label for="email">Email:</label>
-    <input type="email" name="email" id="email" >
+    <input type="email" name="email" id="email" value="<?= old_value('email', $data['email'] ?? '') ?>" required>
     <span class="error-message" id="email_error"></span>
 
     <label for="address">Address:</label>
-    <textarea name="address" id="address" required></textarea>
+    <textarea name="address" id="address" required><?= old_value('address', $data['address'] ?? '') ?> </textarea>
     <span class="error-message" id="address_error"></span>
 
     <label for="medical_history">Medical History:</label>
-    <textarea name="medical_history" id="medical_history"></textarea>
+    <textarea name="medical_history" id="medical_history" required><?= old_value('medical_history', $data['medical_history'] ?? '') ?></textarea>
 
     <label for="allergies">Allergies:</label>
-    <textarea name="allergies" id="allergies"></textarea>
+    <textarea name="allergies" id="allergies" required><?= old_value('allergies', $data['allergies'] ?? '') ?></textarea>
 
     <button type="submit" class="button">Save Changes</button>
     <button type="button" class="button" onclick="window.location.href='patient_dashboard'">Cancel</button>
 </form>
-<script>
+<!-- <script>
     function validateForm() {
         let isValid = true;
 
@@ -98,7 +98,7 @@
 
         return isValid;
     }
-</script>
+</script> -->
 
 </body>
 </html>

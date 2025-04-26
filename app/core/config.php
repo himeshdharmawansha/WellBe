@@ -27,3 +27,4 @@ define('APP_DESC', "Best website on the planet");
 
 /** true means show errors **/
 define('DEBUG', true);
+

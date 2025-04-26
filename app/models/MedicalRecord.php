@@ -145,6 +145,22 @@ class MedicalRecord extends Model
         $this->query($query, [$med_id, $medication, $dosage, $howToTake, $susbstitution]);
     }
 
+    public function getLabTestData($testReqId){
+
+    }
+
+    public function getMedicalRecordData($testReqId){
+        $query = "SELECT mrd.*, t.date, CONCAT(d.first_name, ' ', d.last_name) AS doctor_name
+          FROM medication_request_details mrd
+          JOIN medication_requests mr ON mr.id = mrd.req_id
+          JOIN doctor d ON d.id = mr.doctor_id
+          JOIN timeslot t ON t.slot_id = mr.date
+          WHERE mr.id = ?;";
+
+        $result = $this->query($query, [$testReqId]);
+        return $result;
+    }
+
     public function getRequest($patient_id)
     {
         $query = "SELECT 

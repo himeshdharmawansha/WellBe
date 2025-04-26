@@ -56,7 +56,11 @@
    padding: 1px 8px 1px 8px;
    border: none;
    border-radius: 5px;
-   transition: background-color 0.3s, cursor 0.3s;
+   transition: background-color 0.3s, cursor 0.3s, opacity 0.3s;
+}
+
+.upload-btn[style*="opacity: 0.5"] {
+   cursor: not-allowed;
 }
 
 .file-input {
@@ -85,3 +89,126 @@
    background-color: #0056b3;
 }
 
+/* Popup Container */
+.popup {
+   position: fixed;
+   top: 20px;
+   right: 20px;
+   background-color: #f8d7da;
+   color: #721c24;
+   padding: 15px 25px;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+   z-index: 10000;
+   display: none;
+   max-width: 350px;
+   min-width: 250px;
+   font-size: 14px;
+   border: 1px solid #f5c6cb;
+   opacity: 0;
+   transition: opacity 0.3s ease-in-out;
+}
+
+/* Active Popup */
+.popup.active {
+   display: block;
+   opacity: 1;
+   animation: slideIn 0.3s ease-in-out forwards;
+}
+
+/* Close Button */
+.popup .close-btn {
+   position: absolute;
+   top: 5px;
+   right: 10px;
+   cursor: pointer;
+   font-size: 16px;
+   color: #721c24;
+   font-weight: bold;
+}
+
+/* Animation for Popup */
+@keyframes slideIn {
+   from {
+      transform: translateX(100%);
+      opacity: 0;
+   }
+   to {
+      transform: translateX(0);
+      opacity: 1;
+   }
+}
+
+/* Success Popup */
+.popup.success {
+   background-color: #d4edda;
+   color: #155724;
+   border: 1px solid #c3e6cb;
+}
+
+/* Ensure popup message is readable */
+#popup-message {
+   display: block;
+   line-height: 1.5;
+}
+
+/* Confirmation Popup */
+.confirm-popup {
+   position: fixed;
+   top: 40%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   background-color: #fff;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+   z-index: 10000;
+   display: none;
+   width: 300px;
+   text-align: center;
+   border: 1px solid #e5e7eb;
+}
+
+.confirm-popup.active {
+   display: block;
+}
+
+#confirm-message {
+   display: block;
+   margin-bottom: 20px;
+   font-size: 16px;
+   color: #333;
+}
+
+.confirm-buttons {
+   display: flex;
+   justify-content: center;
+   gap: 10px;
+}
+
+.confirm-btn {
+   padding: 8px 20px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 14px;
+   transition: background-color 0.3s ease-in-out;
+}
+
+.yes-btn {
+   background-color: #28a745;
+   color: white;
+}
+
+.yes-btn:hover {
+   background-color: #218838;
+}
+
+.no-btn {
+   background-color: #dc3545;
+   color: white;
+}
+
+.no-btn:hover {
+   background-color: #c82333;
+}

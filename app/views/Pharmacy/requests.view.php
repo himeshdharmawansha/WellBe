@@ -40,7 +40,7 @@
                   <tbody id="pending-requests-body">
                      <?php if (empty($data['pendingRequests'])) : ?>
                         <tr>
-                           <td colspan="4" style="text-align: center;">No pending requests found.</td>
+                           <td colspan="6" style="text-align: center;">No pending requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
@@ -72,7 +72,7 @@
                   <tbody id="completed-requests-body">
                      <?php if (empty($data['completedRequests'])) : ?>
                         <tr>
-                           <td colspan="4" style="text-align: center;">No completed requests found.</td>
+                           <td colspan="6" style="text-align: center;">No completed requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
@@ -94,6 +94,12 @@
                <span id="pagination-pages"></span>
                <button class="pagination-btn" onclick="changePage(1)">Next</button>
             </div>
+         </div>
+         <!-- Add popup at the root level -->
+         <div class="popup" id="error-popup">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <span id="popup-message"></span>
+            <button class="retry-btn" id="retry-btn" style="display:none;">Retry</button>
          </div>
       </div>
    </div>
@@ -190,6 +196,15 @@
                fetch('<?= ROOT ?>/Pharmacy/getRequestsJson')
                   .then(response => response.json())
                   .then(data => {
+                     if (data.error) {
+                        showPopup(data.error);
+                        const pending = document.getElementById('pending-requests-body');
+                        const completed = document.getElementById('completed-requests-body');
+                        pending.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
+                        completed.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
+                        return;
+                     }
+
                      const pending = document.getElementById('pending-requests-body');
                      const completed = document.getElementById('completed-requests-body');
 
@@ -216,11 +231,35 @@
                      displayPage(currentPage);
                   })
                   .catch(error => {
+                     showPopup('Error fetching requests. Please try again', 'error', true, () => {
+                        fetch('<?= ROOT ?>/Pharmacy/getRequestsJson').then(response => response.json()).then(data => {
+                           const pending = document.getElementById('pending-requests-body');
+                           const completed = document.getElementById('completed-requests-body');
+                           pending.innerHTML = '';
+                           completed.innerHTML = '';
+                           data.forEach(request => {
+                              const formattedTime = formatTimeToAmPm(request.time);
+                              const row = `
+                                 <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                                    <td>${request.id}</td>
+                                    <td>${request.patient_id}</td>
+                                    <td>${request.patient_name}</td>
+                                    <td>${request.first_name}</td>
+                                    <td>${request.date_t}</td>
+                                    <td>${formattedTime}</td>
+                                 </tr>`;
+                              if (request.state === 'pending') pending.innerHTML += row;
+                              if (request.state === 'completed') completed.innerHTML += row;
+                           });
+                           setupPagination(currentTable);
+                           displayPage(currentPage);
+                        });
+                     });
                      console.error('Error fetching requests:', error);
                      const pending = document.getElementById('pending-requests-body');
                      const completed = document.getElementById('completed-requests-body');
-                     pending.innerHTML = '<tr><td colspan="4" style="text-align: center;">Error loading requests.</td></tr>';
-                     completed.innerHTML = '<tr><td colspan="4" style="text-align: center;">Error loading requests.</td></tr>';
+                     pending.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
+                     completed.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
                   });
             }
          }, 3000);
@@ -241,12 +280,33 @@
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                const searchTerm = e.target.value.trim();
+               // Validate search term length
+               if (searchTerm.length > 50) {
+                  showPopup('Search term too long. Please use up to 50 characters');
+                  return;
+               }
+
                if (searchTerm) {
                   isSearching = true;
 
                   fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
                      .then(response => response.json())
                      .then(data => {
+                        if (data.error) {
+                           showPopup(data.error);
+                           const requestBodies = document.querySelectorAll('.requests-section tbody');
+                           requestBodies.forEach(body => {
+                              body.innerHTML = `
+                                 <tr>
+                                    <td colspan="6" style="text-align: center;">Error occurred while searching</td>
+                                 </tr>`;
+                           });
+                           currentPage = 1;
+                           setupPagination(currentTable);
+                           displayPage(currentPage);
+                           return;
+                        }
+
                         const requestBodies = document.querySelectorAll('.requests-section tbody');
                         requestBodies.forEach(body => body.innerHTML = '');
 
@@ -272,7 +332,7 @@
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
-                                    <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                    <td colspan="6" style="text-align: center;">No results found for "${searchTerm}"</td>
                                  </tr>`;
                            });
                         }
@@ -282,12 +342,49 @@
                         displayPage(currentPage);
                      })
                      .catch(error => {
+                        showPopup('Error occurred while searching. Please try again', 'error', true, () => {
+                           fetch(`<?= ROOT ?>/MedicationRequests/searchRequestsByPatientId?patient_id=${searchTerm}`)
+                              .then(response => response.json())
+                              .then(data => {
+                                 const requestBodies = document.querySelectorAll('.requests-section tbody');
+                                 requestBodies.forEach(body => body.innerHTML = '');
+                                 if (data.length) {
+                                    data.forEach(request => {
+                                       const formattedTime = formatTimeToAmPm(request.time);
+                                       const row = `
+                                          <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
+                                             <td>${request.id}</td>
+                                             <td>${request.patient_id}</td>
+                                             <td>${request.patient_name}</td>
+                                             <td>${request.first_name}</td>
+                                             <td>${request.date_t}</td>
+                                             <td>${formattedTime}</td>
+                                          </tr>`;
+                                       if (request.state === "completed") {
+                                          document.querySelector("#completed-requests-body").innerHTML += row;
+                                       } else {
+                                          document.querySelector("#pending-requests-body").innerHTML += row;
+                                       }
+                                    });
+                                 } else {
+                                    requestBodies.forEach(body => {
+                                       body.innerHTML = `
+                                          <tr>
+                                             <td colspan="6" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                          </tr>`;
+                                    });
+                                 }
+                                 currentPage = 1;
+                                 setupPagination(currentTable);
+                                 displayPage(currentPage);
+                              });
+                        });
                         console.error("Search error:", error);
                         const requestBodies = document.querySelectorAll('.requests-section tbody');
                         requestBodies.forEach(body => {
                            body.innerHTML = `
                               <tr>
-                                 <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                                 <td colspan="6" style="text-align: center;">Error occurred while searching</td>
                               </tr>`;
                         });
                         currentPage = 1;

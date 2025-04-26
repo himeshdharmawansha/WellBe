@@ -86,32 +86,81 @@
                             <button class='btn remarks' id='remarksButton'>Print</button>
                           </div>";
                 } else {
-                    echo "<p>Missing or invalid request details. Please provide valid Request ID, Doctor ID, and Patient ID.</p>";
+                    echo "<script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                showPopup('Missing or invalid request details. Please provide valid Request ID, Doctor ID, and Patient ID.');
+                            });
+                          </script>";
                 }
                 ?>
             </div>
         </div>
-        <script src="<?= ROOT ?>/assets/js/Pharmacy/remarkPopup.js"></script>
-        <script>
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-            document.addEventListener('DOMContentLoaded', function() {
-                const doneButton = document.getElementById('doneButton');
+        <!-- Move popup outside of dashboard-content -->
+        <div class="popup" id="error-popup">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <span id="popup-message"></span>
+        </div>
+    </div>
+    <script src="<?= ROOT ?>/assets/js/Pharmacy/remarkPopup.js"></script>
+    <script>
+        function showPopup(message, type = 'error') {
+            const popup = document.getElementById('error-popup');
+            const popupMessage = document.getElementById('popup-message');
+            if (!popup || !popupMessage) {
+                console.error('Popup elements not found');
+                return;
+            }
+            popupMessage.textContent = message;
+            popup.className = `popup ${type} active`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                popup.className = 'popup';
+            }, 5000);
+        }
 
+        function closePopup() {
+            const popup = document.getElementById('error-popup');
+            if (popup) {
+                popup.className = 'popup';
+            }
+        }
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const doneButton = document.getElementById('doneButton');
+            if (doneButton) {
                 doneButton.addEventListener('click', function() {
                     const requestID = doneButton.getAttribute('data-request-id');
                     const remarks = document.getElementById('additionalRemarks').value;
                     const rows = document.querySelectorAll('.medication-table tbody tr');
 
+                    // Validate remarks length
+                    if (remarks.length > 500) {
+                        showPopup('Remarks exceed maximum length of 500 characters');
+                        return;
+                    }
+
+                    // Validate medication states
                     const medications = [];
+                    let allStatesSelected = true;
                     rows.forEach(row => {
                         const medicationName = row.cells[0].textContent.trim();
                         const state = row.querySelector('select').value;
-
+                        if (!state) {
+                            allStatesSelected = false;
+                        }
                         medications.push({
                             medicationName,
                             state,
                         });
                     });
+
+                    if (!allStatesSelected) {
+                        showPopup('Please select a state for all medications');
+                        return;
+                    }
 
                     fetch('<?= ROOT ?>/MedicationRequests/update', {
                         method: 'POST',
@@ -127,16 +176,28 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            window.location.href = `requests`;
+                            showPopup('Medication request updated successfully', 'success');
+                            setTimeout(() => {
+                                window.location.href = 'requests';
+                            }, 2000);
                         } else {
-                            alert('Failed to update medication request.');
+                            showPopup(data.error || 'Failed to update medication request. Please try again');
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        showPopup('Error updating medication request. Please try again');
+                        console.error('Error:', error);
+                    });
                 });
-            });
-        </script>
-    </div>
-</body>
+            }
 
+            const printButton = document.getElementById('remarksButton');
+            if (printButton) {
+                printButton.addEventListener('click', function() {
+                    window.print();
+                });
+            }
+        });
+    </script>
+</body>
 </html>

@@ -232,3 +232,77 @@ a {
    text-decoration: none;
    color: inherit;
 }
+
+/* Popup Container */
+.popup {
+   position: fixed;
+   top: 20px;
+   right: 20px;
+   background-color: #f8d7da;
+   color: #721c24;
+   padding: 15px 25px;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+   z-index: 10000;
+   display: none;
+   max-width: 350px;
+   min-width: 250px;
+   font-size: 14px;
+   border: 1px solid #f5c6cb;
+   opacity: 0;
+   transition: opacity 0.3s ease-in-out;
+}
+
+/* Active Popup */
+.popup.active {
+   display: block;
+   opacity: 1;
+   animation: slideIn 0.3s ease-in-out forwards;
+}
+
+/* Close Button */
+.popup .close-btn {
+   position: absolute;
+   top: 5px;
+   right: 10px;
+   cursor: pointer;
+   font-size: 16px;
+   color: #721c24;
+   font-weight: bold;
+}
+
+/* Animation for Popup */
+@keyframes slideIn {
+   from {
+       transform: translateX(100%);
+       opacity: 0;
+   }
+   to {
+       transform: translateX(0);
+       opacity: 1;
+   }
+}
+
+/* Success Popup (for Success Messages) */
+.popup.success {
+   background-color: #d4edda;
+   color: #155724;
+   border: 1px solid #c3e6cb;
+}
+
+/* Retry Button */
+.retry-btn {
+   margin-left: 10px;
+   padding: 5px 10px;
+   background-color: #007bff;
+   color: white;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+}
+
+/* Ensure popup message is readable */
+#popup-message {
+   display: block;
+   line-height: 1.5;
+}

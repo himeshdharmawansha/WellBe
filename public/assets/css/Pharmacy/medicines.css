@@ -192,7 +192,7 @@ a {
 
 .add-btn {
    background-color: transparent;
-   color: #4CAF50; /* Changed to red */
+   color: #4CAF50;
    border: none;
    font-size: 20px;
    cursor: pointer;
@@ -200,9 +200,143 @@ a {
 }
 
 .add-btn:hover {
-   color: #2c732f; /* Darker red on hover */
+   color: #2c732f;
 }
 
 .delete-btn i {
-   color: #ff0000; /* Already red in the original CSS */
+   color: #ff0000;
+}
+
+/* Error/Success Popup */
+.popup {
+   position: fixed;
+   top: 20px;
+   right: 20px;
+   background-color: #f8d7da;
+   color: #721c24;
+   padding: 15px 25px;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+   z-index: 10000;
+   display: none;
+   max-width: 350px;
+   min-width: 250px;
+   font-size: 14px;
+   border: 1px solid #f5c6cb;
+   opacity: 0;
+   transition: opacity 0.3s ease-in-out;
+}
+
+.popup.active {
+   display: block;
+   opacity: 1;
+   animation: slideIn 0.3s ease-in-out forwards;
+}
+
+.popup .close-btn {
+   position: absolute;
+   top: 5px;
+   right: 10px;
+   cursor: pointer;
+   font-size: 16px;
+   color: #721c24;
+   font-weight: bold;
+}
+
+@keyframes slideIn {
+   from {
+      transform: translateX(100%);
+      opacity: 0;
+   }
+   to {
+      transform: translateX(0);
+      opacity: 1;
+   }
+}
+
+.popup.success {
+   background-color: #d4edda;
+   color: #155724;
+   border: 1px solid #c3e6cb;
+}
+
+.retry-btn {
+   margin-left: 10px;
+   padding: 5px 10px;
+   background-color: #007bff;
+   color: white;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+}
+
+#popup-message {
+   display: block;
+   line-height: 1.5;
+}
+
+/* Confirmation Popup */
+.confirm-popup {
+   position: fixed;
+   top: 40%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   background-color: #ffffff;
+   color: #333;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+   z-index: 10001;
+   display: none;
+   max-width: 400px;
+   min-width: 300px;
+   font-size: 16px;
+   border: 1px solid #ccc;
+   opacity: 0;
+   transition: opacity 0.3s ease-in-out;
+   text-align: center;
+}
+
+.confirm-popup.active {
+   display: block;
+   opacity: 1;
+}
+
+#confirm-message {
+   display: block;
+   margin-bottom: 20px;
+   line-height: 1.5;
+}
+
+.confirm-buttons {
+   display: flex;
+   justify-content: center;
+   gap: 10px;
+}
+
+.confirm-btn {
+   padding: 8px 20px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 14px;
+   transition: background-color 0.3s;
+}
+
+.yes-btn {
+   background-color: #4CAF50;
+   color: white;
+}
+
+.yes-btn:hover {
+   background-color: #45a049;
+}
+
+.no-btn {
+   background-color: #f44336;
+   color: white;
+}
+
+.no-btn:hover {
+   background-color: #da190b;
 }

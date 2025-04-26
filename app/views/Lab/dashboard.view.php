@@ -62,6 +62,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr>
+                                        <td colspan="2">Loading...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -80,6 +83,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr>
+                                        <td colspan="2">Loading...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -90,10 +96,65 @@
                 </div>
             </div>
         </div>
+        <!-- Error/Success Popup -->
+        <div class="popup" id="error-popup">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <span id="popup-message"></span>
+            <button class="retry-btn" id="retry-btn" style="display:none;">Retry</button>
+        </div>
     </div>
     <script src="<?= ROOT ?>/assets/js/Lab/labTechnicianDashboard.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
+            // Popup logic (error/success)
+            let retryCallback = null;
+
+            function showPopup(message, type = 'error', retry = false, callback = null) {
+                console.log('showPopup called with message:', message, 'type:', type);
+                const popup = document.getElementById('error-popup');
+                const popupMessage = document.getElementById('popup-message');
+                const retryBtn = document.getElementById('retry-btn');
+                if (!popup || !popupMessage || !retryBtn) {
+                    console.error('Popup elements not found:', { popup, popupMessage, retryBtn });
+                    alert(message);
+                    return;
+                }
+                popupMessage.textContent = message;
+                popup.className = `popup ${type} active`;
+                console.log('Popup class set to:', popup.className);
+
+                if (retry) {
+                    retryBtn.style.display = 'inline-block';
+                    retryCallback = callback;
+                } else {
+                    retryBtn.style.display = 'none';
+                    retryCallback = null;
+                }
+
+                setTimeout(() => {
+                    popup.className = 'popup';
+                    console.log('Popup hidden after timeout');
+                }, 5000);
+            }
+
+            function closePopup() {
+                console.log('closePopup called');
+                const popup = document.getElementById('error-popup');
+                if (popup) {
+                    popup.className = 'popup';
+                    console.log('Popup class reset to:', popup.className);
+                }
+            }
+
+            function retryAction() {
+                if (retryCallback) {
+                    retryCallback();
+                }
+            }
+
+            document.getElementById('retry-btn')?.addEventListener('click', retryAction);
+
+            // Chart data fetching
             google.charts.load('current', {
                 'packages': ['corechart']
             });
@@ -125,53 +186,60 @@
                         const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
                         chart.draw(google.visualization.arrayToDataTable(chartData), options);
                     })
-                    .catch(error => console.error('Error fetching chart data:', error));
+                    .catch(error => {
+                        showPopup('Error fetching chart data. Please try again', 'error', true, drawChart);
+                        console.error('Error fetching chart data:', error);
+                    });
             }
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableBody = document.querySelector('.request-table tbody');
+            // Test requests fetching
+            const tableBodyRequests = document.querySelector('.request-table tbody');
 
             function fetchTestRequests() {
                 fetch('<?= ROOT ?>/Lab/testRequests')
                     .then(response => response.json())
                     .then(data => {
                         let html = '';
-                        data.forEach(request => {
-                            html += `
-                        <tr>
-                            <td>${request.patient_id}</td>
-                            <td><span class="status ${request.state}">${request.state}</span></td>
-                        </tr>
-                    `;
-                        });
-                        tableBody.innerHTML = html;
+                        if (data.length === 0) {
+                            html = `<tr><td colspan="2" style="text-align: center;">No ongoing tests</td></tr>`;
+                        } else {
+                            data.forEach(request => {
+                                html += `
+                                <tr>
+                                    <td>${request.patient_id}</td>
+                                    <td><span class="status ${request.state}">${request.state}</span></td>
+                                </tr>
+                            `;
+                            });
+                        }
+                        tableBodyRequests.innerHTML = html;
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        showPopup('Error fetching test requests. Please try again', 'error', true, fetchTestRequests);
+                        tableBodyRequests.innerHTML = `<tr><td colspan="2">Error loading test requests.</td></tr>`;
+                        console.error('Error:', error);
+                    });
             }
 
             fetchTestRequests();
             setInterval(fetchTestRequests, 3000);
-        });
 
-        function formatTimeToAmPm(time) {
-            const [hours, minutes, seconds] = time.split(':');
-            const date = new Date();
-            date.setHours(hours, minutes, seconds || 0);
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableBody = document.querySelector('.message-table tbody');
+            // Messages fetching
+            const tableBodyMessages = document.querySelector('.message-table tbody');
             const noMessagesRow = `
-        <tr>
-            <td colspan="2" style="text-align: center;">No new messages</td>
-        </tr>
-    `;
+                <tr>
+                    <td colspan="2" style="text-align: center;">No new messages</td>
+                </tr>
+            `;
+
+            function formatTimeToAmPm(time) {
+                const date = new Date(time);
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
 
             function fetchNewMessages() {
                 fetch('<?= ROOT ?>/Lab/fetchNewMessages')
@@ -182,40 +250,42 @@
                             html = noMessagesRow;
                         } else {
                             data.forEach(message => {
-                                const time = new Date(message.last_message_date).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
+                                const time = formatTimeToAmPm(message.last_message_date);
                                 html += `
-                            <tr>
-                                <td>${message.first_name}</td>
-                                <td>${formatTimeToAmPm(time)}</td>
-                            </tr>
-                        `;
+                                <tr>
+                                    <td>${message.first_name}</td>
+                                    <td>${time}</td>
+                                </tr>
+                            `;
                             });
                         }
-                        tableBody.innerHTML = html;
+                        tableBodyMessages.innerHTML = html;
                     })
-                    .catch(error => console.error('Error fetching messages:', error));
+                    .catch(error => {
+                        showPopup('Error fetching messages. Please try again', 'error', true, fetchNewMessages);
+                        tableBodyMessages.innerHTML = `<tr><td colspan="2">Error loading messages.</td></tr>`;
+                        console.error('Error fetching messages:', error);
+                    });
             }
 
             fetchNewMessages();
             setInterval(fetchNewMessages, 5000);
+
+            // Chat state updates
+            function updateState() {
+                fetch('<?= ROOT ?>/ChatController/loggedin')
+                    .catch(error => console.error("Error in loggedin:", error));
+            }
+
+            setInterval(updateState, 3000);
+
+            function updateReceivedState(receiverId) {
+                fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
+                    .catch(error => console.error("Error updating timestamps:", error));
+            }
+
+            setInterval(() => updateReceivedState(<?php echo $_SESSION['USER']->id; ?>), 3000);
         });
-
-        function updateState() {
-            fetch('<?= ROOT ?>/ChatController/loggedin')
-                .catch(error => console.error("Error in loggedin :", error));
-        }
-
-        setInterval(updateState, 3000);
-
-        function updateReceivedState(receiverId) {
-            fetch(`<?= ROOT ?>/ChatController/updateReceivedState/${receiverId}`)
-                .catch(error => console.error("Error updating timestamps:", error));
-        }
-
-        setInterval(() => updateReceivedState(<?php echo $_SESSION['USER']->id; ?>), 3000);
     </script>
 </body>
 

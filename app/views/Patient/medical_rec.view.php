@@ -108,7 +108,8 @@
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label for="diagnosis">Diagnosis:</label>
-                                <p style="font-weight: bold;width:20vw"><?= htmlspecialchars($data['recordData'][0]->diagnosis) ?></p>
+                                <p style="font-weight: bold; width:20vw;"><?= htmlspecialchars($data['recordData'][0]->diagnosis) ?></p>
+
                             </div>
                         </div>
                 <?php else: ?>

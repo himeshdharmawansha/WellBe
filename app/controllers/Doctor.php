@@ -87,10 +87,10 @@ use Random\Engine\Mt19937;
 
             $medicalRecord = new MedicalRecord();
             $past_record_details = $medicalRecord->getPastRecordsDetials($patient_details[0]->id);
+            //print_r($past_record_details);
 
             $testRequest = new TestRequest();
             $past_test_records = $testRequest -> getPastTestDetials($patient_details[0]->id);
-            //print_r($past_test_records);
 
             $patient_history['past_records'] = $past_record_details;
             $patient_history['past_tests'] = $past_test_records;

@@ -30,6 +30,24 @@ body {
     background-repeat: no-repeat;
 }
 
+.loginsignup-fields select {
+    height: 50px;
+    padding-left: 20px;
+    padding-right: 40px; /* Space for custom arrow */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    appearance: none; /* Remove default browser styling */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .loginsignup-container {
     width: 400px;
     background: white;
@@ -112,6 +130,99 @@ h1 {
     font-weight: 600;
    
 } */
+
+.inline-fields {
+    display: flex;
+    flex-direction: row;
+    gap: 10px; /* Space between NIC and user type fields */
+    width: 100%;
+    align-items: center; /* Allow wrapping on smaller screens */
+}
+
+/* Wrapper for NIC field */
+.nic-field {
+    flex: 2; /* Takes more space (e.g., 66% of the container) */
+}
+
+/* Wrapper for user type field */
+.user-type-field {
+    flex: 1;
+}
+
+/* Styling for input and select */
+.nic-field input,
+.user-type-field select {
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px; /* Adjusted for select arrow */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.user-type-field select {
+    appearance: none; /* Remove default browser styling */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px; /* Space for arrow */
+}
+
+.nic-field input:focus,
+.user-type-field select:focus {
+    border-color: #18ac8d;
+    box-shadow: 0 0 5px rgba(18, 172, 141, 0.5);
+}
+
+/* Wrapper for each field to include label and input/select */
+.field-wrapper {
+    flex: 1; /* Equal width for both fields */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure labels and inputs/selects match existing styles */
+.field-wrapper label {
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.field-wrapper input,
+.field-wrapper select {
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px; /* Space for select arrow or input */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field-wrapper select {
+    appearance: none; /* Remove default browser styling */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.field-wrapper input:focus,
+.field-wrapper select:focus {
+    border-color: #18ac8d;
+    box-shadow: 0 0 5px rgba(18, 172, 141, 0.5);
+}
+
 .loginsignup-login span a {
     color: #007BFF;
     font-weight: 300;

@@ -27,6 +27,8 @@ class MedicalRecord extends Model
                     CONCAT(d.first_name, ' ', d.last_name) AS doctor,
                     t.date,
                     mr.diagnosis,
+                    mr.file_name,
+                    mr.remark,
                     CONCAT('[', GROUP_CONCAT(
                         JSON_OBJECT(
                             'medication_name', IFNULL(mrd.medication_name, ''),

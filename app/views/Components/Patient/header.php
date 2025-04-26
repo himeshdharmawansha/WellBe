@@ -142,14 +142,14 @@
          <h3 id="appointmentMessage">Your appointment has been rescheduled.</h3>
          <h3 id="appointmentPrimaryId" hidden>primary id</h3>
          <div class="modal-buttons-noti">
-            <button class="btn-primary" onclick="showManageOptions()" style="background-color: #007bff;">Manage Appointment</button>
+            <button class="btn-primary" onclick="showManageOptions_noti()" style="background-color: #007bff;">Manage Appointment</button>
          </div>
       </div>
       <div class="modal-content-noti" id="step2" style="display: none;">
          <h3>What would you like to do?</h3>
          <div class="modal-buttons-noti">
-            <button class="btn-primary" onclick="handleReschedule()">Reschedule</button>
-            <button class="btn-danger" onclick="handleCancel()">Cancel Appointment</button>
+            <button class="btn-primary" onclick="handleReschedule_noti()">Reschedule</button>
+            <button class="btn-danger" onclick="handleCancel_noti()">Cancel Appointment</button>
          </div>
       </div>
    </div>
@@ -170,25 +170,25 @@
          document.getElementById('appointmentPrimaryId').innerText = data.id;
          //console.log("Notification ID:", data.id);
 
-         showModal();
+         showModal_noti();
       } catch (err) {
          console.error('Failed to parse WebSocket message:', err);
       }
    });
 
 
-   function showModal() {
+   function showModal_noti() {
       document.getElementById('notificationModal').style.display = 'flex';
       document.getElementById('step1').style.display = 'block';
       document.getElementById('step2').style.display = 'none';
    }
 
-   function showManageOptions() {
+   function showManageOptions_noti() {
       document.getElementById('step1').style.display = 'none';
       document.getElementById('step2').style.display = 'block';
    }
 
-   function handleReschedule() {
+   function handleReschedule_noti() {
       const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       document.getElementById('notificationModal').style.display = 'none';
       //window.location.href = `http://localhost/WellBe/public/patient/doc_appointment`;
@@ -197,7 +197,7 @@
 
    }
 
-   function handleCancel() {
+   function handleCancel_noti() {
       const appointmentPrimaryId = document.getElementById('appointmentPrimaryId').innerText;
       console.log(appointmentPrimaryId);
       document.getElementById('notificationModal').style.display = 'none';

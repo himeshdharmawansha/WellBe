@@ -90,6 +90,8 @@ class LabTest extends Model
     JOIN timeslot t ON tr.date = t.slot_id
     JOIN timeslot_doctor td ON tr.date = td.slot_id
     WHERE patient_id = ?";
+
+    
         $result = $this->query($query, [$patient_id]);
         return $result;
     }

@@ -57,8 +57,8 @@
             </div>
             <h1>Log In</h1>
             <form method="post" autocomplete="off" onsubmit="validateForm(event)">
-                <div class="loginsignup-fields">
-                <div class="inline-fields">
+                <div class="loginsignup-fields" >
+                <div class="inline-fields" style="display: flex; gap: 10px; align-items: center;">
                     <div class="field-wrapper nic-field" style="flex: 2;">
                         <input name="nic" style = "font-size:medium" type="text" placeholder="Type your NIC No" id="nic" required autocomplete="off" style="width: 100%;" />
                     </div>
@@ -102,6 +102,27 @@
             </form>
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nicInput = document.querySelector('input[name="nic"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const errorContainer = document.getElementById('error-container');
+
+        if (nicInput) {
+            nicInput.addEventListener('input', clearErrors);
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener('input', clearErrors);
+        }
+
+        function clearErrors() {
+            if (errorContainer) {
+                errorContainer.innerHTML = '';
+            }
+        }
+    });
+</script>
+
 </body>
 
 </html>

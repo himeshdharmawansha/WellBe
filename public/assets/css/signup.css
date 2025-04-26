@@ -97,6 +97,16 @@ h1 {
     transition: all 0.3s ease;
 }
 
+.field-wrapper .user-type-field select {
+    height: 50px;
+    padding-left: 20px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
 .loginsignup-fields input:focus {
     border-color: #18ac8d;
     box-shadow: 0 0 5px rgba(18, 172, 141, 0.5);

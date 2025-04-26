@@ -217,7 +217,7 @@
                 <?php endif; ?>
 
                 <!-- Lab Tests -->
-                <div class="record-navigation">
+                <div class="record-navigation" style="margin-top: 20px;">
                     <?php if (empty($data['past_tests'])): ?>
                         <button id="prev-lab-btn" class="nav-btn-inactive" disabled>‹</button>
                         <button id="next-lab-btn" class="nav-btn-inactive" disabled>›</button>
@@ -226,6 +226,8 @@
                         <button id="next-lab-btn" class="nav-btn" onclick="shiftLabTest(1)">›</button>
                     <?php endif; ?>
                 </div>
+
+                <h2>SUGGESTED LAB TESTS:</h2>
 
                 <?php if (!empty($data['past_tests'])): ?>
                     <div style="display: flex; justify-content: space-between; gap: 30px; margin-top:2%; margin-bottom:3%">

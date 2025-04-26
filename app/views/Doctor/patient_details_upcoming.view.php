@@ -220,6 +220,8 @@
                     <?php endif; ?>
                 </div>
 
+                <h2>SUGGESTED LAB TESTS:</h2>
+
                 <?php if (!empty($data['past_tests'])): ?>
                     <div style="display: flex; justify-content: space-between; gap: 30px; margin-top:2%; margin-bottom:3%">
                         <div style="display: flex; align-items: center; gap: 10px;">

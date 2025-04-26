@@ -30,18 +30,18 @@
             width: 90%;
             height: 90%;
             max-width: 1200px;
-            max-heightters: 800px;
+            max-height: 800px;
             overflow: auto;
             position: relative;
         }
 
         /* Report Modal Specific Styles */
-        #reportModal {
+        #reportModal, #imageModal {
             z-index: 9999;
             background: rgba(0,0,0,0.8);
         }
 
-        #modalContent {
+        #modalContent, #imageModalContent {
             width: 95%;
             height: 95%;
             padding: 40px 20px 20px 20px;
@@ -49,12 +49,11 @@
             flex-direction: column;
         }
 
-        #modalContent iframe {
+        #modalContent iframe, #imageModalContent img {
             width: 100%;
             height: 100%;
             border: none;
-            transform: scale(1);
-            transform-origin: top left;
+            object-fit: contain;
         }
 
         /* Close Button Styles */
@@ -101,11 +100,6 @@
 
             <!-- Dashboard Content -->
             <div class="dashboard-content" style="position:relative">
-                <div class="dashboard-header">
-                    <div class="button-container">
-                        
-                    </div>
-                </div>
 
                 <!-- Medication Records -->
                 <div class="record-navigation">
@@ -132,6 +126,15 @@
                             <label for="date">Date:</label>
                             <p id="record-date" style="width: 17vw;"><?= htmlspecialchars(date('d/m/Y', strtotime($data['past_records'][0]->date))); ?></p>
                         </div>
+                    </div>
+
+                    <div id="view-document-container" style="margin-top: 10px;margin-bottom: 20px"></div>
+
+                    <div class="remarks-section" style="margin-bottom: 3%;">
+                        <h3>Remarks</h3>
+                        <textarea id="additionalRemarks" readonly>
+                            <?= htmlspecialchars($data['past_records'][0]->remark ?? 'None'); ?>
+                        </textarea>
                     </div>
 
                     <h2>MEDICINES NEED TO BE GIVEN:</h2>
@@ -178,12 +181,6 @@
                         </tbody>
                     </table>
 
-                    <div class="remarks-section" style="margin-bottom: 3%;">
-                        <h3>Remarks</h3>
-                        <textarea id="additionalRemarks" readonly>
-                            <?= htmlspecialchars($data['past_records'][0]->remarks ?? 'Please continue the medicine for 7 days, if you do not see a change please consult again'); ?>
-                        </textarea>
-                    </div>
                 <?php else: ?>
                     <h2>MEDICINES NEED TO BE GIVEN:</h2>
                     <table class="medication-table">
@@ -192,7 +189,7 @@
                                 <th>Name of the Medication</th>
                                 <th>Dosage of the Medication(mg)</th>
                                 <th colspan="4">Number taken at a time</th>
-                                <th>Do not substitute</th>
+                                <th>Allowed to substitute</th>
                             </tr>
                             <tr>
                                 <th></th>
@@ -242,7 +239,7 @@
                                 <th>Priority Level</th>
                                 <th>Report</th>
                             </tr>
-                        </thead>
+                        </head>
                         <tbody id="labtest-body">
                             <?php 
                             $labTestsData = json_decode($data['past_tests'][0]->tests, true);
@@ -282,9 +279,17 @@
         </div>
     </div>
 
+    <!-- Modal for Lab Reports -->
     <div id="reportModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999;">
         <div id="modalContent" style="background: #fff; max-width: 95%; max-height: 95%; overflow: auto; border-radius: 8px; position: relative;">
             <span id="closeReportModal" class="close" style="position: absolute; top: 15px; right: 25px; font-size: 30px; cursor: pointer; color: #333;">×</span>
+        </div>
+    </div>
+
+    <!-- Modal for Image Display -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999;">
+        <div id="imageModalContent" style="background: #fff; max-width: 95%; max-height: 95%; overflow: auto; border-radius: 8px; position: relative;">
+            <span id="closeImageModal" class="close" style="position: absolute; top: 15px; right: 25px; font-size: 30px; cursor: pointer; color: #333;">×</span>
         </div>
     </div>
 
@@ -300,6 +305,7 @@
         // Update Medication Section
         function updateMedicationsView(index) {
             const medicationBody = document.getElementById('medication-body');
+            const viewDocumentContainer = document.getElementById('view-document-container');
             medicationBody.innerHTML = '';
 
             if (!records || records.length === 0) {
@@ -310,6 +316,7 @@
                 if (document.getElementById('record-date')) document.getElementById('record-date').innerText = 'N/A';
                 if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = 'N/A';
                 if (document.getElementById('additionalRemarks')) document.getElementById('additionalRemarks').value = '';
+                viewDocumentContainer.innerHTML = '';
                 return;
             }
 
@@ -319,6 +326,47 @@
             if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = record.diagnosis;
             if (document.getElementById('additionalRemarks')) {
                 document.getElementById('additionalRemarks').value = record.remarks || 'Please continue the medicine for 7 days, if you do not see a change please consult again';
+            }
+
+            // Update the "View Document" link
+            viewDocumentContainer.innerHTML = '';
+            if (record.file_name && record.file_name.trim() !== '') {
+                viewDocumentContainer.innerHTML = `
+                    <span style="font-weight:bold;">Open Attached File: </span>
+                    <a 
+                        href="#" 
+                        class="view-document" 
+                        data-file="${encodeURIComponent(record.file_name)}" 
+                        style="color: blue; text-decoration: underline;"
+                    >
+                        View Document
+                    </a>
+                `;
+
+                // Add event listener to the "View Document" link
+                document.querySelectorAll('.view-document').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const file = this.getAttribute('data-file');
+                        const modal = document.getElementById('imageModal');
+                        const container = document.getElementById('imageModalContent');
+
+                        // Create image element
+                        const img = document.createElement('img');
+                        img.src = `/wellbe/public/assets/files/prescription_documents/${file}`;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'contain';
+
+                        // Clear previous content and append new image
+                        while (container.firstChild && container.firstChild !== document.getElementById('closeImageModal')) {
+                            container.removeChild(container.firstChild);
+                        }
+                        container.appendChild(img);
+
+                        modal.style.display = 'flex';
+                    });
+                });
             }
 
             try {
@@ -399,7 +447,7 @@
 
                             // Insert iframe after the close button
                             const iframe = document.createElement('iframe');
-                            iframe.src = `http://localhost/WellBe/public/assets/files/${file}.pdf`;
+                            iframe.src = `http://localhost/WellBe/public/assets/files/${file}`;
                             iframe.style.width = '100%';
                             iframe.style.height = '100%';
                             iframe.style.border = 'none';
@@ -450,7 +498,7 @@
             updateLabTestsView(labTestIndex);
         };
 
-        // Close Modal Functionality
+        // Close Modal Functionality for Report Modal
         const reportModal = document.getElementById('reportModal');
         const closeReportModal = document.getElementById('closeReportModal');
 
@@ -472,6 +520,32 @@
                 const iframe = modalContent.querySelector('iframe');
                 if (iframe) {
                     iframe.remove();
+                }
+            }
+        });
+
+        // Close Modal Functionality for Image Modal
+        const imageModal = document.getElementById('imageModal');
+        const closeImageModal = document.getElementById('closeImageModal');
+
+        closeImageModal.addEventListener('click', function() {
+            console.log('Closing image modal');
+            imageModal.style.display = 'none';
+            const modalContent = document.getElementById('imageModalContent');
+            const img = modalContent.querySelector('img');
+            if (img) {
+                img.remove();
+            }
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === imageModal) {
+                console.log('Closing image modal (clicked outside)');
+                imageModal.style.display = 'none';
+                const modalContent = document.getElementById('imageModalContent');
+                const img = modalContent.querySelector('img');
+                if (img) {
+                    img.remove();
                 }
             }
         });

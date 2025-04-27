@@ -105,7 +105,6 @@ $testDetails = $he->getTestDetails($requestID);
     </div>
 
     <script>
-        // Define showPopup and closePopup in the global scope
         function showPopup(message, type = 'error') {
             const popup = document.getElementById('error-popup');
             const popupMessage = document.getElementById('popup-message');
@@ -129,7 +128,7 @@ $testDetails = $he->getTestDetails($requestID);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Confirmation popup logic
+
             function showConfirmPopup(message, onConfirm) {
                 const confirmPopup = document.getElementById('confirm-popup');
                 const confirmMessage = document.getElementById('confirm-message');
@@ -164,13 +163,12 @@ $testDetails = $he->getTestDetails($requestID);
                 const eyeBtn = row.querySelector(`#eye-btn-${testName}`);
                 const deleteBtn = row.querySelector(`#delete-btn-${testName}`);
 
-                // Show pass icon if a file exists initially
                 if (uploadedIcon && uploadedIcon.dataset.fileExists === "true") {
                     uploadedIcon.style.display = 'inline';
-                    eyeBtn.style.opacity = '1'; // Full opacity for eye button
-                    eyeBtn.disabled = false; // Enable eye button
-                    deleteBtn.style.opacity = '1'; // Full opacity for delete button
-                    deleteBtn.disabled = false; // Enable delete button
+                    eyeBtn.style.opacity = '1'; 
+                    eyeBtn.disabled = false; 
+                    deleteBtn.style.opacity = '1'; 
+                    deleteBtn.disabled = false; 
                 }
 
                 if (deleteBtn) {
@@ -194,14 +192,14 @@ $testDetails = $he->getTestDetails($requestID);
                                     if (data.success) {
                                         showPopup('File deleted successfully!', 'success');
                                         uploadedIcon.style.display = 'none';
-                                        uploadedIcon.dataset.fileExists = 'false'; // Reset file-exists flag
-                                        eyeBtn.style.opacity = '0.5'; // Dim eye button
-                                        eyeBtn.disabled = true; // Disable eye button
-                                        deleteBtn.style.opacity = '0.5'; // Dim delete button
-                                        deleteBtn.disabled = true; // Disable delete button
+                                        uploadedIcon.dataset.fileExists = 'false'; 
+                                        eyeBtn.style.opacity = '0.5';
+                                        eyeBtn.disabled = true; 
+                                        deleteBtn.style.opacity = '0.5';
+                                        deleteBtn.disabled = true;
                                         const fileInput = document.getElementById(`file-input-${testName}`);
                                         fileInput.disabled = false;
-                                        fileInput.value = ''; // Clear the file input
+                                        fileInput.value = ''; 
                                     } else {
                                         showPopup('No file to delete.');
                                     }
@@ -304,17 +302,17 @@ $testDetails = $he->getTestDetails($requestID);
                     if (file) {
                         formData.append(testName, file);
                         if (uploadedIcon) {
-                            uploadedIcon.dataset.fileExists = 'true'; // Update file-exists flag on upload
-                            uploadedIcon.style.display = 'inline'; // Ensure pass icon is visible
-                            eyeBtn.style.opacity = '1'; // Full opacity for eye button
-                            eyeBtn.disabled = false; // Enable eye button
-                            deleteBtn.style.opacity = '1'; // Full opacity for delete button
-                            deleteBtn.disabled = false; // Enable delete button
+                            uploadedIcon.dataset.fileExists = 'true'; 
+                            uploadedIcon.style.display = 'inline'; 
+                            eyeBtn.style.opacity = '1'; 
+                            eyeBtn.disabled = false; 
+                            deleteBtn.style.opacity = '1'; 
+                            deleteBtn.disabled = false; 
                         }
                     }
                 });
 
-                // Log FormData contents
+
                 for (let [key, value] of formData.entries()) {
                     console.log(`FormData Entry - ${key}:`, value);
                 }
@@ -330,7 +328,7 @@ $testDetails = $he->getTestDetails($requestID);
 
                 formData.append('tests', JSON.stringify(tests));
 
-                // Update test details
+
                 fetch('<?= ROOT ?>/testRequests/updateRequestDetails', {
                         method: 'POST',
                         body: formData,
@@ -376,17 +374,16 @@ $testDetails = $he->getTestDetails($requestID);
                                         showPopup('An error occurred while sending the email, check the network connection');
                                     })
                                     .finally(() => {
-                                        // Delay the reload to ensure popups are visible
+
                                         setTimeout(() => {
                                             window.location.reload();
-                                        }, 3000); // 3-second delay
+                                        }, 3000); 
                                     });
                             } else {
                                 console.log('Not all tests are completed, skipping email.');
-                                // Delay the reload to ensure popup is visible
                                 setTimeout(() => {
                                     window.location.reload();
-                                }, 3000); // 3-second delay
+                                }, 3000); 
                             }
                         } else {
                             showPopup('Failed to update test details: ' + (data.error || 'Unknown error'));
@@ -411,10 +408,10 @@ $testDetails = $he->getTestDetails($requestID);
 
                     if (this.value === 'completed') {
                         fileInput.disabled = false;
-                        uploadBtn.style.opacity = '1'; // Full opacity when state is completed
+                        uploadBtn.style.opacity = '1'; 
                     } else {
                         fileInput.disabled = true;
-                        uploadBtn.style.opacity = '0.5'; // Dim when state is not completed
+                        uploadBtn.style.opacity = '0.5'; 
                     }
                 });
 
@@ -423,10 +420,10 @@ $testDetails = $he->getTestDetails($requestID);
                 const uploadBtn = document.getElementById(`upload-btn-${testName}`);
                 if (select.value === 'completed') {
                     fileInput.disabled = false;
-                    uploadBtn.style.opacity = '1'; // Full opacity if state is completed
+                    uploadBtn.style.opacity = '1';
                 } else {
                     fileInput.disabled = true;
-                    uploadBtn.style.opacity = '0.5'; // Dim if state is not completed
+                    uploadBtn.style.opacity = '0.5'; 
                 }
             });
 
@@ -441,17 +438,17 @@ $testDetails = $he->getTestDetails($requestID);
                         if (this.files.length > 0) {
                             icon.style.display = 'inline';
                             icon.dataset.fileExists = 'true';
-                            eyeBtn.style.opacity = '1'; // Full opacity for eye button
-                            eyeBtn.disabled = false; // Enable eye button
-                            deleteBtn.style.opacity = '1'; // Full opacity for delete button
-                            deleteBtn.disabled = false; // Enable delete button
+                            eyeBtn.style.opacity = '1'; 
+                            eyeBtn.disabled = false; 
+                            deleteBtn.style.opacity = '1';   
+                            deleteBtn.disabled = false; 
                         } else {
                             icon.style.display = 'none';
                             icon.dataset.fileExists = 'false';
-                            eyeBtn.style.opacity = '0.5'; // Dim eye button
-                            eyeBtn.disabled = true; // Disable eye button
-                            deleteBtn.style.opacity = '0.5'; // Dim delete button
-                            deleteBtn.disabled = true; // Disable delete button
+                            eyeBtn.style.opacity = '0.5'; 
+                            eyeBtn.disabled = true; 
+                            deleteBtn.style.opacity = '0.5'; 
+                            deleteBtn.disabled = true;  
                         }
                     }
                 });

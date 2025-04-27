@@ -12,13 +12,10 @@
 
 <body>
    <div class="dashboard-container">
-      <!-- Sidebar -->
       <?php
       $this->renderComponent('navbar', $active);
       ?>
-      <!-- Main Content -->
       <div class="main-content">
-         <!-- Top Header -->
          <?php
          $pageTitle = "Chat";
          include $_SERVER['DOCUMENT_ROOT'] . '/WELLBE/app/views/Components/header.php';
@@ -160,9 +157,8 @@
       let selectedMessage = null;
       let selectedFile = null;
       let selectedFileType = null;
-      let unseenCountsMap = {}; // Store unseen counts for each user
+      let unseenCountsMap = {}; 
 
-      // Popup functions for error feedback
       function showPopup(message, type = 'error') {
          const popup = document.getElementById('error-popup');
          const popupMessage = document.getElementById('popup-message');
@@ -185,7 +181,6 @@
          }
       }
 
-      // Role mapping function
       function getRoleTitle(roleId) {
          const roles = {
             1: 'pharmacy',
@@ -198,10 +193,9 @@
          return roles[roleId] || 'Unknown';
       }
 
-      // Hide chat input initially since no chat is selected
       document.addEventListener('DOMContentLoaded', function() {
          const chatInput = document.getElementById('chat-input');
-         chatInput.style.display = 'none'; // Hide by default
+         chatInput.style.display = 'none'; 
       });
 
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
@@ -223,14 +217,12 @@
                selectedUserId :
                <?php echo json_encode($currentUserId); ?>;
 
-            // Show/hide "Edit" option for text messages
             if (senderId !== <?php echo json_encode($currentUserId); ?> || selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document')) {
                editOption.style.display = 'none';
             } else {
                editOption.style.display = 'block';
             }
 
-            // Show/hide "Edit Caption" option for photo and document messages
             if (senderId === <?php echo json_encode($currentUserId); ?> && (selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document'))) {
                editCaptionOption.style.display = 'block';
             } else {
@@ -370,7 +362,7 @@
          const newCaption = prompt("Edit caption:", currentCaption);
 
          if (newCaption === null) {
-            return; // User canceled the prompt
+            return;
          }
 
          fetch(`<?= ROOT ?>/ChatController/editCaption`, {
@@ -430,7 +422,6 @@
          const formattedTime = formatTimeOrDate(messageDate);
          const currentDate = messageDate.toDateString();
 
-         // Insert date header if the date changes (only for initial render)
          if (isInitialRender) {
             const lastDate = chatMessages.lastDate || null;
             if (lastDate !== currentDate) {
@@ -453,7 +444,7 @@
             `;
          } else if (message.type === 'photo') {
             div.classList.add('photo');
-            const fileName = message.file_path.split('/').pop(); // Extract file name from path
+            const fileName = message.file_path.split('/').pop();
             div.innerHTML = `
                <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
                ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
@@ -499,7 +490,7 @@
                iconClass = 'fa-file';
                fileTypeDisplay = message.file_type || 'Document';
             }
-            const fileName = message.file_path.split('/').pop(); // Extract file name from path
+            const fileName = message.file_path.split('/').pop(); 
             div.innerHTML = `
                   <div class="file-frame">
                      <i class="fa-solid ${iconClass} doc-icon"></i>
@@ -516,7 +507,6 @@
                `;
          }
 
-         // Insert the unseen messages line before the first unseen message (only for initial render)
          if (isInitialRender && unseenCount > 0 && index === (data.messages.length - unseenCount) && !insertedUnseenLine.value) {
             const unseenLine = document.createElement('div');
             unseenLine.classList.add('unseen-line');
@@ -537,9 +527,8 @@
             const data = await response.json();
             const chatMessages = document.getElementById("chat-messages");
             chatMessages.innerHTML = '';
-            chatMessages.lastDate = null; // Reset last date for date headers
+            chatMessages.lastDate = null; 
 
-            // Get the unseen count from the map
             const unseenCount = unseenCountsMap[receiverId] || 0;
             let insertedUnseenLine = { value: false };
 
@@ -570,7 +559,7 @@
                      const latestMessage = data.messages[data.messages.length - 1];
                      const chatMessages = document.getElementById("chat-messages");
                      chatMessages.innerHTML = '';
-                     chatMessages.lastDate = null; // Reset last date for date headers
+                     chatMessages.lastDate = null; 
 
                      data.messages.forEach(message => {
                         renderMessage(message, chatMessages, true);

@@ -112,20 +112,19 @@ class ChatController extends Controller
          return;
       }
 
-      // Handle file upload if a file is present
       if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
          $file = $_FILES['file'];
          $allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
          $allowedDocTypes = [
-            'application/pdf',                                     // PDF
-            'application/msword',                                  // Word (.doc)
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word (.docx)
-            'application/vnd.ms-excel',                            // Excel (.xls)
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel (.xlsx)
-            'text/plain',                                          // Text (.txt)
-            'text/csv',                                            // CSV (.csv)
-            'application/rtf',                                     // RTF (.rtf)
-            'application/zip'                                      // ZIP (.zip)
+            'application/pdf',                                     
+            'application/msword',                                
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+            'application/vnd.ms-excel',                           
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+            'text/plain',                                        
+            'text/csv',                                         
+            'application/rtf',                                  
+            'application/zip'                                   
          ];
          $fileMimeType = mime_content_type($file['tmp_name']);
          $maxSize = 5 * 1024 * 1024; // 5MB
@@ -135,10 +134,8 @@ class ChatController extends Controller
             return;
          }
 
-         // Calculate file size in MB
          $fileSize = number_format($file['size'] / (1024 * 1024), 1) . ' MB';
 
-         // Determine file type for display
          if ($fileMimeType === 'application/pdf') {
             $fileType = 'PDF Document';
          } elseif ($fileMimeType === 'application/msword' || $fileMimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
@@ -160,7 +157,6 @@ class ChatController extends Controller
          $fileName = time() . '_' . basename($file['name']);
          $uploadDir = __DIR__ . '/../../public/assets/chats/';
 
-         // Create directories if they don't exist
          if ($type === 'photo') {
             if (!in_array($fileMimeType, $allowedImageTypes)) {
                echo json_encode(["status" => "error", "message" => "Invalid photo format. Only JPEG, PNG, and GIF are allowed."]);
@@ -188,23 +184,19 @@ class ChatController extends Controller
 
          $filePath = $uploadDir . $fileName;
 
-         // Move the uploaded file
          if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-            error_log("Failed to move file to $filePath", 3, __DIR__ . '/../../logs/error.log');
             echo json_encode(['error' => 'Failed to move file']);
             return;
          }
 
-         // Store relative path in the database (e.g., assets/chats/photos/photo123.jpg)
          $filePath = 'assets/chats/' . ($type === 'photo' ? 'photos/' : 'documents/') . $fileName;
-         $message = $fileName; // Store the file name as the message content
+         $message = $fileName;
       } elseif ($type === 'text' && !$message) {
          echo json_encode(["status" => "error", "message" => "Message is required for text type."]);
          return;
       }
 
       try {
-         error_log("Sending message to receiver ID: $receiver with type: $type", 3, __DIR__ . '/../../logs/debug.log');
          $response = $this->chatModel->sendMessage($receiver, $message, $type, $filePath, $caption, $fileType, $fileSize);
 
          if ($response) {

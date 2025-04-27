@@ -84,7 +84,7 @@ class LabModel extends Model
 
    public function fetchNewMessages()
    {
-      $sender = $_SESSION['userid']; // Current user's ID
+      $sender = $_SESSION['userid']; 
       $receiverQuery = "SELECT id FROM user_profile WHERE role IN (3, 5)";
       $receivers = $this->query($receiverQuery);
 

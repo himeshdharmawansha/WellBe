@@ -1,6 +1,5 @@
 <?php
 
-//medicine class
 class Medicine extends Model
 {
    protected $table = 'medicines';
@@ -25,7 +24,6 @@ class Medicine extends Model
    {
       $offset = ($page - 1) * $rowsPerPage;
 
-      // Use direct variable substitution instead of named parameters for LIMIT & OFFSET
       $query = "SELECT medicine_id, generic_name, brand_name, category, expiry_date, 
                         IF(expiry_date < CURDATE(), 0, quantity_in_stock) AS quantity_in_stock, unit 
                  FROM medicines
@@ -38,7 +36,6 @@ class Medicine extends Model
    {
       $offset = ($page - 1) * $limit;
 
-      // Corrected SQL Query (No named parameters for LIMIT and OFFSET)
       $query = "SELECT medicine_id, generic_name, brand_name, category, expiry_date, 
                         IF(expiry_date < CURDATE(), 0, quantity_in_stock) AS quantity_in_stock, unit 
                  FROM medicines

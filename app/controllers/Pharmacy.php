@@ -21,7 +21,6 @@ class Pharmacy extends Controller
 
     public function __construct()
     {
-        
         if (!isset($_SESSION['USER']) || $_SESSION['user_type'] !== "pharmacy") {
             redirect('login');
             exit;
@@ -35,17 +34,14 @@ class Pharmacy extends Controller
     public function index()
     {
         $data = [
-            'requestCounts' => $this->pharmacyModel->getRequestCounts(), // Fetch request counts
+            'requestCounts' => $this->pharmacyModel->getRequestCounts(),
         ];
         $this->view('Pharmacy/dashboard', 'dashboard', $data);
     }
 
     public function requests()
     {
-        // Fetch all requests
         $requests = $this->medicationRequestModel->getAll();
-
-        // Separate pending and completed requests
         $pendingRequests = array_filter($requests, function ($request) {
             return $request['state'] === 'pending';
         });
@@ -85,14 +81,12 @@ class Pharmacy extends Controller
 
     public function chat()
     {
-        // Fetch unseen counts using the local UnseenCounts method
         $unseenCounts = $this->UnseenCounts([3, 5]);
         $user_profile = $unseenCounts;
         if (!is_array($user_profile)) {
             $user_profile = [];
         }
 
-        // Fetch all profiles
         $profiles = $this->profileModel->getAll();
         if (!empty($profiles) && !isset($profiles['error'])) {
             $profileMap = [];
@@ -109,7 +103,6 @@ class Pharmacy extends Controller
             unset($user);
         }
 
-        // Pass data to the view
         $data = [
             'user_profile' => $user_profile
         ];
@@ -162,12 +155,6 @@ class Pharmacy extends Controller
         $filename = "../app/views/Components/{$component}.php";
         require $filename;
     }
-
-    // public function getRequestCounts()
-    // {
-    //     $counts = $this->pharmacyModel->getRequestCounts();
-    //     echo json_encode($counts);
-    // }
 
     public function getRequestsByDay()
     {

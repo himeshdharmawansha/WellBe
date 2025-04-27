@@ -54,6 +54,7 @@
                             <tr class="header-row" >
                                 <th>Appointment No</th>
                                 <th>Patient Name</th>
+                                <th>Verified</th>
                                 <th>Patient Status</th>
                                 <th>Payment Status</th>
                             </tr>
@@ -70,6 +71,20 @@
                                         <input type="hidden" name="appointments[<?= $index ?>][appointment_id]" value="<?= $app->appointment_id ?>">
                                         <input type="hidden" name="appointments[<?= $index ?>][original_patient_status]" value="<?= $app->patient_status ?>">
                                         <input type="hidden" name="appointments[<?= $index ?>][original_payment_status]" value="<?= $app->payment_status ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][patient_id]" value="<?= $app->patient_id ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][original_verified]" value="<?= $app->verified ?>">
+                                        <input type="hidden" name="appointments[<?= $index ?>][patient_type]" value="<?= $app->patient_type ?>">
+
+                                        <td>
+                                            <?php if ($app->verified === 'Verified'): ?>
+                                                <!-- Already Verified patients: checkbox is checked and disabled -->
+                                                <input type="checkbox" checked disabled>
+                                                <input type="hidden" name="appointments[<?= $index ?>][verified]" value="Verified">
+                                            <?php else: ?>
+                                                <!-- Not Verified patients: allow checking -->
+                                                <input type="checkbox" name="appointments[<?= $index ?>][verified]" value="Verified">
+                                            <?php endif; ?>
+                                        </td>
 
                                         <td>
                                             <input type="hidden" name="appointments[<?= $index ?>][patient_status]" value="<?= $app->patient_status ?>" class="hidden-patient-status">
@@ -114,7 +129,7 @@
 
     <script>
         function changeDropdownColor(dropdown) {
-            if (dropdown.value === "Present" || dropdown.value === "Paid") {
+            if (dropdown.value === "PRESENT" || dropdown.value === "Paid") {
                 dropdown.style.backgroundColor = "#24FF3A";
                 dropdown.style.color = "black"; // Optional, to make the text readable
             } else {

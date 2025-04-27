@@ -58,7 +58,7 @@ class Receptionist extends Controller
       $doctor_id = $_GET['doctor_id'] ?? null; 
 
       $appointmentModel = new Appointments();
-
+      
       if($_SERVER['REQUEST_METHOD'] === 'POST'){
          $slot_id = $_POST['slot_id'] ?? null;
          $doctor_id = $_POST['doctor_id'] ?? null;
@@ -66,15 +66,28 @@ class Receptionist extends Controller
          if (!empty($_POST['appointments'])) {
             foreach ($_POST['appointments'] as $app) {
                $id = $app['appointment_id'];
+               $patient_id = $app['patient_id'];
+
                $newPatientStatus = $app['patient_status'];
                $newPaymentStatus = $app['payment_status'];
                $originalPatientStatus = $app['original_patient_status'];
                $originalPaymentStatus = $app['original_payment_status'];
+               $patient_type = $app['patient_type'];
+
+               // Figure out if verified status has changed
+               $original_verified = $app['original_verified'];
+               $verified = isset($app['verified']) ? 'Verified' : 'Not Verified';
       
                // Only update if either status has changed
                if ($newPatientStatus !== $originalPatientStatus || $newPaymentStatus !== $originalPaymentStatus) {
                   error_log("Updating appointment ID: $id | Patient: $newPatientStatus | Payment: $newPaymentStatus");
                   $appointmentModel->updateStatus($id, $newPatientStatus, $newPaymentStatus, $slot_id, $doctor_id);
+               }
+
+              // Update verified status in patient table if changed
+              if ($original_verified !== $verified) {
+                  error_log("Updating verified status for patient ID: $patient_id to $verified");
+                  $appointmentModel->updatePatientVerifiedStatus($patient_id, $verified);
                }
             }
          }

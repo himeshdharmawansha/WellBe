@@ -317,7 +317,10 @@ class Appointments extends Model
         $query = "
         SELECT 
             a.appointment_id,
+            a.patient_id AS patient_id,
+            p.verified,
             CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+            a.patient_type,
             a.state AS patient_status,
             a.payment_status
         FROM 
@@ -340,7 +343,7 @@ class Appointments extends Model
         ]);
     }
 
-    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id)
+    public function updateStatus($appointment_id, $patient_status, $payment_status, $slot_id, $doctor_id, $patient_id = null, $verified = null)
     {
         $query = "
         UPDATE `appointment` SET 
@@ -364,6 +367,23 @@ class Appointments extends Model
         error_log(print_r($params, true));
         return $this->query($query, $params);
     }
+
+    public function updatePatientVerifiedStatus($patient_id, $verified)
+    {
+        $query = "
+            UPDATE `patient`
+            SET `verified` = ?
+            WHERE `id` = ?
+        ";
+
+        $params = [
+            $verified,
+            $patient_id
+        ];
+
+        return $this->query($query, $params);
+    }
+
 
     public function getProfits($startDate, $endDate, $doctor)
     {

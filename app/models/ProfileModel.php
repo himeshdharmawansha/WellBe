@@ -160,4 +160,36 @@ class ProfileModel extends Model
         return $this->query($query);
 
     }
+
+
+    public function addPatientUser($data, $role)
+    {
+        // Check if the role is 4 (patient)
+        if ($role == 4) {
+            // Assuming the password is provided in the $data array from the form
+            $password = $data['password'];  // Retrieve password from the form data
+    
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    
+            // Create the user ID by appending 'p' to the NIC
+            $id = $data['nic'] . 'p';
+        }
+    
+        // Build the SQL query using the provided data
+        $query = "
+            INSERT INTO `user_profile` 
+            (`id`, `username`, `password`, `role`) 
+            VALUES (
+                '{$id}', 
+                '{$data['first_name']}',
+                '{$hashedPassword}',  // Use the hashed password
+                '{$role}'
+            )
+        ";
+    
+        // Execute the query
+        return $this->query($query);
+    }
+    
 }

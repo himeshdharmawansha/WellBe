@@ -303,7 +303,7 @@ class Appointments extends Model
         JOIN
             timeslot t ON a.date = t.slot_id
         JOIN
-            timeslot_doctor td ON a.date = td.slot_id
+             timeslot_doctor td ON t.slot_id = td.slot_id AND a.doctor_id = td.doctor_id
         WHERE 
             a.patient_id = ?
         ORDER BY 

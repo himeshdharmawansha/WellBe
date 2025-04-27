@@ -50,6 +50,7 @@
                         <option value="all">All</option>
                         <option value="Present">Present</option>
                         <option value="Not Present">Not Present</option>
+                        <option value="Done">Done</option>
                     </select>
                     <button type="button" class="refresh-btn"
                     onclick="window.location.href = window.location.href;">Refresh</button>
@@ -60,7 +61,7 @@
                         <?php foreach ($appointments as $appointment) : ?>
                             <?php
                             $statusRaw = strtolower(str_replace(' ', '', (string)($appointment->state ?? '')));
-                            $presenceStatus = ($statusRaw === 'present') ? 'Present' : 'Not Present';
+                            $presenceStatus = ($statusRaw === 'present') ? 'Present' : (($statusRaw === 'done') ? 'Done' : 'Not Present');
                             $rawStatus = strtolower(str_replace(' ', '', (string)($appointment->payment_status ?? '')));
                             $paymentStatus = ($rawStatus === 'paid') ? 'Paid' : 'Payment Pending';
 

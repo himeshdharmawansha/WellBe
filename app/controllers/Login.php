@@ -12,7 +12,6 @@ class Login extends Controller
 
                 $id = $_POST['nic'];
                 $_SESSION['userid'] = $id;
-                // print_r($_POST['userType']);
 
                 
 

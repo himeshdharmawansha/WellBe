@@ -122,9 +122,9 @@
     </div>
 
     <div id="successModal2" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
+        <div class="modal-content2">
             <p>Appointment successfully rescheduled!</p>
-            <div class="modal-buttons">
+            <div class="modal-buttons2">
                 <button style="background-color: green;" onclick="closeSuccessModal()">OK</button>
             </div>
         </div>

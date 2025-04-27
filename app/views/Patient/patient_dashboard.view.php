@@ -1,5 +1,6 @@
 <?php
-//print_r($rescheduledAppointments);
+// Remove print_r for production
+// print_r($rescheduledAppointments);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +17,6 @@
   <div class="dashboard-container">
     <!-- Sidebar -->
     <?php
-
     $this->renderComponent('navbar', $active);
     ?>
 
@@ -24,10 +24,9 @@
     <div class="main-content">
       <!-- Top Header -->
       <?php
-      $pageTitle = "Dashboard"; // Set the text you want to display
+      $pageTitle = "Dashboard";
       include $_SERVER['DOCUMENT_ROOT'] . '/WellBe/app/views/Components/header.php';
       ?>
-
 
       <!-- Dashboard Content -->
       <div class="container">
@@ -42,8 +41,6 @@
             </div>
             <div class="text-data">
               <span class="name" style="font-size: 25px;"><strong> <?= $_SESSION['USER']->first_name; ?> <?= $_SESSION['USER']->last_name; ?></strong></span>
-
-              <!-- <span class="job"><strong>Patient_id: </strong>PT_<?= $_SESSION['USER']->id; ?></span> -->
             </div>
             <br>
             <div class="profile-details">
@@ -57,8 +54,9 @@
                 <p><strong>Medical History: <?= $_SESSION['USER']->medical_history; ?></strong> </p>
                 <p><strong>Allergies: <?= $_SESSION['USER']->allergies; ?></strong></p>
               </div>
-
+             
               <div style="background-color: #fff3cd; color: #856404; padding: 10px 20px; border: 1px solid #ffeeba; border-radius: 5px; display: inline-block; margin-top: 10px;">
+
                 <div class="tooltip-container">
                   <span>Your E-Wallet Balance:</span>
                   <div class="tooltip-text">E-Wallet is your digital balance used for paying doctor appointment fees.</div>
@@ -70,41 +68,31 @@
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>
               <button class="button" onclick="window.location.href='<?= ROOT ?>/patient/edit_profile'">Edit Profile</button>
-
             </div>
 
           </div>
 
           <div class="right">
-
             <div class="cards-container">
               <div class="card med-rep">
                 <div class="circle-background">
                   <i class="fas fa-notes-medical icon"></i>
                 </div>
-
                 <div class="label" onclick="window.location.href='medicalreports'">View Medical Reports</div>
-
               </div>
-
               <div class="card lab-rep">
                 <div class="circle-background">
                   <i class="fas fa-flask icon"></i>
                 </div>
-
                 <div class="label" onclick="window.location.href='labreports'">View Lab Reports</div>
-
               </div>
-
               <div class="card app">
                 <div class="circle-background">
                   <i class="fas fa-user-md icon"></i>
                 </div>
                 <div class="label" onclick="window.location.href='doc_appointment'">Book an Appointment</div>
-
               </div>
             </div>
-
 
             <div class="calendar-wrapper">
               <div class="calendar-container">
@@ -112,10 +100,8 @@
                 <form id="bmiForm" class="bmi-form">
                   <label for="height">Height (cm):</label>
                   <input type="number" id="height" placeholder="Enter height in cm" required />
-
                   <label for="weight">Weight (kg):</label>
                   <input type="number" id="weight" placeholder="Enter weight in kg" required />
-
                   <button type="submit" class="submit-btn">Calculate BMI</button>
                   <button type="button" id="refreshBtn" class="refresh-btn">Refresh</button>
                 </form>
@@ -128,18 +114,15 @@
               <div class="additional-container">
                 <?php if (!empty($appointments)) : ?>
                   <h3>Upcoming Appointments</h3>
-
-                  <div class="mini-scroll-container"> <!-- Scrollable wrapper -->
+                  <div class="mini-scroll-container">
                     <?php foreach ($appointments as $appt) : ?>
                       <?php
-                      // Get the appointment date and time
                       $appointmentDateTime = strtotime($appt->date . ' ' . $appt->start_time);
                       $currentDateTime = time(); // Get the current timestamp
-                      $appointmentStatus = strtolower($appt->state); // Get the appointment status
 
                       // Check if the appointment has already passed
-                      if ($appointmentStatus == 'done' || ($appointmentDateTime < $currentDateTime && $appointmentStatus != 'Done')) {
-                        continue; // Skip rendering the card if the appointment is 'Done' or if the appointment date has passed
+                      if ($appointmentDateTime < $currentDateTime) {
+                        continue; // Skip the rendering of this card if the appointment has passed
                       }
 
                       ?>
@@ -161,21 +144,13 @@
                         </div>
                       </div>
                     <?php endforeach; ?>
-
                   </div>
-
                 <?php else : ?>
                   <p>No upcoming appointments.</p>
                 <?php endif; ?>
               </div>
-
-
             </div>
-
           </div>
-
-
-
         </div>
       </div>
 
@@ -196,32 +171,31 @@
       <?php if (!empty($rescheduledAppointments)) :
         $last = end($rescheduledAppointments);
       ?>
-        <div id="reschedulePopup" class="modal hidden">
-          <div class="modal-content">
-            <div class="modal-header">
+        <div id="reschedulePopup" class="reschedule-modal modal-hidden">
+          <div class="reschedule-modal-content">
+            <div class="reschedule-modal-header">
               <h2>Rescheduled Appointment</h2>
             </div>
-            <div class="modal-body">
+            <div class="reschedule-modal-body">
               <p style="color:black">
                 Your appointment with Dr.<?= htmlspecialchars($last->doctor_name) ?> (<?= htmlspecialchars($last->specialization) ?>)
                 on <?= date('Y-m-d', strtotime($last->date)) ?> has been rescheduled.
               </p>
             </div>
-            <div class="modal-footer">
+            <div class="reschedule-modal-footer">
               <button id="manageBtn" class="submit-btn" style="background-color: blue;">Manage Appointment</button>
             </div>
           </div>
         </div>
-
-        <div id="managePopup" class="modal hidden">
-          <div class="modal-content">
-            <div class="modal-header">
+        <div id="managePopup" class="manage-modal modal-hidden">
+          <div class="manage-modal-content">
+            <div class="manage-modal-header">
               <h2>Manage Appointment</h2>
             </div>
-            <div class="modal-body">
+            <div class="manage-modal-body">
               <p style="color: black;">Would you like to reschedule or cancel your appointment?</p>
             </div>
-            <div class="modal-footer">
+            <div class="manage-modal-footer">
               <button style="margin-bottom: 10px;" class="submit-btn" onclick="window.location.href = 'http://localhost/wellbe/public/patient/reschedule_doc_appointment/<?= $last->id ?>'">
                 Reschedule Appointment
               </button>
@@ -233,28 +207,23 @@
         </div>
       <?php endif; ?>
 
-
       <script src="./script.js"></script>
       <script>
-        // Function to parse query parameters
         function getQueryParam(param) {
           const urlParams = new URLSearchParams(window.location.search);
           const value = urlParams.get(param);
-          console.log(`Query Parameter "${param}" Value:`, value); // Debugging output
+          console.log(`Query Parameter "${param}" Value:`, value);
           return value;
         }
-        // Check if "payment" parameter is "success"
         document.addEventListener("DOMContentLoaded", () => {
-          const paymentStatus = getQueryParam("payment"); // Get payment status
-          console.log("Payment Status:", paymentStatus); // Debugging
-
+          const paymentStatus = getQueryParam("payment");
+          console.log("Payment Status:", paymentStatus);
           if (paymentStatus === "success") {
             const modal = document.getElementById("popupModal2");
-            console.log("Displaying Modal"); // Debugging
-            modal.classList.remove("hidden"); // Show the modal
-
+            console.log("Displaying Modal");
+            modal.classList.remove("hidden");
             document.getElementById("closeModal2").addEventListener("click", () => {
-              modal.classList.add("hidden"); // Hide the modal on button click
+              modal.classList.add("hidden");
             });
           }
         });
@@ -262,16 +231,33 @@
 
       <script>
         document.addEventListener("DOMContentLoaded", () => {
+          console.log("DOM Content Loaded");
           const reschedulePopup = document.getElementById("reschedulePopup");
           const managePopup = document.getElementById("managePopup");
 
-          <?php if (!empty($rescheduledAppointments)) : ?>
-            reschedulePopup.classList.remove("hidden");
+          console.log("reschedulePopup:", reschedulePopup);
+          console.log("managePopup:", managePopup);
 
-            document.getElementById("manageBtn").addEventListener("click", () => {
-              reschedulePopup.classList.add("hidden");
-              managePopup.classList.remove("hidden");
-            });
+          <?php if (!empty($rescheduledAppointments)) : ?>
+            if (reschedulePopup) {
+              console.log("Removing modal-hidden class from reschedulePopup");
+              reschedulePopup.classList.remove("modal-hidden");
+              console.log("reschedulePopup classes:", reschedulePopup.className);
+            } else {
+              console.error("reschedulePopup not found in DOM");
+            }
+
+            const manageBtn = document.getElementById("manageBtn");
+            if (manageBtn) {
+              console.log("Adding click event to manageBtn");
+              manageBtn.addEventListener("click", () => {
+                console.log("Manage button clicked");
+                reschedulePopup.classList.add("modal-hidden");
+                managePopup.classList.remove("modal-hidden");
+              });
+            } else {
+              console.error("manageBtn not found in DOM");
+            }
           <?php endif; ?>
         });
       </script>
@@ -285,15 +271,11 @@
 
           bmiForm.addEventListener("submit", (e) => {
             e.preventDefault();
-
             const height = parseFloat(document.getElementById("height").value);
             const weight = parseFloat(document.getElementById("weight").value);
-
             if (height > 0 && weight > 0) {
               const bmi = (weight / ((height / 100) ** 2)).toFixed(2);
               bmiValue.textContent = bmi;
-
-              // Determine BMI category
               let category = "";
               if (bmi < 18.5) {
                 category = "Underweight";
@@ -304,7 +286,6 @@
               } else {
                 category = "Obese";
               }
-
               bmiCategory.textContent = `Category: ${category}`;
               bmiResult.classList.remove("hidden");
             } else {
@@ -312,15 +293,13 @@
             }
           });
 
-          refreshBtn.addEventListener("click", () => {
+          document.getElementById("refreshBtn").addEventListener("click", () => {
             document.getElementById("height").value = "";
             document.getElementById("weight").value = "";
-            bmiResult.classList.add("hidden"); // Hide the results
+            bmiResult.classList.add("hidden");
           });
-
         });
       </script>
-
 </body>
 
 </html>

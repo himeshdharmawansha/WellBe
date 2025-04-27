@@ -9,7 +9,20 @@ class Forgot extends Controller
     public function check()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'], $_POST['selection'])) {
-            $nicID = $_POST['nicID'];
+            if ($_POST['selection'] == 'doctor') {
+                $nicID = $_POST['nicID'] . "d";
+            } elseif ($_POST['selection'] == 'patient') {
+                $nicID = $_POST['nicID'] . "p";
+            } elseif ($_POST['selection'] == 'pharmacist') {
+                $nicID = $_POST['nicID'] . "h";
+            } elseif ($_POST['selection'] == 'lab_technician') {
+                $nicID = $_POST['nicID'] . "l";
+            } elseif ($_POST['selection'] == 'administrative_staff') {
+                $nicID = $_POST['nicID'] . "a";
+            } elseif ($_POST['selection'] == 'receptionist') {
+                $nicID = $_POST['nicID'] . "r";
+            }
+
             $userEmail = $_POST['email'];
             $table = $_POST['selection'];
 
@@ -30,7 +43,7 @@ class Forgot extends Controller
                 $_SESSION['reset_nic'] = $nicID;
                 $_SESSION['reset_table'] = $table;
                 $_SESSION['verification_code'] = $verificationCode;
-                $_SESSION['code_expiry'] = time() + 360; 
+                $_SESSION['code_expiry'] = time() + 360;
                 $_SESSION['code_verified'] = false;
 
                 $subject = 'Password Reset Verification Code';
@@ -158,7 +171,7 @@ class Forgot extends Controller
                     $_SESSION['reset_nic'] = $nicID;
                     $_SESSION['reset_table'] = $table;
                     $_SESSION['verification_code'] = $verificationCode;
-                    $_SESSION['code_expiry'] = time() + 360; 
+                    $_SESSION['code_expiry'] = time() + 360;
                     $_SESSION['code_verified'] = false;
 
                     $subject = 'Password Reset Verification Code';
@@ -201,7 +214,7 @@ class Forgot extends Controller
             $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
 
             $_SESSION['verification_code'] = $verificationCode;
-            $_SESSION['code_expiry'] = time() + 360; 
+            $_SESSION['code_expiry'] = time() + 360;
             $_SESSION['code_verified'] = false;
 
             $subject = 'Password Reset Verification Code';

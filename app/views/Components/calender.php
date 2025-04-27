@@ -115,34 +115,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-
-
-    <div class="cal-dashboard calendar-container">
-        <div class="calendar-header">
-            <h3>Calendar</h3>
-            <div class="calendar-nav">
-                <button id="prevMonth">&lt;</button>
-                <span id="monthYear"></span>
-                <button id="nextMonth">&gt;</button>
+        <div class="cal-dashboard calendar-container">
+            <div class="calendar-header">
+                <h3>Calendar</h3>
+                <div class="calendar-nav">
+                    <button id="prevMonth">&lt;</button>
+                    <span id="monthYear"></span>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+            </div>
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        <th>S</th>
+                        <th>M</th>
+                        <th>T</th>
+                        <th>W</th>
+                        <th>T</th>
+                        <th>F</th>
+                        <th>S</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <!-- Calendar Dates will be generated dynamically -->
+                </tbody>
+            </table>
+            <div style="display: flex;flex-direction:column;align-items:end;margin-top:10px">
+                <div class="status">
+                            <p>Dates to be Scheduled :  </p>
+                            <div style="width: 20px;height: 20px;background-color:#d9d143;border-radius:20%;"></div>
+                        </div>
+                <div class="status">
+                            <p>Scheduled Dates :  </p>
+                            <div style="width: 20px;height: 20px;background-color:#3fc846;border-radius:20%;"></div>
+                        </div>
             </div>
         </div>
-        <table class="calendar-table">
-            <thead>
-                <tr>
-                    <th>S</th>
-                    <th>M</th>
-                    <th>T</th>
-                    <th>W</th>
-                    <th>T</th>
-                    <th>F</th>
-                    <th>S</th>
-                </tr>
-            </thead>
-            <tbody id="calendar-body">
-                <!-- Calendar Dates will be generated dynamically -->
-            </tbody>
-        </table>
-    </div>
 
     <script src="<?= ROOT ?>/assets/js/schedule.js?v=1.2"></script>
     <script src="<?= ROOT ?>/assets/js/calender.js?v=1.2"></script>

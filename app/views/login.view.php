@@ -16,7 +16,7 @@
             }
         }
 
-        // Function to clear error messages when user starts typing
+        // Function to clear error messages when user starts typing or selects an option
         function clearErrorMessages(event) {
             var errorMessages = document.querySelectorAll('.error');
             errorMessages.forEach(function(error) {
@@ -25,9 +25,10 @@
         }
 
         window.onload = function() {
-            var inputs = document.querySelectorAll('.loginsignup-fields input');
+            var inputs = document.querySelectorAll('.loginsignup-fields input, .loginsignup-fields select');
             inputs.forEach(function(input) {
                 input.addEventListener('focus', clearErrorMessages); // Clear error on focus
+                input.addEventListener('change', clearErrorMessages); // Clear error on change for select
             });
         };
 
@@ -55,11 +56,25 @@
                 <div class="logo_text">WELL BE</div>
             </div>
             <h1>Log In</h1>
-            <form method="post" onsubmit="validateForm(event)">
-                <div class="loginsignup-fields">
-                    <input name="nic" type="text" placeholder="Type your NIC number" required />
+            <form method="post" autocomplete="off" onsubmit="validateForm(event)">
+                <div class="loginsignup-fields" >
+                <div class="inline-fields" style="display: flex; gap: 10px; align-items: center;">
+                    <div class="field-wrapper nic-field" style="flex: 2;">
+                        <input name="nic" style = "font-size:medium" type="text" placeholder="Type your NIC No" id="nic" required autocomplete="off" style="width: 100%;" />
+                    </div>
+                    <div class="field-wrapper user-type-field" style="flex: 1.6;">
+                        <select name="userType" id="userType" style = "font-size:medium" required autocomplete="off" style="width: 100%;">
+                            <option value="Patient">Patient</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Pharmacist">Pharmacist</option>
+                            <option value="LabTech">Lab Tech</option>
+                            <option value="Receptionist">Receptionist</option>
+                        </select>
+                    </div>
+                </div>
                     <div class="password-wrapper">
-                        <input name="password" type="password" placeholder="Type your Password" id="password" required />
+                        <input name="password" type="password" placeholder="Type your Password" id="password" required autocomplete="new-password" />
                         <span class="toggle-password" onclick="togglePasswordVisibility()">
                             <i class="fa-solid fa-eye-slash"></i>
                         </span>
@@ -67,7 +82,6 @@
                     <div class="forgot-password">
                         <a href="<?= ROOT ?>/forgot">Forgot password?</a>
                     </div>
-
                 </div>
 
                 <?php if (!empty($errors)): ?>
@@ -88,6 +102,27 @@
             </form>
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nicInput = document.querySelector('input[name="nic"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const errorContainer = document.getElementById('error-container');
+
+        if (nicInput) {
+            nicInput.addEventListener('input', clearErrors);
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener('input', clearErrors);
+        }
+
+        function clearErrors() {
+            if (errorContainer) {
+                errorContainer.innerHTML = '';
+            }
+        }
+    });
+</script>
+
 </body>
 
 </html>

@@ -79,19 +79,19 @@
 
 .calendar-table td.today {
     color: #ffffff;
-    background-color: rgb(30, 116, 237);
+    background-color: rgb(140, 163, 195);
     /* Dim color for other month's dates */
 }
 
 .calendar-table td.update {
     color: #ffffff;
-    background-color: rgb(217, 209, 67);
+    background-color: #d9d143;
     /* Dim color for other month's dates */
 }
 
 .calendar-table td.scheduled {
     color: #ffffff;
-    background-color: rgb(63, 200, 70);
+    background-color: #3fc846;
     /* Dim color for other month's dates */
 }
 

@@ -44,6 +44,7 @@
                                         <option value="<?= htmlspecialchars($doctor->name) ?>"></option>
                                     <?php endforeach; ?>
                                 </datalist>
+
                             </div>
 
                             <!-- Specialization Selection -->
@@ -79,21 +80,26 @@
                             <div id="dates-container" class="dates-grid">
                                 <?php if (!empty($data['dates']) && isset($_POST['doctor']) && isset($_POST['specialization'])): ?>
                                     <?php foreach ($data['dates'] as $day): ?>
-                                        <?php if ($day['appointment_id'] <= 15): ?>
-                                            <button class="date-btn"
-                                                data-doc-id="<?= isset($data['docId']) ? $data['docId'] : '' ?>"
-                                                data-doctor-fee="<?= isset($data['doctorFee']) ? $data['doctorFee'] : '' ?>"
-                                                data-doctor="<?= htmlspecialchars($_POST['doctor']) ?>"
-                                                data-specialization="<?= htmlspecialchars($_POST['specialization']) ?>"
-                                                data-appointment-id="<?= $day['appointment_id'] ?>"
-                                                data-start-time="<?= $day['start_time'] ?>"
-                                                data-day="<?= $day['day'] ?>"
-                                                onclick="storeSelection(this)">
-                                                <div class="dawasa">Date : <?= $day['day'] ?></div>
-                                                <div class="time">Starting Time : <?= $day['start_time'] ?></div>
-                                                <div class="appnmbr">Appointment Number : <?= $day['appointment_id'] ?></div>
-                                            </button>
-                                        <?php endif; ?>
+                                        <button class="date-btn"
+                                            data-doc-id="<?= isset($data['docId']) ? $data['docId'] : '' ?>"
+                                            data-doctor-fee="<?= isset($data['doctorFee']) ? $data['doctorFee'] : '' ?>"
+                                            data-doctor="<?= htmlspecialchars($_POST['doctor']) ?>"
+                                            data-specialization="<?= htmlspecialchars($_POST['specialization']) ?>"
+                                            data-appointment-id="<?= $day['appointment_id'] ?>"
+                                            data-start-time="<?= $day['start_time'] ?>"
+                                            data-day="<?= $day['day'] ?>"
+                                            onclick="storeSelection(this)"
+                                            <?php if ($day['appointment_id'] > 15): ?> disabled <?php endif; ?>>
+                                            <div class="dawasa">Date: <?= $day['day'] ?></div>
+                                            <div class="time">Starting Time: <?= $day['start_time'] ?></div>
+                                            <div class="appnmbr">
+                                                <?php if ($day['appointment_id'] > 15): ?>
+                                                    <span style="color: red;">All appointments are booked</span>
+                                                <?php else: ?>
+                                                    Appointment Number: <?= $day['appointment_id'] ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        </button>
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <p>Please select the doctor and specialization to show the available slots.</p>
@@ -111,36 +117,36 @@
 </body>
 
 <script>
-    const doctors = <?= json_encode($data['doctors']) ?>;
+const doctors = <?= json_encode($data['doctors']) ?>;
 
-    const doctorInput = document.getElementById('doctor');
-    const specializationInput = document.getElementById('specialization');
-    const doctorsDatalist = document.getElementById('doctors');
-    const specializationsDatalist = document.getElementById('specializations');
+const doctorInput = document.getElementById('doctor');
+const specializationInput = document.getElementById('specialization');
+const doctorsDatalist = document.getElementById('doctors');
+const specializationsDatalist = document.getElementById('specializations');
 
     // Helper to update datalist options
-    function updateDatalist(datalistElement, values) {
-        datalistElement.innerHTML = ''; // Clear current options
-        const uniqueValues = [...new Set(values)]; // Remove duplicates using Set
-        uniqueValues.forEach(value => {
-            const option = document.createElement('option');
-            option.value = value;
-            datalistElement.appendChild(option);
-        });
-    }
-
-    // When specialization changes, update doctor suggestions
-    specializationInput.addEventListener('input', function() {
-        const selectedSpecialization = this.value.trim().toLowerCase();
-
-        // Filter doctors by selected specialization
-        const filteredDoctors = doctors
-            .filter(doc => doc.specialization.toLowerCase() === selectedSpecialization)
-            .map(doc => doc.name);
-
-        // Update the doctor datalist with unique names
-        updateDatalist(doctorsDatalist, filteredDoctors);
+function updateDatalist(datalistElement, values) {
+    datalistElement.innerHTML = ''; // Clear current options
+    const uniqueValues = [...new Set(values)]; // Remove duplicates using Set
+    uniqueValues.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        datalistElement.appendChild(option);
     });
+}
+
+// When specialization changes, update doctor suggestions
+specializationInput.addEventListener('input', function() {
+    const selectedSpecialization = this.value.trim().toLowerCase();
+
+    // Filter doctors by selected specialization
+    const filteredDoctors = doctors
+        .filter(doc => doc.specialization.toLowerCase() === selectedSpecialization)
+        .map(doc => doc.name);
+
+    // Update the doctor datalist with unique names
+    updateDatalist(doctorsDatalist, filteredDoctors);
+});
 
     // When doctor changes, update specialization suggestion
     doctorInput.addEventListener('input', function() {
@@ -162,17 +168,24 @@
         }
     });
 
-    function storeSelection(button) {
-        sessionStorage.setItem('doc_id', button.dataset.docId);
-        sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);
-        sessionStorage.setItem('doctor', button.dataset.doctor);
-        sessionStorage.setItem('specialization', button.dataset.specialization);
-        sessionStorage.setItem('appointment_id', button.dataset.appointmentId);
-        sessionStorage.setItem('start_time', button.dataset.startTime);
-        sessionStorage.setItem('day', button.dataset.day);
+function storeSelection(button) {
+    sessionStorage.setItem('doc_id', button.dataset.docId);
+    sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);
+    sessionStorage.setItem('doctor', button.dataset.doctor);
+    sessionStorage.setItem('specialization', button.dataset.specialization);
+    sessionStorage.setItem('appointment_id', button.dataset.appointmentId);
+    sessionStorage.setItem('start_time', button.dataset.startTime);
+    sessionStorage.setItem('day', button.dataset.day);
 
         window.location.href = 'hello';
-    }
+}
+
+
+
+
+
+
+
 </script>
 
 </html>

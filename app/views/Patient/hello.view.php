@@ -67,6 +67,7 @@
 
 
             <section class="container">
+                
                 <!-- Patient Details Section -->
                 <div class="patient-details">
                     <h2 class="title">Appointment Details</h2>
@@ -330,6 +331,37 @@
         document.getElementById('payHereBtn').addEventListener('click', () => sendAppointmentData("online"));
         document.getElementById('payLaterBtn').addEventListener('click', () => sendAppointmentData("counter"));
         document.getElementById('payByWalletBtn').addEventListener('click', () => sendAppointmentData("wallet"));
+
+        document.addEventListener('DOMContentLoaded', function () {
+        // Set the timer for 3 minutes (3 * 60 = 180 seconds)
+        let timeLeft = 60; 
+
+        // Optional: You can show the countdown somewhere on the page
+        const timerDisplay = document.createElement('p');
+        timerDisplay.id = 'timerDisplay';
+        timerDisplay.style.fontWeight = 'bold';
+        timerDisplay.style.color = 'red';
+        timerDisplay.style.textAlign = 'center';
+        timerDisplay.style.marginTop = '10px';
+        document.querySelector('.patient-details').appendChild(timerDisplay);
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            timeLeft--;
+
+            if (timeLeft < 0) {
+                clearInterval(timerInterval);
+                window.location.href = 'doc_appointment'; // <-- Redirect to Search Doctor page
+            }
+        }
+
+        updateTimer(); // Initial call to show immediately
+        const timerInterval = setInterval(updateTimer, 1000); // Update every second
+    });
+
+
     </script>
 
 </body>

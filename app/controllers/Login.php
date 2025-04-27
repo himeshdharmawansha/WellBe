@@ -12,32 +12,38 @@ class Login extends Controller
 
                 $id = $_POST['nic'];
                 $_SESSION['userid'] = $id;
+                // print_r($_POST['userType']);
 
                 
 
                 // Check if 'd' exists in the string
-                if (strpos($id, 'd') !== false) {
+                if ($_POST['userType'] == 'Doctor') {
                     $_SESSION['user_type'] = "doctor";
                     $user = new Doctor;
-                } elseif (strpos($id, 'p') !== false) {
+                    $arr['nic'] = $_POST['nic'] . "d" ;
+                } elseif ($_POST['userType'] == 'Patient') {
                     $user = new Patient;
                     $_SESSION['user_type'] = "patient";
-                } elseif (strpos($id, 'h') !== false) {
+                    $arr['nic'] = $_POST['nic'] . "p" ;
+                } elseif ($_POST['userType'] == 'Pharmacist') {
                     $user = new PharmacyModel;
                     $_SESSION['user_type'] = "pharmacy";
-                } elseif (strpos($id, 'l') !== false) {
+                    $arr['nic'] = $_POST['nic'] . "h" ;
+                } elseif ($_POST['userType'] == 'LabTech') {
                     $user = new LabModel;
                     $_SESSION['user_type'] = "lab";
-                } elseif (strpos($id, 'a') !== false) {
+                    $arr['nic'] = $_POST['nic'] . "l" ;
+                } elseif ($_POST['userType'] == 'Admin') {
                     $user = new Admin;
                     $_SESSION['user_type'] = "admin";
-                }elseif (strpos($id, 'r') !== false) {
+                    $arr['nic'] = $_POST['nic'] . "a" ;
+                }elseif ($_POST['userType'] == 'Receptionist') {
                     $user = new Receptionist;
                     $_SESSION['user_type'] = "receptionist";
+                    $arr['nic'] = $_POST['nic'] . "r" ;
                 }
 
                 //password_verify($_POST['password'], $row->password
-                $arr['nic'] = $_POST['nic'];
                 $row = $user->first($arr);
 
                 if ($row) {

@@ -112,10 +112,10 @@
     </div>
     
     <div id="confirmationModal2" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <p id="confirmationMessage"></p>
-            <div class="modal-buttons">
-                <button id="confirmBtn">Yes</button>
+        <div class="modal-content2">
+            <p id="confirmationMessage2"></p>
+            <div class="modal-buttons2">
+                <button id="confirmBtn2">Yes</button>
                 <button onclick="closeModal()">Cancel</button>
             </div>
         </div>
@@ -185,14 +185,14 @@
 
             // Show confirmation message
             const message = `Do you want to confirm rescheduling the appointment to <strong>${docName}</strong> on <strong>${day}</strong>, appointment number <strong>${appointmentId}</strong>?`;
-            document.getElementById('confirmationMessage').innerHTML = message;
+            document.getElementById('confirmationMessage2').innerHTML = message;
 
             // Show the confirmation modal
             const modal = document.getElementById('confirmationModal2');
             modal.style.display = 'flex';
 
             // When user confirms
-            document.getElementById('confirmBtn').onclick = function () {
+            document.getElementById('confirmBtn2').onclick = function () {
                 // Store data in sessionStorage
                 sessionStorage.setItem('doc_id', button.dataset.docId);
                 sessionStorage.setItem('doctor_fee', button.dataset.doctorFee);

@@ -267,7 +267,60 @@ class Patient extends Controller
 
    public function edit_profile()
    {
-      $this->view('Patient/edit_profile', 'edit_profile');
+       $patientModel = new editProf();
+
+       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+           // 1. Get POST data
+           $first_name = trim($_POST['first_name']);
+           $last_name = trim($_POST['last_name']);
+           $contact = trim($_POST['contact']);
+           $email = trim($_POST['email']);
+           $address = trim($_POST['address']);
+           $medical_history = trim($_POST['medical_history']);
+           $allergies = trim($_POST['allergies']);
+           $gender = isset($_POST['gender']) ? $_POST['gender'] : '';
+
+           // 2. Validate input
+           $errors = [];
+
+           if (empty($first_name)) $errors['first_name'] = "First name is required.";
+           if (empty($last_name)) $errors['last_name'] = "Last name is required.";
+           if (!preg_match('/^\d{10}$/', $contact)) $errors['contact'] = "Contact must be a 10-digit number.";
+           if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = "Invalid email format.";
+           if (empty($address)) $errors['address'] = "Address is required.";
+         //   if (empty($gender)) $errors['gender'] = "Gender is required.";
+           // 3. If no errors, update
+           if (empty($errors)) {
+               $id = $_SESSION['USER']->id;
+
+               $updateData = [
+                   'first_name' => $first_name,
+                   'last_name' => $last_name,
+                   'contact' => $contact,
+                   'email' => $email,
+                   'address' => $address,
+                   'medical_history' => $medical_history,
+                   'allergies' => $allergies,
+                  //  'gender' => $gender,
+               ];
+
+               $patientModel->editProfile($id, $updateData);
+
+               // Update session too
+               foreach ($updateData as $key => $value) {
+                   $_SESSION['USER']->$key = $value;
+               }
+
+               // Redirect after saving
+               redirect('patient/patient_dashboard');
+           } else {
+               // If errors, reload view with errors
+               $this->view('Patient/edit_profile', ['errors' => $errors]);
+           }
+       } else {
+           // On GET request
+           $this->view('Patient/edit_profile');
+       }
    }
 
    public function medical_rec($reqId)

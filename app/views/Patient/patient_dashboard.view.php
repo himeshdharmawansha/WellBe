@@ -69,7 +69,8 @@
             </div>
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>
-              <button class="button" onclick="window.location.href='edit_profile'">Edit Profile</button>
+              <button class="button" onclick="window.location.href='<?= ROOT ?>/patient/edit_profile'"
+              >Edit Profile</button>
 
             </div>
             

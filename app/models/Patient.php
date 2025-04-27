@@ -427,5 +427,5 @@ class Patient extends Model
 
 
 
-
 }
+

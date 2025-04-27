@@ -81,7 +81,7 @@
                   </div>
                   <div class="chat-messages" id="chat-messages">
                   </div>
-                  <div class="chat-input">
+                  <div class="chat-input" id="chat-input">
                      <div class="upload">
                         <i class="fa-solid fa-paperclip" onclick="showUploadPopup()"></i>
                         <div class="upload-popup" id="upload-popup">
@@ -114,7 +114,7 @@
 
    <div id="popup-menu" style="display: none; position: absolute; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
       <ul style="list-style: none; padding: 0; margin: 0;">
-         <li onclick="deleteMessage()" style="padding: 8px; cursor: pointer;">
+         <li onclick="showDeleteConfirmation()" style="padding: 8px; cursor: pointer;">
             <i class="fas fa-trash-alt"></i> Delete
          </li>
          <li onclick="editMessage()" style="padding: 8px; cursor: pointer;">
@@ -138,6 +138,22 @@
       </div>
    </div>
 
+   <!-- Delete Confirmation Popup -->
+   <div id="delete-confirmation" style="display: none; position: fixed; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; z-index: 100;">
+      <h4>Delete this message?</h4>
+      <p>This action cannot be undone.</p>
+      <div class="notification-actions">
+         <button onclick="confirmDelete()" class="discard-btn">Delete</button>
+         <button onclick="cancelDelete()" class="return-btn">Cancel</button>
+      </div>
+   </div>
+
+   <!-- Error Popup -->
+   <div class="popup" id="error-popup">
+      <span class="close-btn" onclick="closePopup()">×</span>
+      <span id="popup-message"></span>
+   </div>
+
    <script src="<?= ROOT ?>/assets/js/lab/message.js"></script>
    <script>
       let selectedUserId = null;
@@ -145,6 +161,29 @@
       let selectedFile = null;
       let selectedFileType = null;
       let unseenCountsMap = {}; // Store unseen counts for each user
+
+      // Popup functions for error feedback
+      function showPopup(message, type = 'error') {
+         const popup = document.getElementById('error-popup');
+         const popupMessage = document.getElementById('popup-message');
+         if (!popup || !popupMessage) {
+            console.error('Popup elements not found:', { popup, popupMessage });
+            return;
+         }
+         popupMessage.textContent = message;
+         popup.className =`popup ${type} active`;
+
+         setTimeout(() => {
+            popup.className = 'popup';
+         }, 5000);
+      }
+
+      function closePopup() {
+         const popup = document.getElementById('error-popup');
+         if (popup) {
+            popup.className = 'popup';
+         }
+      }
 
       // Role mapping function
       function getRoleTitle(roleId) {
@@ -158,6 +197,12 @@
          };
          return roles[roleId] || 'Unknown';
       }
+
+      // Hide chat input initially since no chat is selected
+      document.addEventListener('DOMContentLoaded', function() {
+         const chatInput = document.getElementById('chat-input');
+         chatInput.style.display = 'none'; // Hide by default
+      });
 
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
          event.preventDefault();
@@ -204,42 +249,78 @@
          document.removeEventListener('click', hidePopupMenu);
       }
 
-      function deleteMessage() {
+      function showDeleteConfirmation() {
          if (!selectedMessage) {
-            alert("No message selected for deletion.");
+            showPopup("No message selected for deletion.");
             return;
          }
 
-         const confirmDelete = window.confirm("Are you sure you want to delete this message?");
-         if (confirmDelete) {
-            const messageId = selectedMessage.getAttribute('data-message-id');
-            const isSender = selectedMessage.classList.contains('sent');
+         const confirmationPopup = document.getElementById('delete-confirmation');
+         const chatWindow = document.getElementById('chat-window');
+         const dimOverlay = document.getElementById('dim-overlay');
 
-            fetch(`<?= ROOT ?>/ChatController/deleteMessage/${messageId}/${isSender ? 1 : 0}`)
-               .then(response => {
-                  if (!response.ok) {
-                     throw new Error('Failed to delete message');
-                  }
-                  return response.json();
-               })
-               .then(data => {
-                  if (data.status === "success") {
-                     refreshUnseenCounts([3, 5]);
-                     pullMessages();
-                     hidePopupMenu();
-                  } else {
-                     alert('Error deleting message');
-                  }
-               })
-               .catch(error => {
-                  console.error('An error occurred while deleting the message:', error);
-               });
-         }
+         const chatWindowRect = chatWindow.getBoundingClientRect();
+         const centerX = chatWindowRect.left + (chatWindowRect.width / 2);
+         const centerY = chatWindowRect.top + (chatWindowRect.height / 2);
+
+         const confirmationRect = confirmationPopup.getBoundingClientRect();
+         const confirmationWidth = confirmationRect.width;
+         const confirmationHeight = confirmationRect.height;
+
+         const verticalOffset = -140;
+         const horizontalOffset = -330;
+         const adjustedX = centerX - (confirmationWidth / 2) + horizontalOffset;
+         const adjustedY = centerY - (confirmationHeight / 2) + verticalOffset;
+
+         confirmationPopup.style.left = `${adjustedX}px`;
+         confirmationPopup.style.top = `${adjustedY}px`;
+         confirmationPopup.style.display = 'block';
+         dimOverlay.style.display = 'block';
+         hidePopupMenu();
+      }
+
+      function confirmDelete() {
+         const messageId = selectedMessage.getAttribute('data-message-id');
+         const isSender = selectedMessage.classList.contains('sent');
+
+         fetch(`<?= ROOT ?>/ChatController/deleteMessage/${messageId}/${isSender ? 1 : 0}`)
+            .then(response => {
+               if (!response.ok) {
+                  throw new Error('Failed to delete message');
+               }
+               return response.json();
+            })
+            .then(data => {
+               if (data.status === "success") {
+                  refreshUnseenCounts([3, 5]);
+                  pullMessages();
+                  hideDeleteConfirmation();
+               } else {
+                  showPopup('Error deleting message');
+                  hideDeleteConfirmation();
+               }
+            })
+            .catch(error => {
+               console.error('An error occurred while deleting the message:', error);
+               showPopup('An error occurred while deleting the message: ' + error.message);
+               hideDeleteConfirmation();
+            });
+      }
+
+      function cancelDelete() {
+         hideDeleteConfirmation();
+      }
+
+      function hideDeleteConfirmation() {
+         const confirmationPopup = document.getElementById('delete-confirmation');
+         const dimOverlay = document.getElementById('dim-overlay');
+         confirmationPopup.style.display = 'none';
+         dimOverlay.style.display = 'none';
       }
 
       function editMessage() {
          if (!selectedMessage) {
-            alert("No message selected for editing.");
+            showPopup("No message selected for editing.");
             return;
          }
 
@@ -248,7 +329,7 @@
          const newMessage = prompt("Edit your message:", currentText);
 
          if (newMessage === null || newMessage.trim() === "") {
-            alert("Message cannot be empty.");
+            showPopup("Message cannot be empty.");
             return;
          }
 
@@ -269,18 +350,18 @@
                   pullMessages();
                   hidePopupMenu();
                } else {
-                  alert(data.message || "Error editing message.");
+                  showPopup(data.message || "Error editing message.");
                }
             })
             .catch(error => {
                console.error("Error editing message:", error);
-               alert("Error editing message.");
+               showPopup("Error editing message: " + error.message);
             });
       }
 
       function editCaption() {
          if (!selectedMessage) {
-            alert("No message selected for editing caption.");
+            showPopup("No message selected for editing caption.");
             return;
          }
 
@@ -309,11 +390,12 @@
                   pullMessages();
                   hidePopupMenu();
                } else {
-                  alert(data.message || "Error editing caption.");
+                  showPopup(data.message || "Error editing caption.");
                }
             })
             .catch(error => {
                console.error("Error editing caption:", error);
+               showPopup("Error editing caption: " + error.message);
             });
       }
 
@@ -327,6 +409,10 @@
          document.getElementById('chat-username').textContent = username;
          document.getElementById('chat-status').textContent = userTime;
          document.getElementById('chat-avatar').src = avatarSrc;
+
+         // Show the chat input when a chat is selected
+         const chatInput = document.getElementById('chat-input');
+         chatInput.style.display = 'flex';
 
          startChat(userId);
          markMessagesAsSeen(userId);
@@ -464,6 +550,7 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
          } catch (error) {
             console.error('Error fetching messages:', error);
+            showPopup('Error fetching messages: ' + error.message);
          }
       }
 
@@ -497,6 +584,7 @@
                })
                .catch(error => {
                   console.error('Error fetching messages:', error);
+                  showPopup('Error fetching messages: ' + error.message);
                });
          }
       }
@@ -515,7 +603,7 @@
 
          if (!message) return;
          if (!selectedUserId) {
-            alert("Please select a chat.");
+            showPopup("Please select a chat.");
             return;
          }
 
@@ -546,12 +634,12 @@
                   refreshUnseenCounts([3, 5]);
                } else {
                   console.error('Server responded with failure:', data);
-                  alert(data.message || 'Error sending message');
+                  showPopup(data.message || 'Error sending message');
                }
             })
             .catch(error => {
                console.error("Error sending message:", error);
-               alert(`Error sending message: ${error.message}`);
+               showPopup(`Error sending message: ${error.message}`);
             });
       }
 
@@ -583,7 +671,7 @@
 
       function handleFileSelection(files) {
          if (!selectedUserId) {
-            alert("Please select a chat.");
+            showPopup("Please select a chat.");
             return;
          }
 
@@ -593,7 +681,7 @@
          const fileType = file.type;
 
          if (selectedFileType === 'photo' && !fileType.startsWith('image/')) {
-            alert("Please upload an image file.");
+            showPopup("Please upload an image file.");
             return;
          } else if (selectedFileType === 'document') {
             const allowedDocumentTypes = [
@@ -608,7 +696,7 @@
                'application/zip'
             ];
             if (!allowedDocumentTypes.includes(fileType)) {
-               alert("Invalid document format. Only PDF, Word, Excel, TXT, CSV, RTF, and ZIP files are allowed.");
+               showPopup("Invalid document format. Only PDF, Word, Excel, TXT, CSV, RTF, and ZIP files are allowed.");
                return;
             }
          }
@@ -759,7 +847,7 @@
 
       function sendFile() {
          if (!selectedFile || !selectedUserId) {
-            alert("Please select a file and a chat.");
+            showPopup("Please select a file and a chat.");
             return;
          }
 
@@ -800,10 +888,12 @@
                   isNotificationDismissed = false;
                } else {
                   console.error('Server responded with failure:', data);
+                  showPopup('Server responded with failure: ' + (data.message || 'Unknown error'));
                }
             })
             .catch(error => {
                console.error("Error uploading file:", error);
+               showPopup("Error uploading file: " + error.message);
             });
       }
 
@@ -839,6 +929,7 @@
                   });
                } else {
                   console.error('Failed to refresh user statuses:', xhr.status);
+                  showPopup('Failed to refresh user statuses: ' + xhr.status);
                }
             }
          };
@@ -921,6 +1012,7 @@
             .then(users => {
                if (users.error) {
                   console.error("Error:", users.error);
+                  showPopup("Error fetching unseen counts: " + users.error);
                   return;
                }
 
@@ -967,7 +1059,10 @@
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
-            .catch(error => console.error("Error fetching unseen counts:", error));
+            .catch(error => {
+               console.error("Error fetching unseen counts:", error);
+               showPopup("Error fetching unseen counts: " + error.message);
+            });
       }
 
       setInterval(() => {
@@ -1039,6 +1134,7 @@
             })
             .catch(error => {
                console.error("Error searching users:", error);
+               showPopup("Error searching users: " + error.message);
             });
       }
 
@@ -1053,6 +1149,7 @@
             })
             .catch(error => {
                console.error("Error marking messages as seen:", error);
+               showPopup("Error marking messages as seen: " + error.message);
             });
       }
 
@@ -1060,6 +1157,7 @@
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
             .catch(error => {
                console.error("Error updating timestamps:", error);
+               showPopup("Error updating timestamps: " + error.message);
             });
       }
 

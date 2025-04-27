@@ -34,6 +34,36 @@
             </div>
          </div>
       </div>
+      <!-- Error/Success Popup -->
+      <div class="popup" id="error-popup">
+         <span class="close-btn" onclick="closePopup()">×</span>
+         <span id="popup-message"></span>
+         <button class="retry-btn" id="retry-btn" style="display:none;">Retry</button>
+      </div>
+      <!-- Report Popup Overlay -->
+      <div class="pharmacy-report-popup-overlay" id="report-popup-overlay">
+         <div class="pharmacy-report-popup-content">
+            <div class="pharmacy-report-header-container">
+               <div class="pharmacy-report-header-title">
+                  <h1>Medication Report</h1>
+               </div>
+               <div class="pharmacy-report-header-right">
+                  <img src="<?= ROOT ?>/assets/images/logo.png" alt="WellBe Logo" class="pharmacy-report-header-image">
+               </div>
+            </div>
+            <div class="pharmacy-report-header-left">
+               <h4>WELLBE</h4>
+               <p>By <strong><?= $_SESSION['USER']->first_name ?></strong></p>
+               <p id="date-range"></p>
+            </div>
+            <div class="pharmacy-report-popup-body">
+               <button class="pharmacy-report-popup-close">×</button>
+               <div id="pie_chart" style="width: 100%; height: 300px;margin-left: 100px;"></div>
+               <div id="line_chart" style="width: 100%; height: 300px;"></div>
+            </div>
+            <button class="pharmacy-report-popup-print" onclick="window.print()">Print</button>
+         </div>
+      </div>
    </div>
 
    <script>
@@ -41,11 +71,69 @@
          const reportButton = document.querySelector('.pharmacy-report-report');
          const startDateInput = document.getElementById('start');
          const endDateInput = document.getElementById('end');
-         const popupOverlay = document.createElement('div');
-         popupOverlay.classList.add('pharmacy-report-popup-overlay');
+         const popupOverlay = document.getElementById('report-popup-overlay');
+         const popupClose = popupOverlay.querySelector('.pharmacy-report-popup-close');
 
-         const today = new Date();
-         const thirtyDaysAgo = new Date();
+         // Popup logic (error/success)
+         let retryCallback = null;
+
+         function showPopup(message, type = 'error', retry = false, callback = null) {
+            console.log('showPopup called with message:', message, 'type:', type);
+            const popup = document.getElementById('error-popup');
+            const popupMessage = document.getElementById('popup-message');
+            const retryBtn = document.getElementById('retry-btn');
+            if (!popup || !popupMessage || !retryBtn) {
+               console.error('Popup elements not found:', { popup, popupMessage, retryBtn });
+               alert(message);
+               return;
+            }
+            popupMessage.textContent = message;
+            popup.className = `popup ${type} active`;
+            console.log('Popup class set to:', popup.className);
+
+            if (retry) {
+               retryBtn.style.display = 'inline-block';
+               retryCallback = callback;
+            } else {
+               retryBtn.style.display = 'none';
+               retryCallback = null;
+            }
+
+            setTimeout(() => {
+               popup.className = 'popup';
+               console.log('Popup hidden after timeout');
+            }, 5000);
+         }
+
+         function closePopup() {
+            console.log('closePopup called');
+            const popup = document.getElementById('error-popup');
+            if (popup) {
+               popup.className = 'popup';
+               console.log('Popup class reset to:', popup.className);
+            }
+         }
+
+         function retryAction() {
+            if (retryCallback) {
+               retryCallback();
+            }
+         }
+
+         document.getElementById('retry-btn')?.addEventListener('click', retryAction);
+
+         // Date validation function
+         function isDateNotInFuture(dateStr) {
+            const currentDate = new Date('2025-04-26'); // Current date as per system
+            const inputDate = new Date(dateStr);
+            if (isNaN(inputDate.getTime())) {
+               return false; // Invalid date format
+            }
+            return inputDate <= currentDate;
+         }
+
+         const today = new Date('2025-04-26'); // Current date as per system
+         const thirtyDaysAgo = new Date(today);
          thirtyDaysAgo.setDate(today.getDate() - 30);
 
          const formatDateInputValue = (date) => {
@@ -58,33 +146,6 @@
          startDateInput.value = formatDateInputValue(thirtyDaysAgo);
          endDateInput.value = formatDateInputValue(today);
 
-         popupOverlay.innerHTML = `
-            <div class="pharmacy-report-popup-content">
-               <div class="pharmacy-report-header-container">
-                  <div class="pharmacy-report-header-title">
-                     <h1>Medication Report</h1>
-                  </div>
-                  <div class="pharmacy-report-header-right">
-                     <img src="<?= ROOT ?>/assets/images/logo.png" alt="WellBe Logo" class="pharmacy-report-header-image">
-                  </div>
-               </div>
-               <div class="pharmacy-report-header-left">
-                  <h4>WELLBE</h4>
-                  <p>By <strong><?= $_SESSION['USER']->first_name ?></strong></p>
-                  <p id="date-range"></p>
-               </div>
-               <div class="pharmacy-report-popup-body">
-                  <button class="pharmacy-report-popup-close">×</button>
-                  <div id="bar_chart" style="width: 100%; height: 300px;"></div>
-                  <div id="line_chart" style="width: 100%; height: 300px;"></div>
-               </div>
-               <button class="pharmacy-report-popup-print" onclick="window.print()">Print</button>
-            </div>
-         `;
-
-         document.body.appendChild(popupOverlay);
-
-         const popupClose = popupOverlay.querySelector('.pharmacy-report-popup-close');
          popupClose.addEventListener('click', () => {
             popupOverlay.style.display = 'none';
          });
@@ -93,8 +154,25 @@
             const startDate = startDateInput.value;
             const endDate = endDateInput.value;
 
+            // Validation: Check for empty dates
             if (!startDate || !endDate) {
-               alert('Please select both start and end dates.');
+               showPopup('Please select both start and end dates.');
+               return;
+            }
+
+            // Validation: Check if start date is before end date
+            if (new Date(startDate) > new Date(endDate)) {
+               showPopup('Start date must be before end date.');
+               return;
+            }
+
+            // Validation: Check if dates are not in the future
+            if (!isDateNotInFuture(startDate)) {
+               showPopup('Start date cannot be in the future.');
+               return;
+            }
+            if (!isDateNotInFuture(endDate)) {
+               showPopup('End date cannot be in the future.');
                return;
             }
 
@@ -121,14 +199,24 @@
                fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
                   .then((response) => response.json())
                   .then((data) => {
-                     drawBarChart(data.medications);
+                     if (data.error) {
+                        showPopup(data.error);
+                        popupOverlay.style.display = 'none';
+                        return;
+                     }
+                     drawPieChart(data.medications);
                      drawLineChart(data.requests);
+                     showPopup('Report generated successfully', 'success');
                   })
-                  .catch((error) => console.error('Error fetching report data:', error));
+                  .catch((error) => {
+                     showPopup('Error generating report. Please try again', 'error', true, () => drawCharts(startDate, endDate));
+                     popupOverlay.style.display = 'none';
+                     console.error('Error fetching report data:', error);
+                  });
             });
          }
 
-         function drawBarChart(medications) {
+         function drawPieChart(medications) {
             const chartData = [
                ['Medication', 'Usage']
             ];
@@ -138,18 +226,14 @@
 
             const data = google.visualization.arrayToDataTable(chartData);
 
-            const options = {
-               title: 'Medication Usage',
-               hAxis: {
-                  title: 'Type of Medications'
-               },
-               vAxis: {
-                  title: 'Usage'
-               },
-               colors: ['#1a73e8'],
+            var options = {
+               title: 'Medication Usage Distribution',
+               pieSliceText: 'percentage',
+               legend: { position: 'right' },
+               chartArea: { width: '100%', height: '80%' }
             };
 
-            const chart = new google.visualization.ColumnChart(document.getElementById('bar_chart'));
+            const chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
             chart.draw(data, options);
          }
 

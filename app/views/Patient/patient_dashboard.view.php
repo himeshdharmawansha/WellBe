@@ -54,8 +54,14 @@
                 <p><strong>Allergies: <?= $_SESSION['USER']->allergies; ?></strong></p>
               </div>
               <div style="background-color: #fff3cd; color: #856404; padding: 10px 20px; border: 1px solid #ffeeba; border-radius: 5px; display: inline-block; margin-top: 10px;">
-                <span title="E-Wallet is your digital balance used for paying doctor appointment fees." style="text-decoration: underline dotted; cursor: help;">Your E-Wallet Balance:</span>
-                <strong>Rs. <?= htmlspecialchars($ewalletAmount->e_wallet ?? 0) ?></strong></div>
+
+  <div class="tooltip-container">
+    <span>Your E-Wallet Balance:</span>
+    <div class="tooltip-text">E-Wallet is your digital balance used for paying doctor appointment fees.</div>
+  </div>
+  <strong>Rs. <?= htmlspecialchars($ewalletAmount->e_wallet ?? 0) ?></strong>
+</div>
+
             </div>
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>

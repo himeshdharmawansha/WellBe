@@ -78,6 +78,27 @@ class PharmacyModel extends Model
         return $db->query($query);
     }
 
+    public function getMedicationDetails($requestID)
+    {
+        $db = new Database();
+
+        // Get medication details
+        $query = "SELECT medication_name, dosage, taken_time, substitution, state 
+                  FROM medication_request_details 
+                  WHERE req_id = :req_id";
+        $medicationDetails = $db->read($query, ['req_id' => $requestID]);
+
+        // Get remarks
+        $remarksQuery = "SELECT remark FROM medication_requests WHERE id = :req_id";
+        $remarksResult = $db->read($remarksQuery, ['req_id' => $requestID]);
+        $additionalRemarks = $remarksResult[0]['remark'] ?? '';
+
+        return [
+            'medicationDetails' => $medicationDetails,
+            'additionalRemarks' => $additionalRemarks
+        ];
+    }
+
     public function getStock()
     {
         $db = new Database();
@@ -123,10 +144,10 @@ class PharmacyModel extends Model
         $medicationData = $db->read($medicationQuery, ['start_date' => $startDate, 'end_date' => $endDate]);
 
         $requestsQuery = "
-            SELECT DATE(mr.date) AS request_date, COUNT(*) AS request_count
-            FROM medication_requests mr
-            WHERE mr.date BETWEEN :start_date AND :end_date
-            GROUP BY DATE(mr.date)
+            SELECT DATE(t.date) AS request_date, COUNT(*) AS request_count
+            FROM medication_requests mr, timeslot t
+            WHERE t.slot_id = mr.date AND t.date BETWEEN :start_date AND :end_date
+            GROUP BY DATE(t.date)
             ORDER BY request_date ASC
         ";
         $requestData = $db->read($requestsQuery, ['start_date' => $startDate, 'end_date' => $endDate]);

@@ -90,6 +90,12 @@
                 </div>
             </div>
         </div>
+        <!-- Add popup at the root level -->
+        <div class="popup" id="error-popup">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <span id="popup-message"></span>
+            <button class="retry-btn" id="retry-btn" style="display:none;">Retry</button>
+        </div>
     </div>
     <script src="<?= ROOT ?>/assets/js/Pharmacy/phamacistDashboard.js"></script>
     <script type="text/javascript">
@@ -109,6 +115,10 @@
                 fetch(`<?= ROOT ?>/Pharmacy/generateReport?start_date=${startDate}&end_date=${endDate}`)
                     .then(response => response.json())
                     .then(data => {
+                        if (data.error) {
+                            showPopup(data.error);
+                            return;
+                        }
                         const chartData = [
                             ['Medication', 'Usage', { role: 'tooltip', p: { html: true } }]
                         ];
@@ -129,7 +139,10 @@
                         const chart = new google.visualization.ColumnChart(document.getElementById('curve_chart'));
                         chart.draw(google.visualization.arrayToDataTable(chartData), options);
                     })
-                    .catch(error => console.error('Error fetching medication usage data:', error));
+                    .catch(error => {
+                        showPopup('Error fetching medication usage data. Please try again', 'error', true, drawChart);
+                        console.error('Error fetching medication usage data:', error);
+                    });
             }
         });
 
@@ -140,6 +153,11 @@
                 fetch('<?= ROOT ?>/Pharmacy/medicationRequests')
                     .then(response => response.json())
                     .then(data => {
+                        if (data.error) {
+                            showPopup(data.error);
+                            tableBody.innerHTML = '<tr><td colspan="2">No requests found.</td></tr>';
+                            return;
+                        }
                         let html = '';
                         data.forEach(request => {
                             html += `
@@ -151,7 +169,10 @@
                         });
                         tableBody.innerHTML = html;
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        showPopup('Error fetching medication requests. Please try again', 'error', true, fetchMedicationRequests);
+                        console.error('Error:', error);
+                    });
             }
 
             fetchMedicationRequests();
@@ -199,6 +220,12 @@
                     .then(data => {
                         tableBody.innerHTML = '';
 
+                        if (data.error) {
+                            showPopup(data.error);
+                            tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
+                            return;
+                        }
+
                         if (data.length > 0) {
                             data.forEach(med => {
                                 const row = document.createElement('tr');
@@ -213,7 +240,10 @@
                             tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
                         }
                     })
-                    .catch(error => console.error('Error fetching medicines:', error));
+                    .catch(error => {
+                        showPopup('Error fetching medicines. Please try again', 'error', true, () => fetchMedicines(query));
+                        console.error('Error fetching medicines:', error);
+                    });
             }
 
             searchInput.addEventListener('keyup', function() {
@@ -243,6 +273,12 @@
                     .then(data => {
                         tableBody.innerHTML = '';
 
+                        if (data.error) {
+                            showPopup(data.error);
+                            tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
+                            return;
+                        }
+
                         if (data.length > 0) {
                             data.forEach(med => {
                                 const row = document.createElement('tr');
@@ -257,7 +293,10 @@
                             tableBody.innerHTML = '<tr><td colspan="2">No medicines found.</td></tr>';
                         }
                     })
-                    .catch(error => console.error('Error fetching medicines:', error));
+                    .catch(error => {
+                        showPopup('Error fetching medicines. Please try again', 'error', true, () => fetchMedicines(query));
+                        console.error('Error fetching medicines:', error);
+                    });
             }
 
             fetchMedicines();

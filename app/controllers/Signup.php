@@ -51,6 +51,7 @@ class Signup extends Controller
 
             if ($user->validate_second_form($_SESSION['form2_data'])) {
                 $user->insert($fullData);
+                $user -> addToUserProfile($fullData);
                 redirect("login");
             }
             $data['errors'] = $user->errors;

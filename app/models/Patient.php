@@ -248,6 +248,13 @@ class Patient extends Model
         return $this->errors;
     }
 
+    public function addToUserProfile($data){
+
+        $query = "INSERT INTO user_profile (id,username,password,role,image,state) VALUES (?, ?, ?, ?, ?, ?);";
+
+        $this ->query($query,[$data['nic'], $data['first_name'], $data['password'], 4, 'Profile_default.png', 0]);
+    }
+
     public function getAllPatients()
     {
         $query = "

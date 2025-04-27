@@ -490,4 +490,29 @@ class Appointments extends Model
         return $this->query($query);
     }
 
+    public function createAppointment($data) {
+    
+        $query = "
+        INSERT INTO appointment
+        (appointment_id, doctor_id, patient_id, date, payment_fee, payment_status, state, patient_type, scheduled) 
+        VALUES
+        (:appointment_id, :doc_id, :patient_id, :slot_id, :fee, :payment_status, :state, :patient_type, :scheduled)
+        "; 
+
+        $params = [
+            'appointment_id' => $data['appointment_id'],
+            'doc_id' => $data['doc_id'],
+            'patient_id' => $data['patient_id'],
+            'slot_id' => $data['slot_id'],
+            'fee' => 1500,
+            'payment_status' => 'Not Paid',
+            'state' => 'NOT PRESENT',
+            'patient_type' => 'NEW',
+            'scheduled' => 'Scheduled'
+        ];
+
+        error_log("Generated query: " . $query);
+        return $this->query($query, $params);
+    }    
+
 }

@@ -241,9 +241,6 @@ class Timeslot extends Model
             t.slot_id, t.date, td.start_time, td.end_time, d.id, d.first_name, d.last_name
         ";
         
-        // Debug the query
-        //echo("Generated Query: <pre>$query</pre>");
-
         return $this->query($query);
     }
 
@@ -275,9 +272,6 @@ class Timeslot extends Model
         GROUP BY 
             t.slot_id, t.date, td.start_time, td.end_time, d.id, d.first_name, d.last_name
         ";
-        
-        // Debug the query
-        //echo("Generated Query: <pre>$query</pre>");
 
         return $this->query($query);
     }
@@ -310,9 +304,6 @@ class Timeslot extends Model
         GROUP BY 
             t.slot_id, t.date, td.start_time, td.end_time, d.id, d.first_name, d.last_name
         ";
-        
-        // Debug the query
-        //echo("Generated Query: <pre>$query</pre>");
 
         return $this->query($query);
     }
@@ -340,5 +331,14 @@ class Timeslot extends Model
         ]);
         
         return $result ? $result[0] : false;
+    }
+
+    public function getSlotID($date){
+
+        $query = "SELECT slot_id FROM timeslot WHERE date = :date";
+        $data = ['date'=>$date];
+        $result = $this->query($query,$data);
+
+        return $result[0]->slot_id;
     }
 }

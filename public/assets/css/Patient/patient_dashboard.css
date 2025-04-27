@@ -407,10 +407,10 @@
     margin-top: 10px;
 }
 
-
-
 .modal {
+    display: block ;
     position: fixed;
+    z-index: 1000;
     top: 0;
     left: 0;
     width: 100%;
@@ -419,7 +419,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
 }
 
 .modal-content {
@@ -434,6 +433,10 @@
 .modal-header h2 {
     color: #333333;
     margin: 0;
+}
+
+.model.hidden{
+    display: none;
 }
 
 .modal-body p {
@@ -453,6 +456,103 @@
 
 .modal-footer button:hover {
     background: #45a049;
+}
+
+/* Reschedule Modal */
+.reschedule-modal {
+    display: block;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.reschedule-modal.modal-hidden {
+    display: none;
+}
+
+.reschedule-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.reschedule-modal-header {
+    margin-bottom: 10px;
+}
+
+.reschedule-modal-body {
+    margin-bottom: 10px;
+}
+
+.reschedule-modal-footer {
+    text-align: right;
+}
+
+/* Manage Modal */
+.manage-modal {
+    display: block;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.manage-modal.modal-hidden {
+    display: none;
+}
+
+.manage-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.manage-modal-header {
+    margin-bottom: 10px;
+}
+
+.manage-modal-body {
+    margin-bottom: 10px;
+}
+
+.manage-modal-footer {
+    text-align: right;
+}
+
+/* Submit Button */
+.submit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    background-color: #007bff;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Ensure other elements don’t interfere */
+.dashboard-container, .main-content {
+    z-index: 1;
 }
 
 .hidden {

@@ -125,7 +125,7 @@ class Forgot extends Controller
                             unset($_SESSION['reset_email'], $_SESSION['reset_nic'], $_SESSION['reset_table'], $_SESSION['verification_code'], $_SESSION['code_expiry'], $_SESSION['code_verified']);
 
                             // Redirect to login with success message
-                            echo "<script>alert('Password updated successfully!'); window.location.href='" . ROOT . "/login';</script>";
+                            echo "<script>console.log('Password updated successfully!'); window.location.href='" . ROOT . "/login';</script>";
                             exit();
                         } else {
                             $errorMessage = 'Failed to update password. Please try again.';

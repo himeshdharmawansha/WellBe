@@ -626,3 +626,45 @@ a {
    text-transform: uppercase;
    font-weight: bold;
 }
+
+/* Popup styles */
+.popup {
+   position: fixed;
+   top: 20px;
+   right: 20px;
+   background-color: #f44336; /* Default to error (red) */
+   color: white;
+   padding: 15px 20px;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   display: none;
+   z-index: 1000;
+   max-width: 400px;
+   opacity: 0;
+   transform: translateY(-20px);
+   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.popup.active {
+   display: block;
+   opacity: 1;
+   transform: translateY(0);
+}
+
+.popup.success {
+   background-color: #4caf50; /* Green for success */
+}
+
+.popup .close-btn {
+   position: absolute;
+   top: 10px;
+   right: 10px;
+   font-size: 16px;
+   cursor: pointer;
+   color: white;
+}
+
+.popup #popup-message {
+   font-size: 14px;
+   line-height: 1.5;
+}

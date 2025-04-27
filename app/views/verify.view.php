@@ -23,7 +23,7 @@
                             <div class="forgot-message"><?= htmlspecialchars($data['errorMessage']) ?></div>
                         <?php endif; ?>
                         <?php if (isset($data['codeExpired']) && $data['codeExpired']): ?>
-                            <div class="forgot-message">Your verification code has expired. Please request a new code.</div>
+                            <div class="forgot-message"></div>
                         <?php endif; ?>
                         <div class="resend-link">
                             <a href="<?= ROOT ?>/forgot/resend">Resend Code</a>

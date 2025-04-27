@@ -56,7 +56,16 @@ class Patient extends Model
         // Validate date of birth and age
         if (empty($data['dob'])) {
             $this->errors['dob'] = "Date of Birth is required";
+        } else {
+            $dob = new DateTime($data['dob']);
+            $currentDate = new DateTime();
+            $age = $currentDate->diff($dob)->y; 
+        
+            if ($age < 16) {
+                $this->errors['dob'] = "You must be at least 16 years old";
+            }
         }
+        
 
         if (!empty($data['age']) && !is_numeric($data['age'])) {
             $this->errors['age'] = "Age must be a number";

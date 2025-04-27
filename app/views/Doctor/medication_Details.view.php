@@ -91,9 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         foreach ($medicationDetails as $medic) {
             $medicalRecord->insertMed($medic, $request_id);
         }
-
-        $appointments = new Appointments;
-        $appointments->endAppointment($data['app_id']);
     }
 
     if (!empty($lab_tests)) {
@@ -105,6 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $labTest->insertTest($lab, $request_id);
         }
     }
+
+    $appointments = new Appointments;
+        $appointments->endAppointment($data['app_id']);
 }
 ?>
 

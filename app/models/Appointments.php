@@ -35,7 +35,8 @@ class Appointments extends Model
         patient.id,
         patient.gender,
         patient.first_name,
-        patient.last_name
+        patient.last_name,
+        patient.dob
         FROM 
             appointment
         JOIN 

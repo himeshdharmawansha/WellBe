@@ -33,15 +33,9 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                    <!-- <div class="search-bar">
-                        <input type="text" placeholder="Search by Appointment ID" />
-                        <button type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div> -->
                     <div class="add-appointment">
                         <i class="fas fa-plus"></i>
-                        <span class="add-text">Schedule an appointment</span>
+                        <a class="add-text" onclick = "window.location.href='<?= ROOT ?>/Receptionist/scheduleAppointment'" >Schedule an appointment</a>
                     </div>
                 </div>
                 <div class="view-buttons">

@@ -73,7 +73,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                               <div class="chat-info">
                                  <h4><?php echo esc($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $roleTitle; ?></p>
-                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline';?></p>
+                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
                               </div>
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
@@ -369,7 +369,9 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          return div.innerHTML;
       }
 
-      function renderMessage(message, chatMessages, isInitialRender = false, unseenCount = 0, index = 0, insertedUnseenLine = { value: false }) {
+      function renderMessage(message, chatMessages, isInitialRender = false, unseenCount = 0, index = 0, insertedUnseenLine = {
+         value: false
+      }) {
          const messageDate = new Date(message.date);
          const formattedTime = formatTimeOrDate(messageDate);
          const currentDate = messageDate.toDateString();
@@ -485,7 +487,9 @@ if (!empty($profiles) && !isset($profiles['error'])) {
 
             // Get the unseen count from the map
             const unseenCount = unseenCountsMap[receiverId] || 0;
-            let insertedUnseenLine = { value: false };
+            let insertedUnseenLine = {
+               value: false
+            };
 
             data.messages.forEach((message, index) => {
                renderMessage(message, chatMessages, true, unseenCount, index, insertedUnseenLine);
@@ -899,7 +903,9 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          } else if (isYesterday) {
             return "Yesterday";
          } else if (isWithinWeek) {
-            return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
+            return messageDate.toLocaleDateString('en-US', {
+               weekday: 'long'
+            });
          } else {
             return messageDate.toLocaleDateString('en-GB', {
                day: '2-digit',
@@ -935,6 +941,72 @@ if (!empty($profiles) && !isset($profiles['error'])) {
       }
 
       let isSearching = false;
+
+      function searchUsers(query) {
+         const chatList = document.getElementById('chat-list');
+
+         if (!query.trim()) {
+            isSearching = false;
+            refreshUnseenCounts([1, 2, 4, 5]);
+            return;
+         }
+
+         isSearching = true;
+
+         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
+            .then(response => {
+               if (!response.ok) {
+                  throw new Error('Failed to search users');
+               }
+               return response.json();
+            })
+            .then(user_profile => {
+               chatList.innerHTML = '';
+
+               if (user_profile.error || user_profile.length === 0) {
+                  chatList.innerHTML = `<li></li>`;
+                  return;
+               }
+
+               user_profile.forEach(user => {
+                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+                  let lastMessageDisplay = '';
+
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     lastMessageDisplay = formatChatListDate(messageDate);
+                  }
+
+                  const profileImageUrl = user.image ?
+                     '<?= ROOT ?>/assets/images/users/' + user.image :
+                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
+
+                  const chatItemHTML = `
+                     <li>
+                     <div class="chat-item ${unseenClass}" 
+                        data-receiver-id="${user.id}" 
+                        onclick="selectChat(this, '${user.id}')">
+                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                        <div class="chat-info">
+                           <h4>${user.username}</h4>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
+                        </div>
+                        <div class="chat-side">
+                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                           <span class="circle"></span>
+                        </div>
+                     </div>
+                     </li>
+               `;
+
+                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+               });
+            })
+            .catch(error => {
+               console.error("Error searching users:", error);
+            });
+      }
 
       function refreshUnseenCounts(roleArray) {
          if (isSearching) return;
@@ -1006,71 +1078,6 @@ if (!empty($profiles) && !isset($profiles['error'])) {
          }
       }, 1000);
 
-      function searchUsers(query) {
-         const chatList = document.getElementById('chat-list');
-
-         if (!query.trim()) {
-            isSearching = false;
-            refreshUnseenCounts([1, 2, 4, 5]);
-            return;
-         }
-
-         isSearching = true;
-
-         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to search users');
-               }
-               return response.json();
-            })
-            .then(user_profile => {
-               chatList.innerHTML = '';
-
-               if (user_profile.error || user_profile.length === 0) {
-                  chatList.innerHTML = `<li></li>`;
-                  return;
-               }
-
-               user_profile.forEach(user => {
-                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-                  let lastMessageDisplay = '';
-
-                  if (user.last_message_date) {
-                     const messageDate = new Date(user.last_message_date);
-                     lastMessageDisplay = formatChatListDate(messageDate);
-                  }
-
-                  const profileImageUrl = user.image ?
-                     '<?= ROOT ?>/assets/images/users/' + user.image :
-                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
-
-                  const chatItemHTML = `
-                     <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, '${user.id}')">
-                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
-                           <p class="chat-status">${getRoleTitle(user.role)}</p>
-                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
-                        </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
-                     </div>
-                     </li>
-               `;
-
-                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
-               });
-            })
-            .catch(error => {
-               console.error("Error searching users:", error);
-            });
-      }
 
       function markMessagesAsSeen(receiverId) {
          fetch(`<?= ROOT ?>/ChatController/markMessagesSeen/${receiverId}`)

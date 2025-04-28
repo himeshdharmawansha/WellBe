@@ -62,7 +62,23 @@
                             onclick="window.location.href = window.location.href;">Refresh</button>
                         </form>
                     </div>
+                    <div class="form-section">
+                        <div class="header">
+                            <p class="header-title">Patient Details</p>
+                        </div>
+                        <form id="appointment-form-patient" method="POST" action="">
+                            <div class="input-box">
+                                <label for="doctor">Patient NIC:</label>
+                                <input type = "text" id="patient_nic" name = "patent_nic">
+                                <label for="doctor">Patient Name:</label>
+                                <input type = "text" id="patient_name" name = "patent_name">
+                            </div>
+                            <button type="submit" class="submit-button">Make Appointment</button>
+                        </form>
+                    </div>
+                </div>
 
+                <div class = "flex-container">
                     <div class="selection-section">
                         <div class="input-box">
                             <label>Available Dates</label>
@@ -95,23 +111,6 @@
                                 <?php endif; ?>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class = "flex-container">
-                <div class="form-section">
-                        <div class="header">
-                            <p class="header-title">Patient Details</p>
-                        </div>
-                        <form id="appointment-form-patient" method="POST" action="">
-                            <div class="input-box">
-                                <label for="doctor">Patient NIC:</label>
-                                <input type = "text" id="patient_nic" name = "patent_nic">
-                                <label for="doctor">Patient Name:</label>
-                                <input type = "text" id="patient_name" name = "patent_name">
-                            </div>
-                            <button type="submit" class="submit-button">Make Appointment</button>
-                        </form>
                     </div>
                 </div>
             </div>

@@ -34,23 +34,21 @@
                         <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
-                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
                      <?php if (empty($data['pendingRequests'])) : ?>
                         <tr>
-                           <td colspan="6" style="text-align: center;">No pending requests found.</td>
+                           <td colspan="5" style="text-align: center;">No pending requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
-                              <td><?= esc($request['patient_name']) ?></td>
-                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['p_first_name'] . ' ' . $request['p_last_name']) ?></td>
+                              <td><?= esc($request['first_name'] . ' ' . $request['last_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
                      <?php endif; ?>
@@ -66,23 +64,21 @@
                         <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
-                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
                      <?php if (empty($data['completedRequests'])) : ?>
                         <tr>
-                           <td colspan="6" style="text-align: center;">No completed requests found.</td>
+                           <td colspan="5" style="text-align: center;">No completed requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
-                              <td><?= esc($request['patient_name']) ?></td>
-                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['p_first_name'] . ' ' . $request['p_last_name']) ?></td>
+                              <td><?= esc($request['first_name'] . ' ' . $request['last_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
                      <?php endif; ?>
@@ -200,8 +196,8 @@
                         showPopup(data.error);
                         const pending = document.getElementById('pending-requests-body');
                         const completed = document.getElementById('completed-requests-body');
-                        pending.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
-                        completed.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
+                        pending.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading requests.</td></tr>';
+                        completed.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading requests.</td></tr>';
                         return;
                      }
 
@@ -217,10 +213,9 @@
                            <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                               <td>${request.id}</td>
                               <td>${request.patient_id}</td>
-                              <td>${request.patient_name}</td>
-                              <td>${request.first_name}</td>
+                              <td>${request.p_first_name} ${request.p_last_name}</td>
+                              <td>${request.first_name} ${request.last_name}</td>
                               <td>${request.date_t}</td>
-                              <td>${formattedTime}</td>
                            </tr>`;
 
                         if (request.state === 'pending') pending.innerHTML += row;
@@ -243,10 +238,9 @@
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                     <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
-                                    <td>${request.patient_name}</td>
-                                    <td>${request.first_name}</td>
+                                    <td>${request.p_first_name} ${request.p_last_name}</td>
+                                    <td>${request.first_name} ${request.last_name}</td>
                                     <td>${request.date_t}</td>
-                                    <td>${formattedTime}</td>
                                  </tr>`;
                               if (request.state === 'pending') pending.innerHTML += row;
                               if (request.state === 'completed') completed.innerHTML += row;
@@ -258,8 +252,8 @@
                      console.error('Error fetching requests:', error);
                      const pending = document.getElementById('pending-requests-body');
                      const completed = document.getElementById('completed-requests-body');
-                     pending.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
-                     completed.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading requests.</td></tr>';
+                     pending.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading requests.</td></tr>';
+                     completed.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading requests.</td></tr>';
                   });
             }
          }, 3000);
@@ -298,7 +292,7 @@
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
-                                    <td colspan="6" style="text-align: center;">Error occurred while searching</td>
+                                    <td colspan="5" style="text-align: center;">Error occurred while searching</td>
                                  </tr>`;
                            });
                            currentPage = 1;
@@ -317,10 +311,9 @@
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                     <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
-                                    <td>${request.patient_name}</td>
-                                    <td>${request.first_name}</td>
+                                    <td>${request.p_first_name} ${request.p_last_name}</td>
+                                    <td>${request.first_name} ${request.last_name}</td>
                                     <td>${request.date_t}</td>
-                                    <td>${formattedTime}</td>
                                  </tr>`;
                               if (request.state === "completed") {
                                  document.querySelector("#completed-requests-body").innerHTML += row;
@@ -332,7 +325,7 @@
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
-                                    <td colspan="6" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                    <td colspan="5" style="text-align: center;">No results found for "${searchTerm}"</td>
                                  </tr>`;
                            });
                         }
@@ -355,10 +348,9 @@
                                           <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                              <td>${request.id}</td>
                                              <td>${request.patient_id}</td>
-                                             <td>${request.patient_name}</td>
-                                             <td>${request.first_name}</td>
+                                             <td>${request.p_first_name} ${request.p_last_name}</td>
+                                             <td>${request.first_name} ${request.last_name}</td>
                                              <td>${request.date_t}</td>
-                                             <td>${formattedTime}</td>
                                           </tr>`;
                                        if (request.state === "completed") {
                                           document.querySelector("#completed-requests-body").innerHTML += row;
@@ -370,7 +362,7 @@
                                     requestBodies.forEach(body => {
                                        body.innerHTML = `
                                           <tr>
-                                             <td colspan="6" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                             <td colspan="5" style="text-align: center;">No results found for "${searchTerm}"</td>
                                           </tr>`;
                                     });
                                  }
@@ -384,7 +376,7 @@
                         requestBodies.forEach(body => {
                            body.innerHTML = `
                               <tr>
-                                 <td colspan="6" style="text-align: center;">Error occurred while searching</td>
+                                 <td colspan="5" style="text-align: center;">Error occurred while searching</td>
                               </tr>`;
                         });
                         currentPage = 1;

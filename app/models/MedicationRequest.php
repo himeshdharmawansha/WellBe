@@ -7,7 +7,7 @@ class MedicationRequest extends Model
 
    public function getAll()
    {
-      return $this->read("SELECT mr.*, d.first_name,t.date as date_t, p.first_name as patient_name FROM medication_requests mr, timeslot t, doctor d, patient p where mr.date = t.slot_id AND mr.doctor_id = d.id AND p.id = mr.patient_id");
+      return $this->read("SELECT mr.*, d.first_name,d.last_name,t.date as date_t, p.first_name as p_first_name, p.last_name as p_last_name FROM medication_requests mr, timeslot t, doctor d, patient p where mr.date = t.slot_id AND mr.doctor_id = d.id AND p.id = mr.patient_id");
    }
 
    public function getPendingRequests()
@@ -27,7 +27,7 @@ class MedicationRequest extends Model
 
    public function searchByPatientId($patientId)
    {
-      $query = "SELECT mr.*, d.first_name,t.date as date_t, p.first_name as patient_name FROM medication_requests mr, timeslot t, doctor d, patient p where mr.date = t.slot_id AND mr.doctor_id = d.id AND p.id = mr.patient_id AND patient_id LIKE :patient_id ORDER BY id DESC";
+      $query = "SELECT mr.*, d.first_name, d.last_name ,t.date as date_t, p.first_name as p_first_name, p.last_name as p_last_name FROM medication_requests mr, timeslot t, doctor d, patient p where mr.date = t.slot_id AND mr.doctor_id = d.id AND p.id = mr.patient_id AND patient_id LIKE :patient_id ORDER BY id DESC";
       $params = [':patient_id' => '%' . $patientId . '%'];
       return $this->read($query, $params);
    }

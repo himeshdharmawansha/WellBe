@@ -36,24 +36,24 @@
                      <tr>
                         <th>Request ID</th>
                         <th>Patient ID</th>
+                        <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
-                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="pending-requests-body">
                      <?php if (empty($data['pendingRequests'])) : ?>
                         <tr>
-                           <td colspan="4" style="text-align: center;">No pending requests found.</td>
+                           <td colspan="5" style="text-align: center;">No pending requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['pendingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
-                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['p_first_name'] . ' ' . $request['p_last_name']) ?></td>
+                              <td><?= esc($request['first_name'] . ' ' . $request['last_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
                      <?php endif; ?>
@@ -67,24 +67,24 @@
                      <tr>
                         <th>Request ID</th>
                         <th>Patient ID</th>
+                        <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
-                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="ongoing-requests-body">
                      <?php if (empty($data['ongoingRequests'])) : ?>
                         <tr>
-                           <td colspan="4" style="text-align: center;">No ongoing requests found.</td>
+                           <td colspan="5" style="text-align: center;">No ongoing requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['ongoingRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
-                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['p_first_name'] . ' ' . $request['p_last_name']) ?></td>
+                              <td><?= esc($request['first_name'] . ' ' . $request['last_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
                      <?php endif; ?>
@@ -98,24 +98,24 @@
                      <tr>
                         <th>Request ID</th>
                         <th>Patient ID</th>
+                        <th>Patient Name</th>
                         <th>Doctor's Name</th>
                         <th>Date</th>
-                        <th>Time</th>
                      </tr>
                   </thead>
                   <tbody id="completed-requests-body">
                      <?php if (empty($data['completedRequests'])) : ?>
                         <tr>
-                           <td colspan="4" style="text-align: center;">No completed requests found.</td>
+                           <td colspan="5" style="text-align: center;">No completed requests found.</td>
                         </tr>
                      <?php else : ?>
                         <?php foreach ($data['completedRequests'] as $request) : ?>
                            <tr data-id="<?= esc($request['id']) ?>" data-doctor-id="<?= esc($request['doctor_id']) ?>">
                               <td><?= esc($request['id']) ?></td>
                               <td><?= esc($request['patient_id']) ?></td>
-                              <td><?= esc($request['first_name']) ?></td>
+                              <td><?= esc($request['p_first_name'] . ' ' . $request['p_last_name']) ?></td>
+                              <td><?= esc($request['first_name'] . ' ' . $request['last_name']) ?></td>
                               <td><?= esc($request['date_t']) ?></td>
-                              <td><?= date('h:i A', strtotime($request['time'])) ?></td>
                            </tr>
                         <?php endforeach; ?>
                      <?php endif; ?>
@@ -264,19 +264,13 @@
                      completed.innerHTML = '';
 
                      data.forEach(request => {
-                        const formattedTime = new Date(`1970-01-01T${request.time}Z`).toLocaleTimeString('en-US', {
-                           hour: '2-digit',
-                           minute: '2-digit',
-                           hour12: true
-                        });
-
                         const row = `
                            <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                               <td>${request.id}</td>
                               <td>${request.patient_id}</td>
-                              <td>${request.first_name}</td>
+                              <td>${request.p_first_name} ${request.p_last_name}</td>
+                              <td>${request.first_name} ${request.last_name}</td>
                               <td>${request.date_t}</td>
-                              <td>${formattedTime}</td>
                            </tr>`;
 
                         if (request.state === 'pending') pending.innerHTML += row;
@@ -307,19 +301,13 @@
 
                         if (data.length) {
                            data.forEach(request => {
-                              const formattedTime = new Date(`1970-01-01T${request.time}Z`).toLocaleTimeString('en-US', {
-                                 hour: '2-digit',
-                                 minute: '2-digit',
-                                 hour12: true
-                              });
-
                               const row = `
                                  <tr data-id="${request.id}" data-doctor-id="${request.doctor_id}">
                                     <td>${request.id}</td>
                                     <td>${request.patient_id}</td>
-                                    <td>${request.first_name}</td>
+                                    <td>${request.p_first_name} ${request.p_last_name}</td>
+                                    <td>${request.first_name} ${request.last_name}</td>
                                     <td>${request.date_t}</td>
-                                    <td>${formattedTime}</td>
                                  </tr>`;
 
                               if (request.state === 'pending') {
@@ -336,7 +324,7 @@
                            requestBodies.forEach(body => {
                               body.innerHTML = `
                                  <tr>
-                                    <td colspan="4" style="text-align: center;">No results found for "${searchTerm}"</td>
+                                    <td colspan="5" style="text-align: center;">No results found for "${searchTerm}"</td>
                                  </tr>`;
                            });
                         }
@@ -351,7 +339,7 @@
                         requestBodies.forEach(body => {
                            body.innerHTML = `
                               <tr>
-                                 <td colspan="4" style="text-align: center;">Error occurred while searching</td>
+                                 <td colspan="5" style="text-align: center;">Error occurred while searching</td>
                               </tr>`;
                         });
                         currentPage = 1;

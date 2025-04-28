@@ -3,7 +3,7 @@
 class LabTest extends Model
 {
 
-    public function insertRecord($id)
+    public function insertRecord($id, $appointment_id)
     {
 
         $timeslot = new Timeslot();
@@ -13,23 +13,23 @@ class LabTest extends Model
         $patient_id = $id;
         $state = 'Pending';
 
-        $query = "INSERT INTO test_requests (doctor_id, patient_id, date, state)
-                  VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO test_requests (doctor_id, patient_id, date, state, appointment_id)
+                  VALUES (?, ?, ?, ?, ?)";
 
-        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $state]);
+        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $state, $appointment_id]);
     }
 
     public function getPastTestDetails() {}
 
-    public function getLastInsertedId($id)
+    public function getLastInsertedId($id, $appointment_id)
     {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
         $timeslot = new Timeslot();
         $date = $timeslot -> getDateId(date('y-m-d'));
 
-        $query = "SELECT id FROM test_requests WHERE doctor_id = ? AND patient_id = ? AND date = ?";
-        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id]);
+        $query = "SELECT id FROM test_requests WHERE doctor_id = ? AND patient_id = ? AND date = ? AND appointment_id = ?";
+        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id, $appointment_id]);
 
         return $result[0]->id;
     }

@@ -3,7 +3,7 @@
 class MedicalRecord extends Model
 {
 
-    public function insertRecord($remarks, $data, $id, $file_name)
+    public function insertRecord($remarks, $data, $id, $file_name, $appointment_id)
     {
 
         $timeslot = new Timeslot();
@@ -14,10 +14,10 @@ class MedicalRecord extends Model
         $state = "new";
         $diagnosis = $data;
 
-        $query = "INSERT INTO medication_requests (doctor_id, patient_id, date, time, remark, state, diagnosis, file_name)
-                  VALUES (?, ?, ?, CURTIME(), ?, ?, ?, ?)";
+        $query = "INSERT INTO medication_requests (doctor_id, patient_id, date, time, remark, state, diagnosis, file_name, appointment_id)
+                  VALUES (?, ?, ?, CURTIME(), ?, ?, ?, ?, ?)";
 
-        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $remarks, $state, $diagnosis, $file_name]);
+        $this->query($query, [$doctor_id, $patient_id, $today[0]->slot_id, $remarks, $state, $diagnosis, $file_name, $appointment_id]);
     }
 
     public function getPastRecordsDetials($patient_id)
@@ -117,15 +117,15 @@ class MedicalRecord extends Model
         return array_values($groupedData);
     }
 
-    public function getLastInsertedId($id)
+    public function getLastInsertedId($id, $appointment_id)
     {
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
         $timeslot = new Timeslot();
         $date = $timeslot -> getDateId(date('y-m-d'));
 
-        $query = "SELECT id FROM medication_requests WHERE doctor_id = ? AND patient_id = ? AND date = ?";
-        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id]);
+        $query = "SELECT id FROM medication_requests WHERE doctor_id = ? AND patient_id = ? AND date = ? AND appointment_id = ?";
+        $result = $this->query($query, [$doctor_id, $patient_id, $date[0]->slot_id,  $appointment_id]);
 
         return $result[0]->id;
     }

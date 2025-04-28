@@ -106,7 +106,6 @@
     <script src="<?= ROOT ?>/assets/js/Lab/labTechnicianDashboard.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
-            // Popup logic (error/success)
             let retryCallback = null;
 
             function showPopup(message, type = 'error', retry = false, callback = null) {
@@ -154,7 +153,6 @@
 
             document.getElementById('retry-btn')?.addEventListener('click', retryAction);
 
-            // Chart data fetching
             google.charts.load('current', {
                 'packages': ['corechart']
             });
@@ -192,7 +190,6 @@
                     });
             }
 
-            // Test requests fetching
             const tableBodyRequests = document.querySelector('.request-table tbody');
 
             function fetchTestRequests() {
@@ -224,7 +221,7 @@
             fetchTestRequests();
             setInterval(fetchTestRequests, 3000);
 
-            // Messages fetching
+
             const tableBodyMessages = document.querySelector('.message-table tbody');
             const noMessagesRow = `
                 <tr>
@@ -271,7 +268,6 @@
             fetchNewMessages();
             setInterval(fetchNewMessages, 5000);
 
-            // Chat state updates
             function updateState() {
                 fetch('<?= ROOT ?>/ChatController/loggedin')
                     .catch(error => console.error("Error in loggedin:", error));

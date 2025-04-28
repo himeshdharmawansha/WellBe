@@ -84,7 +84,6 @@
             verifyForm.style.display = formId === 'verify-form' ? 'block' : 'none';
             entryForm.style.display = formId === 'entry-form' ? 'block' : 'none';
 
-            // Dim buttons based on active form
             if (formId === 'verify-form') {
                 leftArrow.classList.remove('disabled');
                 rightArrow.classList.add('disabled');

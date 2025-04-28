@@ -36,7 +36,7 @@
 
 .chat-list {
    min-width: 280px;
-   background-color: #f1eeee40;
+   background-color: #f5f5f5;
    border-right: 1px solid #e0e0e0;
    display: flex;
    flex-direction: column;
@@ -135,11 +135,26 @@ ul {
    padding: 15px;
    background-color: #007bff;
    color: #fff;
+   justify-content: flex-start;
    align-items: center;
+}
+
+.fa-search {
+   padding: 13px 4px;
+   border-radius: 10px;
+}
+
+.search-bar-message {
+   padding: 10px;
+   border-radius: 5px;
 }
 
 .header-info h4 {
    margin: 0;
+}
+
+.last {
+   margin-left: auto;
 }
 
 .header-info p {
@@ -194,6 +209,12 @@ ul {
    padding-right: 53px; /* Force long words to break and wrap */
 }
 
+.highlight {
+   background-color: #ffeb3b; /* Yellow background for highlighting */
+   padding: 0;
+   border-radius: 2px;
+}
+
 .message .time {
    font-size: 10px;
    color: #333;
@@ -219,6 +240,7 @@ ul {
    font-size: 0.9em;
    color: #333;
 }
+
 
 .message.document {
    background-color: #589eff;
@@ -625,6 +647,34 @@ a {
    border-radius: 15px;
    text-transform: uppercase;
    font-weight: bold;
+}
+
+.popup-menu {
+   position: absolute;
+   background-color: white;
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   z-index: 1000;
+   padding: 5px 0;
+   display: none;
+}
+
+.popup-menu li {
+   padding: 8px 8px;
+   cursor: pointer;
+   font-size: 14px;
+   color: #333;
+   display: flex;
+   align-items: center;
+}
+
+.popup-menu li i {
+   margin-right: 8px;
+}
+
+.popup-menu li:hover {
+   background-color: #f0f0f0;
 }
 
 /* Popup styles */

@@ -31,7 +31,6 @@ class PharmacyModel extends Model
         $query = "
             SELECT state, COUNT(*) as count 
             FROM medication_requests 
-            WHERE date >= NOW() - INTERVAL 14 DAY
             GROUP BY state
         ";
         $results = $db->read($query);
@@ -82,13 +81,12 @@ class PharmacyModel extends Model
     {
         $db = new Database();
 
-        // Get medication details
         $query = "SELECT medication_name, dosage, taken_time, substitution, state 
                   FROM medication_request_details 
                   WHERE req_id = :req_id";
         $medicationDetails = $db->read($query, ['req_id' => $requestID]);
 
-        // Get remarks
+
         $remarksQuery = "SELECT remark FROM medication_requests WHERE id = :req_id";
         $remarksResult = $db->read($remarksQuery, ['req_id' => $requestID]);
         $additionalRemarks = $remarksResult[0]['remark'] ?? '';

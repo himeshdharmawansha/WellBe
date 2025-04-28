@@ -122,17 +122,16 @@
 
          document.getElementById('retry-btn')?.addEventListener('click', retryAction);
 
-         // Date validation function
          function isDateNotInFuture(dateStr) {
-            const currentDate = new Date('2025-04-26'); // Current date as per system
+            const currentDate = new Date('2025-04-26'); 
             const inputDate = new Date(dateStr);
             if (isNaN(inputDate.getTime())) {
-               return false; // Invalid date format
+               return false; 
             }
             return inputDate <= currentDate;
          }
 
-         const today = new Date('2025-04-26'); // Current date as per system
+         const today = new Date('2025-04-26'); 
          const thirtyDaysAgo = new Date(today);
          thirtyDaysAgo.setDate(today.getDate() - 30);
 
@@ -154,19 +153,16 @@
             const startDate = startDateInput.value;
             const endDate = endDateInput.value;
 
-            // Validation: Check for empty dates
             if (!startDate || !endDate) {
                showPopup('Please select both start and end dates.');
                return;
             }
 
-            // Validation: Check if start date is before end date
             if (new Date(startDate) > new Date(endDate)) {
                showPopup('Start date must be before end date.');
                return;
             }
 
-            // Validation: Check if dates are not in the future
             if (!isDateNotInFuture(startDate)) {
                showPopup('Start date cannot be in the future.');
                return;

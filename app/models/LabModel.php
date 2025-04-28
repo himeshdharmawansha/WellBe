@@ -51,7 +51,6 @@ class LabModel extends Model
       $query = "
            SELECT state, COUNT(*) as count 
            FROM test_requests 
-           WHERE date >= NOW() - INTERVAL 14 DAY
            GROUP BY state
        ";
 
@@ -84,7 +83,7 @@ class LabModel extends Model
 
    public function fetchNewMessages()
    {
-      $sender = $_SESSION['userid']; // Current user's ID
+      $sender = $_SESSION['userid']; 
       $receiverQuery = "SELECT id FROM user_profile WHERE role IN (3, 5)";
       $receivers = $this->query($receiverQuery);
 

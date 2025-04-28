@@ -209,7 +209,7 @@
                 .then(data => {
                     if (data.status === 'success') {
                         alert(data.message);
-                        window.location.href = '" . ROOT . "/Receptionist/todayAppointments';  
+                        window.location.href='<?= ROOT ?>/Receptionist/todayAppointments';  
                     } else {
                         alert(data.message);  
                     }

@@ -58,6 +58,7 @@
                                                 <span style="color: black;">Name</span> : <?php echo htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name); ?>
                                             </p>
                                             <p><span style="color: black;">App.ID</span> : <?php echo $appointment->appointment_id; ?></p>
+                                            <!-- <p><span style="color: black;">Date of Birth</span> : <?php echo $appointment->dob; ?></p> -->
                                         </div>
                                     </div>
                                 </div>

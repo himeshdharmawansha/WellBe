@@ -16,7 +16,7 @@
 
         <div class="form-container">
 
-            <form id='patient-form1' class="patient-form" action="./signup" method="post">
+            <form id='patient-form1' class="patient-form" autocomplete="off" action="./signup" method="post">
                 <div class="logo-container">
                     <img class="logo" src="<?= ROOT?>/assets/images/logo.png" />
                     <div class="logo_text">WELL BE</div>
@@ -51,6 +51,8 @@
                     <input type="password" id="password" name="password" required
                         value="<?= $_SESSION['form1_data']['password'] ?? '' ?>">
                 </div>
+
+
 
                 <div class="form-row">
                     <label for="noc">NIC:</label>

@@ -35,7 +35,8 @@ class Appointments extends Model
         patient.id,
         patient.gender,
         patient.first_name,
-        patient.last_name
+        patient.last_name,
+        patient.dob
         FROM 
             appointment
         JOIN 
@@ -193,7 +194,7 @@ class Appointments extends Model
           JOIN (
               SELECT date, MAX(appointment_id) AS max_appointment_id
               FROM appointment
-              WHERE doctor_id = :doctor_id AND date > :date
+              WHERE doctor_id = :doctor_id AND date >= :date
               GROUP BY date
               ORDER BY date ASC
           ) max_appt 
@@ -303,7 +304,7 @@ class Appointments extends Model
         JOIN
             timeslot t ON a.date = t.slot_id
         JOIN
-            timeslot_doctor td ON a.date = td.slot_id
+             timeslot_doctor td ON t.slot_id = td.slot_id AND a.doctor_id = td.doctor_id
         WHERE 
             a.patient_id = ?
         ORDER BY 

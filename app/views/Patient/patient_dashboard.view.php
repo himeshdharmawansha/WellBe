@@ -32,6 +32,7 @@
       <div class="container">
         <div class="dashboard">
           <div class="profile-card">
+
             <div class="image">
               <?php
               $profileImage = ($_SESSION['USER']->gender == 'M') ? 'male_pro.png' : 'female_pro.png';
@@ -53,20 +54,22 @@
                 <p><strong>Medical History: <?= $_SESSION['USER']->medical_history; ?></strong> </p>
                 <p><strong>Allergies: <?= $_SESSION['USER']->allergies; ?></strong></p>
               </div>
+             
               <div style="background-color: #fff3cd; color: #856404; padding: 10px 20px; border: 1px solid #ffeeba; border-radius: 5px; display: inline-block; margin-top: 10px;">
 
-  <div class="tooltip-container">
-    <span>Your E-Wallet Balance:</span>
-    <div class="tooltip-text">E-Wallet is your digital balance used for paying doctor appointment fees.</div>
-  </div>
-  <strong>Rs. <?= htmlspecialchars($ewalletAmount->e_wallet ?? 0) ?></strong>
-</div>
+                <div class="tooltip-container">
+                  <span>Your E-Wallet Balance:</span>
+                  <div class="tooltip-text">E-Wallet is your digital balance used for paying doctor appointment fees.</div>
+                </div>
+                <strong>Rs. <?= htmlspecialchars($ewalletAmount->e_wallet ?? 0) ?></strong>
+              </div>
 
             </div>
             <div class="buttons">
               <button class="button" onclick="window.location.href='chat'">Message</button>
-              <button class="button" onclick="window.location.href='edit_profile'">Edit Profile</button>
+              <button class="button" onclick="window.location.href='<?= ROOT ?>/patient/edit_profile'">Edit Profile</button>
             </div>
+
           </div>
 
           <div class="right">
@@ -115,10 +118,13 @@
                     <?php foreach ($appointments as $appt) : ?>
                       <?php
                       $appointmentDateTime = strtotime($appt->date . ' ' . $appt->start_time);
-                      $currentDateTime = time();
+                      $currentDateTime = time(); // Get the current timestamp
+
+                      // Check if the appointment has already passed
                       if ($appointmentDateTime < $currentDateTime) {
-                        continue;
+                        continue; // Skip the rendering of this card if the appointment has passed
                       }
+
                       ?>
                       <div class="mini-wrapper">
                         <div class="mini" onclick="window.location.href='appointments'">

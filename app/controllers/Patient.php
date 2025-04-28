@@ -43,7 +43,7 @@ class Patient extends Controller
       }      
 
       // Pass appointment data to the dashboard view
-      $this->view('Patient/patient_dashboard', 'patient_dashboard', [
+      $this->view('Patient/patient_dashboard', 'Dashboard', [
          'appointments' => $appointments,
          'rescheduledAppointments' => $rescheduledAppointments,
          'ewalletAmount' => $ewalletAmount
@@ -66,7 +66,7 @@ class Patient extends Controller
          }
       }
       $data['pastRecords'] = $uniqueRequests;
-      $this->view('Patient/medicalreports', 'medicalreports', $data);
+      $this->view('Patient/medicalreports', 'View Medical Reports', $data);
    }
 
 
@@ -92,7 +92,7 @@ class Patient extends Controller
       }
 
       $data['labRequests'] = $uniqueRequests;
-      $this->view('Patient/labreports', 'labreports', $data);
+      $this->view('Patient/labreports', 'View Lab Reports', $data);
    }
 
 
@@ -100,7 +100,7 @@ class Patient extends Controller
    {
 
       $data = [];
-      $doctor = new Doctor(); // Instantiate the Doctor model
+      $doctor = new Doctor(); 
 
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -122,16 +122,16 @@ class Patient extends Controller
                $docId = $doctor->getDoctorId($first_name, $last_name);
                $data['docId'] = $docId[0]->id;
                $data['doctorFee'] = $doctor->getFeesByDoctorId($docId[0]->id)[0]->fees;
-               //echo $docId[0]->id;
+               
 
                $timeslot = new Timeslot();
 
-               //get available dates of a doctor
+             
                $availableDates = $timeslot->getAvailableDays($docId[0]->id);
 
                $appointment = new Appointments();
 
-               //get current appointment num
+             
                $appointmentNums = $appointment->getAppointment($docId[0]->id, $availableDates['todayId']);
 
                foreach ($availableDates['matchedDates'] as &$day) {
@@ -241,7 +241,7 @@ class Patient extends Controller
       //print_r($data['doctors']);
 
 
-      $this->view('Patient/doc_appointment', 'doc_appointment', $data);
+      $this->view('Patient/doc_appointment', 'Search for a Doctor', $data);
    }
 
    public function appointments()
@@ -258,16 +258,69 @@ class Patient extends Controller
 
    public function chat()
    {
-      $this->view('Patient/chat', 'chat');
+      $this->view('Patient/chat', 'Chat');
    }
    public function logout()
    {
-      $this->view('Patient/logout', 'logout');
+      $this->view('Patient/logout', 'Logout');
    }
 
    public function edit_profile()
    {
-      $this->view('Patient/edit_profile', 'edit_profile');
+       $patientModel = new editProf();
+
+       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+           // 1. Get POST data
+           $first_name = trim($_POST['first_name']);
+           $last_name = trim($_POST['last_name']);
+           $contact = trim($_POST['contact']);
+           $email = trim($_POST['email']);
+           $address = trim($_POST['address']);
+           $medical_history = trim($_POST['medical_history']);
+           $allergies = trim($_POST['allergies']);
+           $gender = isset($_POST['gender']) ? $_POST['gender'] : '';
+
+           // 2. Validate input
+           $errors = [];
+
+           if (empty($first_name)) $errors['first_name'] = "First name is required.";
+           if (empty($last_name)) $errors['last_name'] = "Last name is required.";
+           if (!preg_match('/^\d{10}$/', $contact)) $errors['contact'] = "Contact must be a 10-digit number.";
+           if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = "Invalid email format.";
+           if (empty($address)) $errors['address'] = "Address is required.";
+         //   if (empty($gender)) $errors['gender'] = "Gender is required.";
+           // 3. If no errors, update
+           if (empty($errors)) {
+               $id = $_SESSION['USER']->id;
+
+               $updateData = [
+                   'first_name' => $first_name,
+                   'last_name' => $last_name,
+                   'contact' => $contact,
+                   'email' => $email,
+                   'address' => $address,
+                   'medical_history' => $medical_history,
+                   'allergies' => $allergies,
+                  //  'gender' => $gender,
+               ];
+
+               $patientModel->editProfile($id, $updateData);
+
+               // Update session too
+               foreach ($updateData as $key => $value) {
+                   $_SESSION['USER']->$key = $value;
+               }
+
+               // Redirect after saving
+               redirect('patient/patient_dashboard');
+           } else {
+               // If errors, reload view with errors
+               $this->view('Patient/edit_profile', ['errors' => $errors]);
+           }
+       } else {
+           // On GET request
+           $this->view('Patient/edit_profile');
+       }
    }
 
    public function medical_rec($reqId)

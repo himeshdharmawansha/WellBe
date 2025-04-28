@@ -50,9 +50,28 @@
                         <option value="all">All</option>
                         <option value="Present">Present</option>
                         <option value="Not Present">Not Present</option>
+                        <option value="Done">Done</option>
                     </select>
+
+                    <!-- <label for="docFilter">Doctor:</label>
+                    <select id="docFilter" onchange="filterAppointments()">
+                        <option value="all">All Doctors</option>
+                        <?php
+                        $doctorNames = [];
+                        if (!empty($appointments)) {
+                            foreach ($appointments as $appointment) {
+                                $doctorFullName = trim(($appointment->doctor_first_name ?? '') . ' ' . ($appointment->doctor_last_name ?? ''));
+                                if (!in_array($doctorFullName, $doctorNames)) {
+                                    $doctorNames[] = $doctorFullName;
+                                    echo '<option value="' . htmlspecialchars($doctorFullName) . '">' . htmlspecialchars($doctorFullName) . '</option>';
+                                }
+                            }
+                        }
+                        ?>
+                    </select> -->
+ 
                     <button type="button" class="refresh-btn"
-                    onclick="window.location.href = window.location.href;">Refresh</button>
+                        onclick="window.location.href = window.location.href;">Refresh</button>
                 </div>
 
                 <div class="container">
@@ -60,7 +79,7 @@
                         <?php foreach ($appointments as $appointment) : ?>
                             <?php
                             $statusRaw = strtolower(str_replace(' ', '', (string)($appointment->state ?? '')));
-                            $presenceStatus = ($statusRaw === 'present') ? 'Present' : 'Not Present';
+                            $presenceStatus = ($statusRaw === 'present') ? 'Present' : (($statusRaw === 'done') ? 'Done' : 'Not Present');
                             $rawStatus = strtolower(str_replace(' ', '', (string)($appointment->payment_status ?? '')));
                             $paymentStatus = ($rawStatus === 'paid') ? 'Paid' : 'Payment Pending';
 
@@ -81,8 +100,9 @@
                                 <p>You have an appointment with:</p>
                                 <p class="doc_name">
                                     <span>Dr. <?= htmlspecialchars((string)($appointment->doctor_first_name ?? '')) . ' ' . htmlspecialchars((string)($appointment->doctor_last_name ?? '')) ?>
-                                        (<?= htmlspecialchars((string)($appointment->specialization ?? '')) ?>)</span>
+                                        </span>
                                 </p>
+                                <p class ='specialization'><strong><?= htmlspecialchars((string)($appointment->specialization ?? '')) ?></strong></p>
                                 <p>Appointment Number: <span><strong><?= htmlspecialchars((string)($appointment->appointment_id ?? '')) ?></strong></span></p>
                                 <p>Appointment Date: <span><strong><?= htmlspecialchars((string)(date('Y-m-d', strtotime($appointment->date ?? 'now')))) ?></strong></span></p>
                                 <p>Appointment Time: <span><strong><?= htmlspecialchars((string)($appointment->start_time ?? '')) ?></strong></span></p>
@@ -128,73 +148,79 @@
     </div>
 
     <div id="policyModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">×</span>
-        <h2>What happens when you cancel your appointment?</h2>
-        <p>
-            When you cancel your appointment, it will be immediately canceled, and the payment will be refunded to your e-wallet. This means that the money you paid for the appointment will be available in your e-wallet for future use. You can then use the balance in your e-wallet to pay for future appointments or other services.
-        </p>
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h2>What happens when you cancel your appointment?</h2>
+            <p>
+                When you cancel your appointment, it will be immediately canceled, and the payment will be refunded to your e-wallet. This means that the money you paid for the appointment will be available in your e-wallet for future use. You can then use the balance in your e-wallet to pay for future appointments or other services.
+            </p>
+        </div>
     </div>
-</div>
 
 
 
-    <!-- JavaScript for Modal -->
     <script>
         // Function to show the modal
-// Store the appointment ID to be canceled
-let appointmentIdToCancel = null;
+        // Store the appointment ID to be canceled
+        let appointmentIdToCancel = null;
 
-// Function to show the cancel modal
-function showModal(appointmentId) {
-    appointmentIdToCancel = appointmentId; // Store the ID of the appointment
-    document.getElementById("cancelModal").style.display = "block"; // Show cancel modal
-}
+        // Function to show the cancel modal
+        function showModal(appointmentId) {
+            appointmentIdToCancel = appointmentId; // Store the ID of the appointment
+            document.getElementById("cancelModal").style.display = "block"; // Show cancel modal
+        }
 
-// Function to close the modal (for both cancel and policy modals)
-function closeModal() {
-    document.getElementById("cancelModal").style.display = "none"; // Close the cancel modal
-    document.getElementById("policyModal").style.display = "none"; // Close the policy modal as well
-}
+        // Function to close the modal (for both cancel and policy modals)
+        function closeModal() {
+            document.getElementById("cancelModal").style.display = "none"; // Close the cancel modal
+            document.getElementById("policyModal").style.display = "none"; // Close the policy modal as well
+        }
 
-// Function to show the policy modal (this will be triggered after the appointment is canceled)
-function showPolicyModal() {
-    document.getElementById("policyModal").style.display = "block"; // Show the policy modal
-}
+        // Function to show the policy modal (this will be triggered after the appointment is canceled)
+        function showPolicyModal() {
+            document.getElementById("policyModal").style.display = "block"; // Show the policy modal
+        }
 
-// Function to handle appointment cancellation
-function cancelAppointment() {
-    if (appointmentIdToCancel) {
-        // Redirect to the cancellation/refund route with appointment ID
-        window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentIdToCancel}`;
-        // After the redirection, show the policy modal
-        showPolicyModal(); // Show the cancellation policy modal after the appointment is canceled
-    }
-    closeModal(); // Close the cancel modal
-}
+        // Function to handle appointment cancellation
+        function cancelAppointment() {
+            if (appointmentIdToCancel) {
+                // Redirect to the cancellation/refund route with appointment ID
+                window.location.href = `http://localhost/wellbe/public/patient/refund/${appointmentIdToCancel}`;
+                // After the redirection, show the policy modal
+                showPolicyModal(); // Show the cancellation policy modal after the appointment is canceled
+            }
+            closeModal(); // Close the cancel modal
+        }
 
-// Close the modal if clicked outside of it (for both modals)
-window.onclick = function(event) {
-    var cancelModal = document.getElementById("cancelModal");
-    var policyModal = document.getElementById("policyModal");
+        // Close the modal if clicked outside of it (for both modals)
+        window.onclick = function(event) {
+            var cancelModal = document.getElementById("cancelModal");
+            var policyModal = document.getElementById("policyModal");
 
-    // If the user clicks outside of the cancel modal or policy modal, close them
-    if (event.target === cancelModal || event.target === policyModal) {
-        closeModal();
-    }
-}
+            // If the user clicks outside of the cancel modal or policy modal, close them
+            if (event.target === cancelModal || event.target === policyModal) {
+                closeModal();
+            }
+        }
 
         function filterAppointments() {
             const paymentFilter = document.getElementById('paymentFilter').value.toLowerCase().trim();
             const presenceFilter = document.getElementById('presenceFilter').value.toLowerCase().trim();
+            // const docFilter = document.getElementById('docFilter').value.toLowerCase().trim();
 
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
                 const payment = card.getAttribute('data-payment').toLowerCase().trim();
                 const presence = card.getAttribute('data-presence').toLowerCase().trim();
+                // const doctorNameElement = card.querySelector('.doc_name span');
+
+                // const doctorName = doctorNameElement ? doctorNameElement.textContent.toLowerCase().trim() : '';
+
 
                 const matchesPayment = (paymentFilter === 'all' || payment === paymentFilter);
                 const matchesPresence = (presenceFilter === 'all' || presence === presenceFilter);
+                // const matchesDoctor = (docFilter === 'all' || doctorName.includes(docFilter));
+
 
                 if (matchesPayment && matchesPresence) {
                     card.style.display = 'block';
@@ -203,6 +229,9 @@ window.onclick = function(event) {
                 }
             });
         }
+
+
+        
     </script>
 </body>
 

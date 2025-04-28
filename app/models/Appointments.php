@@ -194,7 +194,7 @@ class Appointments extends Model
           JOIN (
               SELECT date, MAX(appointment_id) AS max_appointment_id
               FROM appointment
-              WHERE doctor_id = :doctor_id AND date > :date
+              WHERE doctor_id = :doctor_id AND date >= :date
               GROUP BY date
               ORDER BY date ASC
           ) max_appt 

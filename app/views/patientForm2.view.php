@@ -67,7 +67,7 @@
                     
                     
                     <div class="buttons-bar">
-                        <button type="button" class="prev-button" onclick="window.location.href='./form1.php';">Previous</button>
+                        <button type="button" class="prev-button" onclick="window.location.href='http://localhost/WELLBE/public/signup';">Previous</button>
                         <button type="submit" class="submit-button">Submit</button>
                     </div>
                 </form>

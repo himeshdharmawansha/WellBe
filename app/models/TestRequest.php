@@ -10,8 +10,9 @@ class TestRequest extends Model
    
    public function getAll()
    {
-      return $this->read("SELECT tr.*, t.date as date_t,d.first_name FROM test_requests tr, timeslot t, doctor d where tr.date = t.slot_id AND d.id = tr.doctor_id");
+      return $this->read("SELECT tr.*, t.date as date_t,d.first_name, d.last_name, p.first_name as p_first_name, p.last_name as p_last_name FROM test_requests tr, timeslot t, doctor d, patient p where tr.date = t.slot_id AND d.id = tr.doctor_id AND p.id = tr.patient_id");
    }
+
 
    public function getPendingRequests()
    {
@@ -30,7 +31,7 @@ class TestRequest extends Model
 
    public function searchByPatientId($patientId)
    {
-      $query = "SELECT tr.*, tr.patient_id, d.first_name, t.date as date_t FROM test_requests tr, doctor d, timeslot t WHERE d.id = tr.doctor_id AND tr.date = t.slot_id AND patient_id LIKE :patient_id ORDER BY id DESC";
+      $query = "SELECT tr.*, d.first_name,d.last_name, t.date as date_t, p.first_name as p_first_name, p.last_name as p_last_name FROM test_requests tr, timeslot t, doctor d, patient p WHERE d.id = tr.doctor_id AND tr.date = t.slot_id AND p.id = tr.patient_id AND patient_id LIKE :patient_id ORDER BY id DESC";
       $params = [':patient_id' => '%' . $patientId . '%'];
       return $this->read($query, $params);
    }

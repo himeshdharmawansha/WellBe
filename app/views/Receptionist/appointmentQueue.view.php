@@ -38,7 +38,7 @@
                         Dr. <?= $session->doctor_name ?>
                     </span>
                     <div class="search-bar">
-                        <input type="text" placeholder="Search by Appointment No" />
+                        <input type="text" id="searchInput" placeholder="Search by Appointment No" />
                         <button type="submit">
                             <i class="fas fa-search"></i>
                         </button>
@@ -145,6 +145,23 @@
                 hidden.value = select.value;
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(filter)) {
+                        row.style.display = ''; 
+                    } else {
+                        row.style.display = 'none'; 
+                    }
+                });
+            });
+        });
     </script>
 
 </body>

@@ -76,6 +76,16 @@
     font-size: 14px;
 }
 
+.refresh-btn {
+    background-color: #33cc6b;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 14px;
+}
 
 /* Flex Container */
 /* .content-container {

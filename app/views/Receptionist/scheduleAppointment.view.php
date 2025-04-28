@@ -58,6 +58,8 @@
                             </div>
 
                             <button type="submit" class="submit-button">Search</button>
+                            <button type="button" class="refresh-btn"
+                            onclick="window.location.href = window.location.href;">Refresh</button>
                         </form>
                     </div>
 
@@ -209,8 +211,8 @@
                 .then(data => {
                     if (data.status === 'success') {
                         alert(data.message);
-                        window.location.href = '" . ROOT . "/Receptionist/todayAppointments';  
-                    } else {
+                        window.location.href='<?= ROOT ?>/Receptionist/todayAppointments';
+                        } else {
                         alert(data.message);  
                     }
                 })

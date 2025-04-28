@@ -53,65 +53,7 @@
         </div>
     </div>
 
-    <!-- ✅ Correct place to write JavaScript -->
-    <!-- <script>
-        function validateForm() {
-            let isValid = true;
-
-            // First Name Validation
-            const firstName = document.getElementById("first_name").value.trim();
-            const firstNameError = document.getElementById("first_name_error");
-            if (!firstName) {
-                firstNameError.textContent = "First Name is required.";
-                isValid = false;
-            } else {
-                firstNameError.textContent = "";
-            }
-
-            // Last Name Validation
-            const lastName = document.getElementById("last_name").value.trim();
-            const lastNameError = document.getElementById("last_name_error");
-            if (!lastName) {
-                lastNameError.textContent = "Last Name is required.";
-                isValid = false;
-            } else {
-                lastNameError.textContent = "";
-            }
-
-            // Contact Validation
-            const contact = document.getElementById("contact").value.trim();
-            const contactError = document.getElementById("contact_error");
-            const contactPattern = /^\d{10}$/;
-            if (!contactPattern.test(contact)) {
-                contactError.textContent = "Contact must be a 10-digit number.";
-                isValid = false;
-            } else {
-                contactError.textContent = "";
-            }
-
-            // Email Validation
-            const email = document.getElementById("email").value.trim();
-            const emailError = document.getElementById("email_error");
-            if (!email) {
-                emailError.textContent = "Email is required.";
-                isValid = false;
-            } else {
-                emailError.textContent = "";
-            }
-
-            // Address Validation
-            const address = document.getElementById("address").value.trim();
-            const addressError = document.getElementById("address_error");
-            if (!address) {
-                addressError.textContent = "Address is required.";
-                isValid = false;
-            } else {
-                addressError.textContent = "";
-            }
-
-            return isValid;
-        }
-    </script> -->
+    
 
 </body>
 

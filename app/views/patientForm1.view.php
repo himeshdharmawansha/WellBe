@@ -52,6 +52,8 @@
                         value="<?= $_SESSION['form1_data']['password'] ?? '' ?>">
                 </div>
 
+
+
                 <div class="form-row">
                     <label for="noc">NIC:</label>
                     <input type="text" id="nic" name="nic" required value="<?= $_SESSION['form1_data']['nic'] ?? '' ?>">

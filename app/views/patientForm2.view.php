@@ -30,9 +30,11 @@
                         <label for="allergies">Allergies:</label>
                         <input type="text" id="allergies" name="allergies" value="<?= $_POST['allergies'] ?? '' ?>">
                     </div>
+
+
                     
+
                     <span class="form-title">Emergency Contact Information</span>
-                    
                     <div class="form-row">
                         <label for="emergency_contact_name">Emergency Contact Name:</label>
                         <input type="text" id="emergency_contact_name" name="emergency_contact_name" required value="<?= $_POST['emergency_contact_name'] ?? '' ?>">

@@ -100,7 +100,7 @@ class Patient extends Controller
    {
 
       $data = [];
-      $doctor = new Doctor(); // Instantiate the Doctor model
+      $doctor = new Doctor(); 
 
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -122,16 +122,16 @@ class Patient extends Controller
                $docId = $doctor->getDoctorId($first_name, $last_name);
                $data['docId'] = $docId[0]->id;
                $data['doctorFee'] = $doctor->getFeesByDoctorId($docId[0]->id)[0]->fees;
-               //echo $docId[0]->id;
+               
 
                $timeslot = new Timeslot();
 
-               //get available dates of a doctor
+             
                $availableDates = $timeslot->getAvailableDays($docId[0]->id);
 
                $appointment = new Appointments();
 
-               //get current appointment num
+             
                $appointmentNums = $appointment->getAppointment($docId[0]->id, $availableDates['todayId']);
 
                foreach ($availableDates['matchedDates'] as &$day) {

@@ -25,6 +25,8 @@ class Patient extends Model
         'emergency_contact_no',
         'emergency_contact_relationship',
         'e_wallet',
+        'verified',
+        'city'
     ];
 
     public function validate_first_form($data)
@@ -37,6 +39,8 @@ class Patient extends Model
         } elseif (!preg_match("/^[a-zA-Z\s]+$/", $data['first_name'])) {
             $this->errors['first_name'] = "First Name must contain only letters and spaces";
         }
+
+
 
         if (empty($data['last_name'])) {
             $this->errors['last_name'] = "Last Name is required";
@@ -59,12 +63,18 @@ class Patient extends Model
         } else {
             $dob = new DateTime($data['dob']);
             $currentDate = new DateTime();
-            $age = $currentDate->diff($dob)->y; 
         
-            if ($age < 16) {
-                $this->errors['dob'] = "You must be at least 16 years old";
+            if ($dob > $currentDate) {
+                $this->errors['dob'] = "Invalid Date of Birth";
+            } else {
+                $age = $currentDate->diff($dob)->y;
+        
+                if ($age < 16) {
+                    $this->errors['dob'] = "You must be at least 16 years old";
+                }
             }
         }
+        
         
 
         if (!empty($data['age']) && !is_numeric($data['age'])) {
@@ -111,6 +121,7 @@ class Patient extends Model
         } elseif (!preg_match("/^[a-zA-Z\s]+$/", $data['emergency_contact_name'])) {
             $this->errors['emergency_contact_name'] = "Emergency Contact Name must contain only letters and spaces";
         }
+
 
         // Validate emergency contact number
         if (empty($data['emergency_contact_no'])) {

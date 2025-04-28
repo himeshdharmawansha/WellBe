@@ -43,7 +43,7 @@ class Patient extends Controller
       }      
 
       // Pass appointment data to the dashboard view
-      $this->view('Patient/patient_dashboard', 'patient_dashboard', [
+      $this->view('Patient/patient_dashboard', 'Dashboard', [
          'appointments' => $appointments,
          'rescheduledAppointments' => $rescheduledAppointments,
          'ewalletAmount' => $ewalletAmount
@@ -66,7 +66,7 @@ class Patient extends Controller
          }
       }
       $data['pastRecords'] = $uniqueRequests;
-      $this->view('Patient/medicalreports', 'medicalreports', $data);
+      $this->view('Patient/medicalreports', 'View Medical Reports', $data);
    }
 
 
@@ -92,7 +92,7 @@ class Patient extends Controller
       }
 
       $data['labRequests'] = $uniqueRequests;
-      $this->view('Patient/labreports', 'labreports', $data);
+      $this->view('Patient/labreports', 'View Lab Reports', $data);
    }
 
 
@@ -241,7 +241,7 @@ class Patient extends Controller
       //print_r($data['doctors']);
 
 
-      $this->view('Patient/doc_appointment', 'doc_appointment', $data);
+      $this->view('Patient/doc_appointment', 'Search for a Doctor', $data);
    }
 
    public function appointments()
@@ -258,11 +258,11 @@ class Patient extends Controller
 
    public function chat()
    {
-      $this->view('Patient/chat', 'chat');
+      $this->view('Patient/chat', 'Chat');
    }
    public function logout()
    {
-      $this->view('Patient/logout', 'logout');
+      $this->view('Patient/logout', 'Logout');
    }
 
    public function edit_profile()

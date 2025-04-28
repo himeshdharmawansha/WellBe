@@ -11,7 +11,7 @@ class MedicalRecord extends Model
 
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
-        $state = "new";
+        $state = "pending";
         $diagnosis = $data;
 
         $query = "INSERT INTO medication_requests (doctor_id, patient_id, date, time, remark, state, diagnosis, file_name, appointment_id)

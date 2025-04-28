@@ -11,7 +11,7 @@ class LabTest extends Model
 
         $doctor_id = $_SESSION['USER']->id;
         $patient_id = $id;
-        $state = 'Pending';
+        $state = 'pending';
 
         $query = "INSERT INTO test_requests (doctor_id, patient_id, date, state, appointment_id)
                   VALUES (?, ?, ?, ?, ?)";

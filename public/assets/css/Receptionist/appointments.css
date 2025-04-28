@@ -1,0 +1,337 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Top Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f8ff; /* Light blue background */
+    border-bottom: 2px solid #d1d9f1;
+}
+
+
+/* Dashboard Content */
+.content-container {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white; /* Main content area white background */
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.form-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #172554;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-row label {
+    margin-right: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.submit-button {
+    background-color: #172554;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 14px;
+}
+
+
+/* Flex Container */
+/* .content-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+} */
+
+/* Form Section */
+.form-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 45%;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Input Box */
+.input-box {
+    margin-bottom: 20px;
+}
+
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+/* Selection Section */
+.selection-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 45%;
+}
+
+.selection-section p {
+    text-align: left;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light border for definition */
+    color: red;
+}
+
+
+.selection-section label{
+font-size: 20px;
+font-weight: 600;
+margin-bottom: 15px;
+color: #333;
+}
+
+.dates-grid,
+.timeslots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+
+
+.active {
+    background-color: #4f77f3;
+    color: white;
+    border-color: #4f77f3;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    /* font-size: 14px; */
+}
+
+/* General Body Styling
+body {
+    background-color: #f4f7fb;
+    color: #333;
+} */
+
+/* Flex Container */
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* Form Section */
+.form-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 45%;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Input Box */
+.input-box {
+    margin-bottom: 20px;
+}
+
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+/* Button Styles */
+.find-doctor-btn {
+    padding: 10px 15px;
+    background-color: #4f77f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.find-doctor-btn:hover {
+    background-color: #3e63d1;
+}
+
+/* Selection Section */
+.selection-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 45%;
+}
+
+.selection-section p {
+    text-align: left;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light border for definition */
+    color: red;
+}
+
+
+.selection-section label{
+font-size: 20px;
+font-weight: 600;
+margin-bottom: 15px;
+color: #333;
+}
+
+.dates-grid,
+.timeslots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+
+
+.active {
+    background-color: #4f77f3;
+    color: white;
+    border-color: #4f77f3;
+}
+
+.date-btn {
+    padding: 15px 20px;
+    background-color: #ffffff;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    max-width: 100%;
+}
+
+.date-btn:hover {
+    background-color: #f0f8ff;
+    transform: translateY(-3px); /* Adds a subtle lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.date-btn.selected {
+    background-color: #cce5ff; /* light blue */
+    border: 2px solid #007bff; /* blue border */
+    color: #000; /* text color */
+}
+
+.dawasa{
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.time{
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.appnmbr{
+    margin-top: 5px;
+    font-size: 16px;
+    color: rgb(101, 178, 71);
+}
+

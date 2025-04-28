@@ -31,7 +31,6 @@ class Patient extends Model
     {
         $this->errors = [];
 
-        // Validate full name
         if (empty($data['first_name'])) {
             $this->errors['first_name'] = "First Name is required";
         } elseif (!preg_match("/^[a-zA-Z\s]+$/", $data['first_name'])) {
@@ -52,8 +51,6 @@ class Patient extends Model
             $this->errors['nic'] = "Invalid NIC format. Use 9 digits followed by V/X or 12 digits.";
         }
         
-
-        // Validate date of birth and age
         if (empty($data['dob'])) {
             $this->errors['dob'] = "Date of Birth is required";
         }
@@ -62,26 +59,22 @@ class Patient extends Model
             $this->errors['age'] = "Age must be a number";
         }
 
-        // Validate gender
         if (empty($data['gender'])) {
             $this->errors['gender'] = "Gender is required";
         } elseif (!in_array($data['gender'], ['M', 'F'])) {
             $this->errors['gender'] = "Gender must be either M or F";
         }
 
-        // Validate address
         if (empty($data['address'])) {
             $this->errors['address'] = "Address is required";
         }
 
-        // Validate email
         if (empty($data['email'])) {
             $this->errors['email'] = "Email Address is required";
         } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $this->errors['email'] = "Invalid Email Address";
         }
 
-        // Validate contact number
         if (empty($data['contact'])) {
             $this->errors['contact'] = "Contact Number is required";
         } elseif (!preg_match("/^[0-9]{10}$/", $data['contact'])) {
@@ -96,21 +89,18 @@ class Patient extends Model
 
         $this->errors = [];
 
-        // Validate emergency contact name
         if (empty($data['emergency_contact_name'])) {
             $this->errors['emergency_contact_name'] = "Emergency Contact Name is required";
         } elseif (!preg_match("/^[a-zA-Z\s]+$/", $data['emergency_contact_name'])) {
             $this->errors['emergency_contact_name'] = "Emergency Contact Name must contain only letters and spaces";
         }
 
-        // Validate emergency contact number
         if (empty($data['emergency_contact_no'])) {
             $this->errors['emergency_contact_no'] = "Emergency Contact Number is required";
         } elseif (!preg_match("/^[0-9]{10}$/", $data['emergency_contact_no'])) {
             $this->errors['emergency_contact_no'] = "Emergency Contact Number must be 10 digits";
         }
 
-        // Validate emergency contact relationship
         if (empty($data['emergency_contact_relationship'])) {
             $this->errors['emergency_contact_relationship'] = "Emergency Contact Relationship is required";
         }
@@ -139,27 +129,18 @@ class Patient extends Model
         $this->errors = [];
 
         if ($step === 1) {
-            // Required fields for doctorForm1
             $requiredFields = [
                 'nic', 'first_name', 'last_name', 'dob', 
                 'address', 'email', 'contact'
             ];
         } else {
-            // Required fields for doctorForm2
             $requiredFields = [
                 'medical_history', 'allergies', 
                 'emergency_contact_name', 'emergency_contact_no', 'emergency_contact_relationship'
             ];
         }
 
-        // Step-specific validations
         if ($step === 1) {
-            // Validate NIC format (12 digits)
-            // if (!empty($patientData['nic']) && !preg_match('/^\d{12}$/', $patientData['nic'])) {
-            //     $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
-            // }
-
-            // Validate NIC format
             if (!empty($patientData['nic']) && !preg_match('/^(\d{12}|\d{9}[vV])$/', $patientData['nic'])) {
                 $this->errors[] = 'Invalid NIC format. It must be 12 digits or 9 digits followed by "V" or "v".';
             }else{
@@ -169,19 +150,14 @@ class Patient extends Model
                 }
             }
 
-            // Validate email format manually
             if (!empty($patientData['email']) && !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $patientData['email'])) {
                 $this->errors[] = 'Invalid email address.';
             }
 
-
-            // Validate contact number (10 digits)
             if (!empty($patientData['contact']) && !preg_match('/^\d{10}$/', $patientData['contact'])) {
                 $this->errors[] = 'Invalid contact number. It must be 10 digits.';
             }
-
             
-            // Validate date of birth (must be a past date)
             if (!empty($patientData['dob'])) {
                 $dob = strtotime($patientData['dob']);
                 if (!$dob || $dob >= time()) {
@@ -191,7 +167,6 @@ class Patient extends Model
         }
 
         if ($step === 2) {
-            // Validate emergency contact number (10 digits)
             if (!empty($patientData['emergency_contact']) && !preg_match('/^\d{10}$/', $patientData['emergency_contact'])) {
                 $this->errors[] = 'Invalid emergency contact number. It must be 10 digits.';
             }
@@ -203,15 +178,11 @@ class Patient extends Model
 
     public function addPatient($data)
     {
-        // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
-        //$patient_pw = 'patient123';
 
-        //hash password
         $patient_pw = password_hash('patient123', PASSWORD_DEFAULT);
         $id = $data['nic'] . 'p';
 
-        // Build the SQL query using the provided data
         $query = "
             INSERT INTO `patient` 
             (`nic`, `password`, `first_name`, `last_name`, `dob`, `age`, `gender`, `address`, `email`, `contact`, `medical_history`, `allergies`, `emergency_contact_name`, `emergency_contact_no`, `emergency_contact_relationship`, `user_id`) 
@@ -235,10 +206,6 @@ class Patient extends Model
             )
         ";
 
-        // Debug the query
-        //echo "Generated Query: <pre>$query</pre>";
-
-        // Execute the query
         return $this->query($query);
 
     }
@@ -246,6 +213,13 @@ class Patient extends Model
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function addToUserProfile($data){
+
+        $query = "INSERT INTO user_profile (id,username,password,role,image,state) VALUES (?, ?, ?, ?, ?, ?);";
+
+        $this ->query($query,[$data['nic'], $data['first_name'], $data['password'], 4, 'Profile_default.png', 0]);
     }
 
     public function getAllPatients()
@@ -259,16 +233,16 @@ class Patient extends Model
             FROM patient
             WHERE account_state = 'Active'
         ";
-        return $this->query($query); // Use the query method to execute and fetch data
+        return $this->query($query); 
     }
 
     public function getPatientById($nic)
     {
         $query = "SELECT * FROM patient WHERE nic = :nic";
-        $data = ['nic' => $nic]; // Bind the NIC parameter
+        $data = ['nic' => $nic]; 
 
-        $result = $this->query($query, $data); // Execute query with binding
-        return $result ? $result[0] : null; // Return the first result (single doctor) or null if not found
+        $result = $this->query($query, $data); 
+        return $result ? $result[0] : null; 
     }
 
     public function validatePatient($patientData)
@@ -282,28 +256,22 @@ class Patient extends Model
             'emergency_contact_relationship'
         ];
 
-        // Validate NIC format (12 digits)
         if (!empty($patientData['nic']) && !preg_match('/^\d{12}$/', $patientData['nic'])) {
             $this->errors[] = 'Invalid NIC format. It must be 12 digits.';
         }
 
-        // Validate email format manually
         if (!empty($patientData['email']) && !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $patientData['email'])) {
             $this->errors[] = 'Invalid email address.';
         }
 
-
-        // Validate contact number (10 digits)
         if (!empty($patientData['contact']) && !preg_match('/^\d{10}$/', $patientData['contact'])) {
             $this->errors[] = 'Invalid contact number. It must be 10 digits.';
         }
 
-        // Validate emergency contact number (10 digits)
         if (!empty($patientData['emergency_contact_no']) && !preg_match('/^\d{10}$/', $patientData['emergency_contact_no'])) {
             $this->errors[] = 'Invalid emergency contact number. It must be 10 digits.';
         }
 
-        // Validate date of birth (must be a past date)
         if (!empty($patientData['dob'])) {
             $dob = strtotime($patientData['dob']);
             if (!$dob || $dob >= time()) {
@@ -311,16 +279,13 @@ class Patient extends Model
             }
         }
 
-        // Return true if no errors, false otherwise
         return empty($this->errors);
     }
 
     public function updatePatient($data, $old_nic)
     {
-        // Calculate the age based on the date of birth
         $data['age'] = $this->calculateAge($data['dob']);
 
-        // SQL query with positional placeholders
         $query = "
         UPDATE `patient` SET 
             `first_name` = ?, 
@@ -338,7 +303,6 @@ class Patient extends Model
             `emergency_contact_relationship` = ?
         WHERE `nic` = ?";
 
-        // Parameters array
         $params = [
             $data['first_name'],
             $data['last_name'],
@@ -353,13 +317,9 @@ class Patient extends Model
             $data['emergency_contact_name'],
             $data['emergency_contact_no'],
             $data['emergency_contact_relationship'],
-            $old_nic // NIC for the WHERE condition
+            $old_nic 
         ];
 
-        // Debug the query
-        //echo "Generated Query: <pre>$query</pre>";
-
-        // Execute the query with parameter binding
         return $this->query($query, $params);
 
     }
@@ -372,7 +332,6 @@ class Patient extends Model
         WHERE nic = :nic
         ";
 
-        //$query = "DELETE FROM patient WHERE nic = :nic";
         $data = ['nic' => $nic];
         return $this->query($query, $data);
     }
@@ -422,7 +381,18 @@ class Patient extends Model
 
         $result = $this->query($query);
         return $result[0]->totalPatients ?? 0;
-        //return $this->query($query);
+    }
+
+    public function getPatientID($nic)
+    {
+        $query ="SELECT id FROM patient WHERE nic = :nic";
+        $id = $nic . 'p';
+        $data = ['nic' => $id];
+
+        error_log("Generated query: " . $query);
+        error_log("Patient NIC = " . $id);
+        $result = $this->query($query, $data);
+        return $result[0]->id;
     }
 
 

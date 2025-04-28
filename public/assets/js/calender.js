@@ -85,19 +85,40 @@ function generateCalendar(month, year) {
                         };
                      } else {
                         cell.classList.add('scheduled');
+
+                        let thisMonth = new Date().getMonth()+2;
+                        let thisYear = new Date().getFullYear();
                         
-                        cell.onclick = function() {
-                           const scheduledDate = `${nextYear}-${formattedNextMonth}-${formattedDate}`;
+                        cell.onclick = async function() {
+                           // Extract the scheduled date
+                           const scheduledDate = `${thisYear}-${thisMonth}-${cell.textContent}`;
                            console.log(scheduledDate);
-  
-                           const exampleAppointments = [
-                             { appointmentId: 1, firstName: "John", lastName: "Doe", date: "2024-11-25" },
-                             { appointmentId: 2, firstName: "Jane", lastName: "Smith", date: "2024-11-26" },
-                             { appointmentId: 3, firstName: "Emily", lastName: "Johnson", date: "2024-11-27" },
-                         ];
-  
-                           showAppointments(exampleAppointments,scheduledDate);
-                         };
+                  
+                           try {
+                              // Send the scheduled date to the PHP file
+                              const response = await fetch('http://localhost/wellbe/public/doctor', {
+
+                                 method: 'POST',
+                                 headers: {
+                                       'Content-Type': 'application/json'
+                                 },
+                                 body: JSON.stringify({ date: scheduledDate }),// Send the date as JSON
+                              });
+                  
+                              const text = await response.text(); // First get raw response
+                              console.log("Raw Response:", text);
+
+                              const data = JSON.parse(text); // Try parsing manually
+                              console.log("Parsed JSON:", data);
+
+                              console.log(data.appointments);
+                  
+                              // Call your showAppointments function with the received data
+                              showAppointments(data.appointments,data.date);
+                           } catch (error) {
+                              console.error('Error:',error);
+                           }
+                        };
                      }
                   }else{
                      cell.classList.add('update');

@@ -84,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if (!empty($medications)) {
         $medicalRecord = new MedicalRecord();
-        $medicalRecord->insertRecord($remarks, $diagnosis, $patient_id, $file_name);
-        $request_id = $medicalRecord->getLastInsertedId($patient_id);
+        $medicalRecord->insertRecord($remarks, $diagnosis, $patient_id, $file_name, $data['app_id']);
+        $request_id = $medicalRecord->getLastInsertedId($patient_id,$data['app_id']);
         print_r($request_id);
 
         foreach ($medicationDetails as $medic) {
@@ -95,8 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if (!empty($lab_tests)) {
         $labTest = new LabTest();
-        $labTest->insertRecord($patient_id);
-        $request_id = $labTest->getLastInsertedId($patient_id);
+        $labTest->insertRecord($patient_id, $data['app_id']);
+        $request_id = $labTest->getLastInsertedId($patient_id, $data['app_id']);
 
         foreach ($labTestDetails as $lab) {
             $labTest->insertTest($lab, $request_id);

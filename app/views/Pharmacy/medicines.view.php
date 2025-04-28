@@ -76,7 +76,6 @@
          let isSearching = false;
          let showEditColumn = false;
 
-         // Popup logic (error/success)
          let retryCallback = null;
 
          function showPopup(message, type = 'error', retry = false, callback = null) {
@@ -124,7 +123,6 @@
 
          document.getElementById('retry-btn')?.addEventListener('click', retryAction);
 
-         // Confirmation popup logic
          let confirmCallback = null;
 
          function showConfirmPopup(message, callback) {
@@ -163,7 +161,6 @@
             closeConfirmPopup();
          });
 
-         // Validation functions
          function isFutureDate(dateStr) {
             const currentDate = new Date();
             currentDate.setHours(0, 0, 0, 0);
@@ -387,7 +384,6 @@
                return;
             }
 
-            // Show confirmation popup instead of confirm()
             showConfirmPopup('Are you sure you want to delete this medicine?', (confirmed) => {
                if (confirmed) {
                   fetch(`<?= ROOT ?>/Pharmacy/deleteMedicine`, {

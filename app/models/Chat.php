@@ -195,4 +195,20 @@ class Chat extends Model
       $query = "UPDATE user_profile SET state = 1 WHERE id = :userId";
       return $this->write($query, ['userId' => $userId]);
    }
+
+   public function searchMessage($receiver, $searchTerm)
+   {
+      $sender = $_SESSION['userid'];
+      $searchTerm = "%$searchTerm%";
+      $query = "SELECT * FROM message 
+              WHERE ((sender = :sender AND receiver = :receiver AND deleted_sender = 0) 
+                  OR (receiver = :sender AND sender = :receiver AND deleted_receiver = 0))
+              AND (message LIKE :searchTerm OR caption LIKE :searchTerm)
+              ORDER BY date ASC";
+      return $this->readn($query, [
+         'sender' => $sender,
+         'receiver' => $receiver,
+         'searchTerm' => $searchTerm
+      ]);
+   }
 }

@@ -9,11 +9,23 @@ class Forgot extends Controller
     public function check()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nicID'], $_POST['email'], $_POST['selection'])) {
-            $nicID = $_POST['nicID'];
+            if ($_POST['selection'] == 'doctor') {
+                $nicID = $_POST['nicID'] . "d";
+            } elseif ($_POST['selection'] == 'patient') {
+                $nicID = $_POST['nicID'] . "p";
+            } elseif ($_POST['selection'] == 'pharmacist') {
+                $nicID = $_POST['nicID'] . "h";
+            } elseif ($_POST['selection'] == 'lab_technician') {
+                $nicID = $_POST['nicID'] . "l";
+            } elseif ($_POST['selection'] == 'administrative_staff') {
+                $nicID = $_POST['nicID'] . "a";
+            } elseif ($_POST['selection'] == 'receptionist') {
+                $nicID = $_POST['nicID'] . "r";
+            }
+
             $userEmail = $_POST['email'];
             $table = $_POST['selection'];
 
-            // Validate the selected table to prevent invalid values
             $validTables = ['doctor', 'patient', 'pharmacist', 'lab_technician', 'administrative_staff', 'receptionist'];
             if (!in_array($table, $validTables)) {
                 $errorMessage = 'Invalid selection.';
@@ -25,18 +37,15 @@ class Forgot extends Controller
             $result = $model->check($nicID, $userEmail, $table);
 
             if ($result['found'] === 'true') {
-                // Generate a 6-digit verification code
                 $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
 
-                // Store the code, email, and table in session for verification
                 $_SESSION['reset_email'] = $userEmail;
                 $_SESSION['reset_nic'] = $nicID;
                 $_SESSION['reset_table'] = $table;
                 $_SESSION['verification_code'] = $verificationCode;
-                $_SESSION['code_expiry'] = time() + 360; // Code valid for 6 minutes
+                $_SESSION['code_expiry'] = time() + 360;
                 $_SESSION['code_verified'] = false;
 
-                // Send verification code via email
                 $subject = 'Password Reset Verification Code';
                 $message = "
                     <h3>Password Reset Request</h3>
@@ -49,7 +58,6 @@ class Forgot extends Controller
                 $response = $emailService->send($userEmail, $userEmail, $message, $userEmail);
 
                 if (strpos($response, 'successfully') !== false) {
-                    // Redirect to verification page
                     header('Location: ' . ROOT . '/forgot/verify');
                     exit();
                 } else {
@@ -69,7 +77,6 @@ class Forgot extends Controller
         $entryErrorMessage = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Check if session data exists
             if (
                 !isset($_SESSION['reset_email']) ||
                 !isset($_SESSION['reset_nic']) ||
@@ -84,7 +91,6 @@ class Forgot extends Controller
             }
 
             if (isset($_POST['verify_code'])) {
-                // Step 1: Verify the code
                 if (time() >= $_SESSION['code_expiry']) {
                     $errorMessage = 'Verification code has expired. Please request a new code.';
                 } else {
@@ -96,21 +102,17 @@ class Forgot extends Controller
                     }
                 }
             } elseif (isset($_POST['update_password'])) {
-                // Step 2: Update password if code was verified
                 if ($_SESSION['code_verified']) {
                     $newPassword = $_POST['new_password'];
                     $confirmPassword = $_POST['confirm_password'];
 
                     if ($newPassword === $confirmPassword) {
-                        // Hash the new password
                         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                        // Update password in the database
                         $model = new checkValues();
                         $updateResult = $model->updatePassword($_SESSION['reset_nic'], $_SESSION['reset_table'], $hashedPassword);
 
                         if ($updateResult) {
-                            // Send confirmation email
                             $subject = 'Password Changed Successfully';
                             $message = "
                                 <h3>Password Changed</h3>
@@ -121,10 +123,8 @@ class Forgot extends Controller
                             $emailService = new Email();
                             $emailService->send($_SESSION['reset_email'], $_SESSION['reset_email'], $message, $_SESSION['reset_email']);
 
-                            // Clear session
                             unset($_SESSION['reset_email'], $_SESSION['reset_nic'], $_SESSION['reset_table'], $_SESSION['verification_code'], $_SESSION['code_expiry'], $_SESSION['code_verified']);
 
-                            // Redirect to login with success message
                             echo "<script>console.log('Password updated successfully!'); window.location.href='" . ROOT . "/login';</script>";
                             exit();
                         } else {
@@ -157,7 +157,6 @@ class Forgot extends Controller
             $userEmail = $_POST['email'];
             $table = $_POST['selection'];
 
-            // Validate the selected table
             $validTables = ['doctor', 'patient', 'pharmacist', 'lab_technician', 'administrative_staff', 'receptionist'];
             if (!in_array($table, $validTables)) {
                 $entryErrorMessage = 'Invalid selection.';
@@ -166,18 +165,15 @@ class Forgot extends Controller
                 $result = $model->check($nicID, $userEmail, $table);
 
                 if ($result['found'] === 'true') {
-                    // Generate a new 6-digit verification code
                     $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
 
-                    // Update session with new data
                     $_SESSION['reset_email'] = $userEmail;
                     $_SESSION['reset_nic'] = $nicID;
                     $_SESSION['reset_table'] = $table;
                     $_SESSION['verification_code'] = $verificationCode;
-                    $_SESSION['code_expiry'] = time() + 360; // 6 minutes
+                    $_SESSION['code_expiry'] = time() + 360;
                     $_SESSION['code_verified'] = false;
 
-                    // Send verification code via email
                     $subject = 'Password Reset Verification Code';
                     $message = "
                         <h3>Password Reset Request</h3>
@@ -215,15 +211,12 @@ class Forgot extends Controller
             isset($_SESSION['reset_nic']) &&
             isset($_SESSION['reset_table'])
         ) {
-            // Generate a new 6-digit verification code
             $verificationCode = sprintf("%06d", mt_rand(100000, 999999));
 
-            // Update session with new code and expiry
             $_SESSION['verification_code'] = $verificationCode;
-            $_SESSION['code_expiry'] = time() + 360; // 6 minutes
+            $_SESSION['code_expiry'] = time() + 360;
             $_SESSION['code_verified'] = false;
 
-            // Send new verification code via email
             $subject = 'Password Reset Verification Code';
             $message = "
                 <h3>Password Reset Request</h3>

@@ -97,14 +97,12 @@ class Lab extends Controller
 
    public function chat()
    {
-      // Fetch unseen counts using the local UnseenCounts method
       $unseenCounts = $this->UnseenCounts([3, 5]);
       $user_profile = $unseenCounts;
       if (!is_array($user_profile)) {
          $user_profile = [];
       }
 
-      // Fetch all profiles
       $profiles = $this->profileModel->getAll();
       if (!empty($profiles) && !isset($profiles['error'])) {
          $profileMap = [];
@@ -121,7 +119,6 @@ class Lab extends Controller
          unset($user);
       }
 
-      // Pass data to the view
       $data = [
          'user_profile' => $user_profile
       ];

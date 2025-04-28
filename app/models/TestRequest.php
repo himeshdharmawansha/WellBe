@@ -62,7 +62,6 @@ class TestRequest extends Model
 
    public function updateRequestDetails($requestID, $tests, $files, $patientID)
    {
-      // Update request state
       $updateRequestQuery = "UPDATE test_requests SET state = 'completed' WHERE id = :requestID";
       $this->query($updateRequestQuery, [':requestID' => $requestID]);
 

@@ -64,12 +64,10 @@ class TestRequests extends Controller
             $data = $_POST;
             $files = $_FILES;
 
-            // Validate patientID
             if (!isset($data['patientID']) || empty($data['patientID'])) {
                 throw new Exception("Patient ID is missing or invalid.");
             }
 
-            // Validate tests
             if (!isset($data['tests']) || empty($data['tests'])) {
                 throw new Exception("No test details provided.");
             }
@@ -82,7 +80,6 @@ class TestRequests extends Controller
             $requestID = $data['requestID'];
             $patientID = $data['patientID'];
 
-            // Validate requestID
             if (!isset($requestID) || empty($requestID)) {
                 throw new Exception("Request ID is missing or invalid.");
             }
@@ -132,63 +129,6 @@ class TestRequests extends Controller
         echo json_encode($response);
     }
 
-    //  public function sendCompletionEmail()
-    //  {
-    //      $response = ['success' => false];
-    //      $data = json_decode(file_get_contents('php://input'), true);
-
-    //      if (isset($data['requestID'], $data['patientID'], $data['testNames'])) {
-    //          // $requestID = htmlspecialchars($data['requestID']);
-    //          // $patientID = htmlspecialchars($data['patientID']);
-    //          // $testNames = $data['testNames'];
-    //          $requestID = htmlspecialchars($data['requestID']);
-    //          $patientID = htmlspecialchars($data['patientID']);
-    //          $testNames = $data['testNames'];
-
-    //          echo "<script>
-    //          console.log('Request ID: " . $requestID . "');
-    //          console.log('Patient ID: " . $patientID . "');
-    //          console.log('Test Names: " . json_encode($testNames) . "');
-    //      </script>";
-
-
-    //          // Fetch patient details
-    //          $patientDetails = $this->testRequestModel->getPatientDetails($patientID);
-    //          if ($patientDetails && isset($patientDetails['email'], $patientDetails['name'])) {
-    //              $patientName = $patientDetails['name'];
-    //              $patientEmail = $patientDetails['email'];
-    //              $testList = implode(', ', $testNames);
-    //              $message = "
-    //                  <h3>Dear $patientName,</h3>
-    //                  <p>We are pleased to inform you that your lab test report(s) for Request ID: $requestID are now ready. The following tests have been completed:</p>
-    //                  <ul>
-    //                      <li>$testList</li>
-    //                  </ul>
-    //                  <p>Please visit our portal or contact our support team to access your report.</p>
-    //                  <p>Thank you for choosing WELLBE Lab Services.</p>
-    //                  <p>Best regards,<br>WELLBE Lab Services Team</p>
-    //              ";
-
-    //              $result = $this->emailModel->send(
-    //                  $patientName,
-    //                  'benshekniel@gmail.com', // Sender email
-    //                  $message,
-    //                  $patientEmail
-    //              );
-    //              $response['success'] = true;
-    //              $response['message'] = $result;
-    //          } else {
-    //              $response['error'] = "Patient details not found.";
-    //          }
-    //      } else {
-    //          $response['error'] = "Invalid input data.";
-    //      }
-
-    //      echo json_encode($response);
-    //      exit;
-    //  }
-
-
     public function sendCompletionEmail()
     {
         $response = ['success' => false];
@@ -199,15 +139,12 @@ class TestRequests extends Controller
             $patientID = htmlspecialchars($data['patientID']);
             $testNames = $data['testNames'];
 
-            // Log for debugging
             error_log("Request ID: $requestID");
             error_log("Patient ID: $patientID");
             error_log("Test Names: " . implode(', ', $testNames));
 
-            // Fetch patient details
             $patientDetails = $this->testRequestModel->getPatientDetails($patientID);
 
-            // Since getPatientDetails returns an array of rows, access the first row
             if (!empty($patientDetails) && is_array($patientDetails) && isset($patientDetails[0]['first_name'], $patientDetails[0]['email'])) {
                 $patientName = $patientDetails[0]['first_name'];
                 $patientEmail = $patientDetails[0]['email'];
@@ -223,15 +160,13 @@ class TestRequests extends Controller
                    <p>Best regards,<br>WELLBE Lab Services Team
                ";
 
-                // Send email using the email model
                 $result = $this->emailModel->send(
                     $patientName,
-                    'himeshdharmawansha1119@gmail.com', // Sender email (this will be overridden by the Email model)
+                    'wellbe.inquiry@gmail.com',
                     $message,
-                    $patientEmail // Receiver email (this will be overridden by the Email model)
+                    $patientEmail
                 );
 
-                // Check the result (which is a string, not a boolean)
                 if ($result === "Message sent successfully.") {
                     $response['success'] = true;
                     $response['message'] = 'Email sent successfully';

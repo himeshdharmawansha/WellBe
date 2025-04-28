@@ -95,7 +95,6 @@
                 ?>
             </div>
         </div>
-        <!-- Move popup outside of dashboard-content -->
         <div class="popup" id="error-popup">
             <span class="close-btn" onclick="closePopup()">×</span>
             <span id="popup-message"></span>
@@ -113,7 +112,6 @@
             popupMessage.textContent = message;
             popup.className = `popup ${type} active`;
             
-            // Auto-hide after 5 seconds
             setTimeout(() => {
                 popup.className = 'popup';
             }, 5000);
@@ -136,13 +134,11 @@
                     const remarks = document.getElementById('additionalRemarks').value;
                     const rows = document.querySelectorAll('.medication-table tbody tr');
 
-                    // Validate remarks length
                     if (remarks.length > 500) {
                         showPopup('Remarks exceed maximum length of 500 characters');
                         return;
                     }
 
-                    // Validate medication states
                     const medications = [];
                     let allStatesSelected = true;
                     rows.forEach(row => {

@@ -10,8 +10,9 @@ class Login extends Controller
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['nic'])) {
 
-                $id = $_POST['nic'];
-                $_SESSION['userid'] = $id;
+                // $id = $_POST['nic'];
+                // $_SESSION['userid'] = $id;
+                // print_r($_POST['userType']);
 
                 
 
@@ -50,6 +51,7 @@ class Login extends Controller
                 
                         $_SESSION['USER'] = $row; // Save user details in the session
                         $model->loggedin();
+                        $_SESSION['userid'] = $arr['nic'];
                         redirect($_SESSION['user_type']);
                     } else {
                         $user->errors['password'] = 'Wrong password'; // Add specific error for wrong password

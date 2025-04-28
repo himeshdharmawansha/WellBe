@@ -17,12 +17,14 @@
 
 /* Sidebar */
 .sidebar {
-    width: 80px; /* Show icons only */
+    /* position: fixed; */
+    width: 80px; 
+    height: 100%;
     background-color: #172554;
     color: white;
     transition: width 0.3s ease;
     overflow: hidden;
-    height: auto;
+    /* height: auto; */
 }
 
 .sidebar:hover {

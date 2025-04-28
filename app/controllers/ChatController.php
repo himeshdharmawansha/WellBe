@@ -275,4 +275,19 @@ class ChatController extends Controller
    {
       $this->chatModel->setLoggedIn($_SESSION['userid']);
    }
+
+   public function searchMessage($receiver)
+   {
+      $query = $_GET['query'] ?? '';
+      if (empty($query)) {
+         echo json_encode(["status" => "success", "messages" => []]);
+         return;
+      }
+
+      $messages = $this->chatModel->searchMessage($receiver, $query);
+      echo json_encode([
+         "status" => "success",
+         "messages" => $messages
+      ]);
+   }
 }

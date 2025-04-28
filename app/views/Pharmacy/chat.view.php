@@ -40,7 +40,7 @@
                               <div class="chat-info">
                                  <h4><?php echo esc($user['username']); ?></h4>
                                  <p class="chat-status"><?php echo $roleTitle; ?></p>
-                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline';?></p>
+                                 <p hidden class="chat-time"><?php echo $user['state'] ? 'Online' : 'Offline'; ?></p>
                               </div>
                               <div class="chat-side">
                                  <span class="time" id="time-<?php echo $user['id']; ?>">
@@ -69,12 +69,23 @@
                </div>
 
                <div class="chat-window" id="chat-window">
-                  <div class="chat-header">
+                  <div class="chat-header" id="chat-header">
                      <img id="chat-avatar" src="<?= ROOT ?>/assets/images/users/Profile_default.png" alt="Avatar" class="avatar">
                      <div class="header-info">
                         <h4 id="chat-username">Select a user</h4>
                         <p id="chat-status">Offline</p>
                      </div>
+                     <div class="last" id="last" style="visibility: hidden;">
+                        <input
+                           class="search-bar-message"
+                           type="text"
+                           id="search-input-message"
+                           placeholder="Search"
+                           oninput="searchMessage(this.value)" />
+                     </div>
+                     <button type="button" id="search-button">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                     </button>
                   </div>
                   <div class="chat-messages" id="chat-messages">
                   </div>
@@ -103,6 +114,13 @@
                         </div>
                      </div>
                   </div>
+                  <!-- Consolidated popup-menu -->
+                  <ul id="popup-menu" class="popup-menu" style="display: none; position: absolute; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
+                     <li onclick="editMessage()"><i class="fa-solid fa-pen"></i> Edit message</li>
+                     <li id="edit-caption-option" onclick="editCaption()" style="display: none;"><i class="fa-solid fa-pen"></i> Edit caption</li>
+                     <li onclick="deleteMessage()"><i class="fas fa-trash-alt"></i> Delete message</li>
+                     <li id="close-chat-option" onclick="closeChat()" style="display: none;"><i class="fa-solid fa-times"></i> Close chat</li>
+                  </ul>
                </div>
             </div>
          </div>
@@ -157,17 +175,41 @@
       let selectedMessage = null;
       let selectedFile = null;
       let selectedFileType = null;
-      let unseenCountsMap = {}; 
+      let unseenCountsMap = {};
+      let isMessageSearching = false;
+
+      // Right-click on messages
+      document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
+         event.preventDefault();
+         const target = event.target.closest('.message');
+         if (target) {
+            selectedMessage = target;
+            showPopupMenu(event.pageX, event.pageY, false); // Not a chat window click
+         }
+      });
+
+      // Right-click on chat window (excluding messages)
+      document.getElementById('chat-window').addEventListener('contextmenu', function(event) {
+         event.preventDefault();
+         // Only show the menu if the click is not on a message
+         if (!event.target.closest('.message')) {
+            selectedMessage = null; // Ensure no message is selected
+            showPopupMenu(event.pageX, event.pageY, true); // Chat window click
+         }
+      });
 
       function showPopup(message, type = 'error') {
          const popup = document.getElementById('error-popup');
          const popupMessage = document.getElementById('popup-message');
          if (!popup || !popupMessage) {
-            console.error('Popup elements not found:', { popup, popupMessage });
+            console.error('Popup elements not found:', {
+               popup,
+               popupMessage
+            });
             return;
          }
          popupMessage.textContent = message;
-         popup.className =`popup ${type} active`;
+         popup.className = `popup ${type} active`;
 
          setTimeout(() => {
             popup.className = 'popup';
@@ -195,7 +237,7 @@
 
       document.addEventListener('DOMContentLoaded', function() {
          const chatInput = document.getElementById('chat-input');
-         chatInput.style.display = 'none'; 
+         chatInput.style.display = 'none';
       });
 
       document.getElementById('chat-messages').addEventListener('contextmenu', function(event) {
@@ -206,27 +248,52 @@
             showPopupMenu(event.pageX, event.pageY);
          }
       });
+      const search_input = document.getElementById('last');
+      const search = document.getElementById('search-button');
+      search.addEventListener('click', function() {
+         search_input.style.visibility = "visible";
+      });
 
-      function showPopupMenu(x, y) {
+      document.getElementById('chat-window').addEventListener('click', function(event) {
+         if (!event.target.closest('#search-button') && !event.target.closest('#last')) {
+            search_input.style.visibility = "hidden";
+         }
+      });
+
+      function showPopupMenu(x, y, isChatWindowClick) {
          const popupMenu = document.getElementById('popup-menu');
          const editOption = popupMenu.querySelector('li[onclick="editMessage()"]');
          const editCaptionOption = popupMenu.querySelector('#edit-caption-option');
+         const deleteOption = popupMenu.querySelector('li[onclick="deleteMessage()"]');
+         const closeChatOption = popupMenu.querySelector('#close-chat-option');
 
-         if (selectedMessage) {
-            const senderId = selectedMessage.classList.contains('received') ?
-               selectedUserId :
-               <?php echo json_encode($currentUserId); ?>;
+         if (isChatWindowClick) {
+            // Show only "Close chat" option
+            editOption.style.display = 'none';
+            editCaptionOption.style.display = 'none';
+            deleteOption.style.display = 'none';
+            closeChatOption.style.display = 'flex'; // Ensure it's visible and aligned
+         } else {
+            // Show message-related options, hide "Close chat"
+            closeChatOption.style.display = 'none';
+            if (selectedMessage) {
+               const senderId = selectedMessage.classList.contains('received') ?
+                  selectedUserId :
+                  <?php echo json_encode($currentUserId); ?>;
 
-            if (senderId !== <?php echo json_encode($currentUserId); ?> || selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document')) {
-               editOption.style.display = 'none';
-            } else {
-               editOption.style.display = 'block';
-            }
+               if (senderId !== <?php echo json_encode($currentUserId); ?> || selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document')) {
+                  editOption.style.display = 'none';
+               } else {
+                  editOption.style.display = 'flex';
+               }
 
-            if (senderId === <?php echo json_encode($currentUserId); ?> && (selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document'))) {
-               editCaptionOption.style.display = 'block';
-            } else {
-               editCaptionOption.style.display = 'none';
+               if (senderId === <?php echo json_encode($currentUserId); ?> && (selectedMessage.classList.contains('photo') || selectedMessage.classList.contains('document'))) {
+                  editCaptionOption.style.display = 'flex';
+               } else {
+                  editCaptionOption.style.display = 'none';
+               }
+
+               deleteOption.style.display = 'flex';
             }
          }
 
@@ -237,7 +304,8 @@
       }
 
       function hidePopupMenu() {
-         document.getElementById('popup-menu').style.display = 'none';
+         const popupMenu = document.getElementById('popup-menu');
+         popupMenu.style.display = 'none';
          document.removeEventListener('click', hidePopupMenu);
       }
 
@@ -387,8 +455,27 @@
             })
             .catch(error => {
                console.error("Error editing caption:", error);
-               showPopup("Error editing caption: " + error.message);
             });
+      }
+
+      function closeChat() {
+         if (!selectedUserId) {
+            alert("No chat is currently selected.");
+            return;
+         }
+
+         selectedUserId = null;
+         isMessageSearching = false;
+         document.getElementById('search-input-message').value = '';
+
+         // Reset the chat window UI
+         document.getElementById('chat-username').textContent = 'Select a user';
+         document.getElementById('chat-status').textContent = 'Offline';
+         document.getElementById('chat-avatar').src = '<?= ROOT ?>/assets/images/users/Profile_default.png';
+         document.getElementById('chat-messages').innerHTML = '';
+         document.getElementById('message-input').disabled = true; // Disable input when no chat is selected
+
+         hidePopupMenu();
       }
 
       function selectChat(chatItem, userId) {
@@ -401,13 +488,34 @@
          document.getElementById('chat-username').textContent = username;
          document.getElementById('chat-status').textContent = userTime;
          document.getElementById('chat-avatar').src = avatarSrc;
+         document.getElementById('message-input').disabled = false; // Enable input when a chat is selected
+         document.getElementById('chat-input').style.display = 'flex'; // Show the chat-input div
 
-         // Show the chat input when a chat is selected
-         const chatInput = document.getElementById('chat-input');
-         chatInput.style.display = 'flex';
-
+         isMessageSearching = false;
+         document.getElementById('search-input-message').value = '';
          startChat(userId);
          markMessagesAsSeen(userId);
+      }
+
+      function closeChat() {
+         if (!selectedUserId) {
+            alert("No chat is currently selected.");
+            return;
+         }
+
+         selectedUserId = null;
+         isMessageSearching = false;
+         document.getElementById('search-input-message').value = '';
+
+         // Reset the chat window UI
+         document.getElementById('chat-username').textContent = 'Select a user';
+         document.getElementById('chat-status').textContent = 'Offline';
+         document.getElementById('chat-avatar').src = '<?= ROOT ?>/assets/images/users/Profile_default.png';
+         document.getElementById('chat-messages').innerHTML = '';
+         document.getElementById('message-input').disabled = true; // Disable input when no chat is selected
+         document.getElementById('chat-input').style.display = 'none'; // Hide the chat-input div
+
+         hidePopupMenu();
       }
 
       function escapeHTML(str) {
@@ -417,7 +525,9 @@
          return div.innerHTML;
       }
 
-      function renderMessage(message, chatMessages, isInitialRender = false, unseenCount = 0, index = 0, insertedUnseenLine = { value: false }) {
+      function renderMessage(message, chatMessages, isInitialRender = false, unseenCount = 0, index = 0, insertedUnseenLine = {
+         value: false
+      }, searchQuery = '') {
          const messageDate = new Date(message.date);
          const formattedTime = formatTimeOrDate(messageDate);
          const currentDate = messageDate.toDateString();
@@ -437,22 +547,28 @@
          div.classList.add('message', message.sender == selectedUserId ? 'received' : 'sent');
          div.setAttribute('data-message-id', message.id);
 
+         function highlightText(text, query) {
+            if (!query || !isMessageSearching) return escapeHTML(text);
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return escapeHTML(text).replace(regex, '<span class="highlight">$1</span>');
+         }
+
          if (message.type === 'text') {
             div.innerHTML = `
-               <p>${escapeHTML(message.message)}</p>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
+                <p>${highlightText(message.message, searchQuery)}</p>
+                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
             `;
          } else if (message.type === 'photo') {
             div.classList.add('photo');
             const fileName = message.file_path.split('/').pop();
             div.innerHTML = `
-               <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
-               ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-               <div class="message-actions">
-                  <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                  <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-               </div>
-               <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
+                <img src="<?= ROOT ?>/${message.file_path}" alt="Photo">
+                ${message.caption ? `<div class="caption">${highlightText(message.caption, searchQuery)}</div>` : ''}
+                <div class="message-actions">
+                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
+                </div>
+                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
             `;
          } else if (message.type === 'document') {
             div.classList.add('document');
@@ -490,21 +606,21 @@
                iconClass = 'fa-file';
                fileTypeDisplay = message.file_type || 'Document';
             }
-            const fileName = message.file_path.split('/').pop(); 
+            const fileName = message.file_path.split('/').pop();
             div.innerHTML = `
-                  <div class="file-frame">
-                     <i class="fa-solid ${iconClass} doc-icon"></i>
-                     <p>${escapeHTML(displayName)}</p>
-                  </div>
-                  <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
-                  <hr>
-                  ${message.caption ? `<div class="caption">${escapeHTML(message.caption)}</div>` : ''}
-                  <div class="message-actions">
-                     <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
-                     <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
-                  </div>
-                  <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
-               `;
+                <div class="file-frame">
+                    <i class="fa-solid ${iconClass} doc-icon"></i>
+                    <p>${highlightText(displayName, searchQuery)}</p>
+                </div>
+                <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                <hr>
+                ${message.caption ? `<div class="caption">${highlightText(message.caption, searchQuery)}</div>` : ''}
+                <div class="message-actions">
+                    <button onclick="openFile('<?= ROOT ?>/${message.file_path}')">Open</button>
+                    <button onclick="downloadFile('<?= ROOT ?>/${message.file_path}', '${escapeHTML(fileName)}')">Save as...</button>
+                </div>
+                <span class="time">${message.edited ? '<span class="edited-label">(edited)</span>' : ''} ${formattedTime}</span>
+            `;
          }
 
          if (isInitialRender && unseenCount > 0 && index === (data.messages.length - unseenCount) && !insertedUnseenLine.value) {
@@ -527,10 +643,12 @@
             const data = await response.json();
             const chatMessages = document.getElementById("chat-messages");
             chatMessages.innerHTML = '';
-            chatMessages.lastDate = null; 
+            chatMessages.lastDate = null;
 
             const unseenCount = unseenCountsMap[receiverId] || 0;
-            let insertedUnseenLine = { value: false };
+            let insertedUnseenLine = {
+               value: false
+            };
 
             data.messages.forEach((message, index) => {
                renderMessage(message, chatMessages, true, unseenCount, index, insertedUnseenLine);
@@ -539,14 +657,13 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
          } catch (error) {
             console.error('Error fetching messages:', error);
-            showPopup('Error fetching messages: ' + error.message);
          }
       }
 
       let lastMessageId = null;
 
       function pullMessages() {
-         if (selectedUserId) {
+         if (selectedUserId && !isMessageSearching) {
             fetch(`<?= ROOT ?>/ChatController/getMessages/${selectedUserId}`)
                .then(response => {
                   if (!response.ok) {
@@ -559,9 +676,9 @@
                      const latestMessage = data.messages[data.messages.length - 1];
                      const chatMessages = document.getElementById("chat-messages");
                      chatMessages.innerHTML = '';
-                     chatMessages.lastDate = null; 
+                     chatMessages.lastDate = null;
 
-                     data.messages.forEach(message => {
+                     data.messages.forEach((message, index) => {
                         renderMessage(message, chatMessages, true);
                      });
 
@@ -737,11 +854,11 @@
                iconClass = 'fa-file';
             }
             div.innerHTML = `
-               <div class="file-frame">
-                  <i class="fa-solid ${iconClass} doc-icon"></i>
-                  <p>${escapeHTML(displayName)}</p>
-               </div>
-               <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
+                <div class="file-frame">
+                    <i class="fa-solid ${iconClass} doc-icon"></i>
+                    <p>${escapeHTML(displayName)}</p>
+                </div>
+                <div class="file-details">${fileSize}, ${fileTypeDisplay}</div>
             `;
             previewContent.appendChild(div);
          }
@@ -918,7 +1035,6 @@
                   });
                } else {
                   console.error('Failed to refresh user statuses:', xhr.status);
-                  showPopup('Failed to refresh user statuses: ' + xhr.status);
                }
             }
          };
@@ -949,7 +1065,9 @@
          } else if (isYesterday) {
             return "Yesterday";
          } else if (isWithinWeek) {
-            return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
+            return messageDate.toLocaleDateString('en-US', {
+               weekday: 'long'
+            });
          } else {
             return messageDate.toLocaleDateString('en-GB', {
                day: '2-digit',
@@ -1001,7 +1119,6 @@
             .then(users => {
                if (users.error) {
                   console.error("Error:", users.error);
-                  showPopup("Error fetching unseen counts: " + users.error);
                   return;
                }
 
@@ -1015,7 +1132,6 @@
 
                users.forEach(user => {
                   const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-
                   let lastMessageDisplay = '';
                   if (user.last_message_date) {
                      const messageDate = new Date(user.last_message_date);
@@ -1027,23 +1143,23 @@
                      '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
                   const chatItemHTML = `
-                     <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, '${user.id}')">
-                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
+                        <li>
+                        <div class="chat-item ${unseenClass}" 
+                            data-receiver-id="${user.id}" 
+                            onclick="selectChat(this, '${user.id}')">
+                            <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                            <div class="chat-info">
+                                <h4>${user.username}</h4>
                            <p class="chat-status">${getRoleTitle(user.role)}</p>
                            <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
+                            </div>
+                            <div class="chat-side">
+                                <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                                <span class="circle"></span>
+                            </div>
                         </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
-                     </div>
-                     </li>
-               `;
+                        </li>
+                    `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
@@ -1100,30 +1216,77 @@
                      '<?= ROOT ?>/assets/images/users/Profile_default.png';
 
                   const chatItemHTML = `
-                     <li>
-                     <div class="chat-item ${unseenClass}" 
-                        data-receiver-id="${user.id}" 
-                        onclick="selectChat(this, '${user.id}')">
-                        <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                           <h4>${user.username}</h4>
+                        <li>
+                        <div class="chat-item ${unseenClass}" 
+                            data-receiver-id="${user.id}" 
+                            onclick="selectChat(this, '${user.id}')">
+                            <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                            <div class="chat-info">
+                                <h4>${user.username}</h4>
                            <p class="chat-status">${getRoleTitle(user.role)}</p>
                            <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
+                            </div>
+                            <div class="chat-side">
+                                <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                                <span class="circle"></span>
+                            </div>
                         </div>
-                        <div class="chat-side">
-                           <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                           <span class="circle"></span>
-                        </div>
-                     </div>
-                     </li>
-               `;
+                        </li>
+                    `;
 
                   chatList.insertAdjacentHTML('beforeend', chatItemHTML);
                });
             })
             .catch(error => {
                console.error("Error searching users:", error);
-               showPopup("Error searching users: " + error.message);
+            });
+      }
+
+      function searchMessage(query) {
+         if (!selectedUserId) {
+            alert("Please select a chat.");
+            return;
+         }
+
+         const chatMessages = document.getElementById("chat-messages");
+         chatMessages.innerHTML = '';
+         chatMessages.lastDate = null;
+
+         if (!query.trim()) {
+            isMessageSearching = false;
+            startChat(selectedUserId);
+            return;
+         }
+
+         isMessageSearching = true;
+
+         fetch(`<?= ROOT ?>/ChatController/searchMessage/${selectedUserId}?query=${encodeURIComponent(query)}`)
+            .then(response => {
+               if (!response.ok) {
+                  throw new Error('Failed to search messages');
+               }
+               return response.json();
+            })
+            .then(data => {
+               const unseenCount = unseenCountsMap[selectedUserId] || 0;
+               let insertedUnseenLine = {
+                  value: false
+               };
+
+               if (data.messages.length === 0) {
+                  chatMessages.innerHTML = '<div class="no-messages">No messages found.</div>';
+                  return;
+               }
+
+               data.messages.forEach((message, index) => {
+                  renderMessage(message, chatMessages, true, unseenCount, index, insertedUnseenLine, query);
+               });
+
+               chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+               console.error('Error searching messages:', error);
+               chatMessages.innerHTML = '<div class="no-messages">Error searching messages.</div>';
             });
       }
 
@@ -1138,7 +1301,6 @@
             })
             .catch(error => {
                console.error("Error marking messages as seen:", error);
-               showPopup("Error marking messages as seen: " + error.message);
             });
       }
 
@@ -1146,11 +1308,13 @@
          fetch('<?= ROOT ?>/ChatController/updateReceivedState')
             .catch(error => {
                console.error("Error updating timestamps:", error);
-               showPopup("Error updating timestamps: " + error.message);
             });
       }
 
       setInterval(updateReceivedState, 3000);
+
+      // Initialize the message input as disabled until a chat is selected
+      document.getElementById('message-input').disabled = true;
    </script>
 </body>
 

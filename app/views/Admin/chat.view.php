@@ -530,7 +530,7 @@ if (!empty($profiles) && !isset($profiles['error'])) {
                });
          }
       }
-      setInterval(pullMessages, 6000);
+      setInterval(pullMessages, 2000);
 
       document.getElementById('message-input').addEventListener('keypress', function(event) {
          if (event.key === 'Enter' && !event.shiftKey) {

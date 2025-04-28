@@ -31,7 +31,6 @@ class PharmacyModel extends Model
         $query = "
             SELECT state, COUNT(*) as count 
             FROM medication_requests 
-            WHERE date >= NOW() - INTERVAL 14 DAY
             GROUP BY state
         ";
         $results = $db->read($query);

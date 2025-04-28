@@ -694,7 +694,7 @@
                });
          }
       }
-      setInterval(pullMessages, 6000);
+      setInterval(pullMessages, 2000);
 
       document.getElementById('message-input').addEventListener('keypress', function(event) {
          if (event.key === 'Enter' && !event.shiftKey) {
@@ -1104,6 +1104,72 @@
 
       let isSearching = false;
 
+      function searchUsers(query) {
+         const chatList = document.getElementById('chat-list');
+
+         if (!query.trim()) {
+            isSearching = false;
+            refreshUnseenCounts([3, 5]);
+            return;
+         }
+
+         isSearching = true;
+
+         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
+            .then(response => {
+               if (!response.ok) {
+                  throw new Error('Failed to search users');
+               }
+               return response.json();
+            })
+            .then(user_profile => {
+               chatList.innerHTML = '';
+
+               if (user_profile.error || user_profile.length === 0) {
+                  chatList.innerHTML = `<li></li>`;
+                  return;
+               }
+
+               user_profile.forEach(user => {
+                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
+                  let lastMessageDisplay = '';
+
+                  if (user.last_message_date) {
+                     const messageDate = new Date(user.last_message_date);
+                     lastMessageDisplay = formatChatListDate(messageDate);
+                  }
+
+                  const profileImageUrl = user.image ?
+                     '<?= ROOT ?>/assets/images/users/' + user.image :
+                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
+
+                  const chatItemHTML = `
+                        <li>
+                        <div class="chat-item ${unseenClass}" 
+                            data-receiver-id="${user.id}" 
+                            onclick="selectChat(this, '${user.id}')">
+                            <img src="${profileImageUrl}" alt="Avatar" class="avatar">
+                            <div class="chat-info">
+                                <h4>${user.username}</h4>
+                           <p class="chat-status">${getRoleTitle(user.role)}</p>
+                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
+                            </div>
+                            <div class="chat-side">
+                                <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
+                                <span class="circle"></span>
+                            </div>
+                        </div>
+                        </li>
+                    `;
+
+                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
+               });
+            })
+            .catch(error => {
+               console.error("Error searching users:", error);
+            });
+      }
+
       function refreshUnseenCounts(roleArray) {
          if (isSearching) return;
 
@@ -1175,72 +1241,6 @@
             refreshUnseenCounts([3, 5]);
          }
       }, 1000);
-
-      function searchUsers(query) {
-         const chatList = document.getElementById('chat-list');
-
-         if (!query.trim()) {
-            isSearching = false;
-            refreshUnseenCounts([3, 5]);
-            return;
-         }
-
-         isSearching = true;
-
-         fetch(`<?= ROOT ?>/ChatController/searchUser?query=${encodeURIComponent(query)}`)
-            .then(response => {
-               if (!response.ok) {
-                  throw new Error('Failed to search users');
-               }
-               return response.json();
-            })
-            .then(user_profile => {
-               chatList.innerHTML = '';
-
-               if (user_profile.error || user_profile.length === 0) {
-                  chatList.innerHTML = `<li></li>`;
-                  return;
-               }
-
-               user_profile.forEach(user => {
-                  const unseenClass = user.unseen_count > 0 ? 'unseen' : '';
-                  let lastMessageDisplay = '';
-
-                  if (user.last_message_date) {
-                     const messageDate = new Date(user.last_message_date);
-                     lastMessageDisplay = formatChatListDate(messageDate);
-                  }
-
-                  const profileImageUrl = user.image ?
-                     '<?= ROOT ?>/assets/images/users/' + user.image :
-                     '<?= ROOT ?>/assets/images/users/Profile_default.png';
-
-                  const chatItemHTML = `
-                        <li>
-                        <div class="chat-item ${unseenClass}" 
-                            data-receiver-id="${user.id}" 
-                            onclick="selectChat(this, '${user.id}')">
-                            <img src="${profileImageUrl}" alt="Avatar" class="avatar">
-                            <div class="chat-info">
-                                <h4>${user.username}</h4>
-                           <p class="chat-status">${getRoleTitle(user.role)}</p>
-                           <p hidden class="chat-time">${user.state ? 'Online' : 'Offline'}</p>
-                            </div>
-                            <div class="chat-side">
-                                <span class="time" id="time-${user.id}">${lastMessageDisplay}</span>
-                                <span class="circle"></span>
-                            </div>
-                        </div>
-                        </li>
-                    `;
-
-                  chatList.insertAdjacentHTML('beforeend', chatItemHTML);
-               });
-            })
-            .catch(error => {
-               console.error("Error searching users:", error);
-            });
-      }
 
       function searchMessage(query) {
          if (!selectedUserId) {

@@ -51,7 +51,6 @@ class LabModel extends Model
       $query = "
            SELECT state, COUNT(*) as count 
            FROM test_requests 
-           WHERE date >= NOW() - INTERVAL 14 DAY
            GROUP BY state
        ";
 

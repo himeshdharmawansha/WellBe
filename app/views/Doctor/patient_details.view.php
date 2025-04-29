@@ -311,7 +311,6 @@
         let medicationIndex = 0;
         let labTestIndex = 0;
 
-        // Update Medication Section
         function updateMedicationsView(index) {
             const medicationBody = document.getElementById('medication-body');
             const viewDocumentContainer = document.getElementById('view-document-container');
@@ -324,7 +323,7 @@
                 if (document.getElementById('doctor-name')) document.getElementById('doctor-name').innerText = 'N/A';
                 if (document.getElementById('record-date')) document.getElementById('record-date').innerText = 'N/A';
                 if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = 'N/A';
-                if (document.getElementById('additionalRemarks')) document.getElementById('additionalRemarks').value = '';
+                if (document.getElementById('additionalRemarks')) document.getElementById('additionalRemarks').value = 'None';
                 viewDocumentContainer.innerHTML = '';
                 return;
             }
@@ -334,14 +333,14 @@
             if (document.getElementById('record-date')) document.getElementById('record-date').innerText = new Date(record.date).toLocaleDateString('en-GB');
             if (document.getElementById('diagnosis')) document.getElementById('diagnosis').innerText = record.diagnosis;
             if (document.getElementById('additionalRemarks')) {
-                document.getElementById('additionalRemarks').value = record.remarks || 'Please continue the medicine for 7 days, if you do not see a change please consult again';
+                document.getElementById('additionalRemarks').value = record.remark || 'None';
             }
 
             // Update the "View Document" link
             viewDocumentContainer.innerHTML = '';
             if (record.file_name && record.file_name.trim() !== '') {
                 viewDocumentContainer.innerHTML = `
-                    <span style="font-weight:bold;">Open Attached File :  </span>
+                    <span style="font-weight:bold;">Open Attached File: </span>
                     <a 
                         href="#" 
                         class="view-document" 
@@ -406,6 +405,7 @@
             document.getElementById('prev-btn').disabled = index === 0;
             document.getElementById('next-btn').disabled = index === records.length - 1;
         }
+
 
         // Update Lab Tests Section
         function updateLabTestsView(index) {

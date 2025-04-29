@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $medicalRecord = new MedicalRecord();
         $medicalRecord->insertRecord($remarks, $diagnosis, $patient_id, $file_name, $data['app_id']);
         $request_id = $medicalRecord->getLastInsertedId($patient_id,$data['app_id']);
-        print_r($request_id);
+        //print_r($request_id);
 
         foreach ($medicationDetails as $medic) {
             $medicalRecord->insertMed($medic, $request_id);
@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                             <tr>
                                 <td><input type="text" name="medication_name[]" placeholder="Medicine Name" list="medicine-suggestions"></td>
                                 <td><input type="text" name="dosage[]" placeholder="Dosage"></td>
-                                <td><input type="number" name="morning[]" min="0" placeholder="0"></td>
+                                <td><input type="number" name="morning[]" min="0" placeholder="0" min='0'></td>
                                 <td><input type="number" name="noon[]" min="0" placeholder="0"></td>
                                 <td><input type="number" name="night[]" min="0" placeholder="0"></td>
                                 <td><input type="number" name="if_needed[]" min="0" placeholder="0"></td>

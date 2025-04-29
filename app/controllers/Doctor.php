@@ -110,6 +110,7 @@ use Random\Engine\Mt19937;
 
             $medicalRecord = new MedicalRecord();
             $past_record_details = $medicalRecord->getPastRecordsDetials($patient_id);
+            //print_r($past_record_details);
 
             $testRequest = new TestRequest();
             $past_test_records = $testRequest -> getPastTestDetials($patient_id);
